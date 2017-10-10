@@ -126,6 +126,9 @@ class Ps_Linklist extends Module implements WidgetInterface
 
     public function renderWidget($hookName, array $configuration)
     {
+        if ($hookName == null && isset($configuration['hook'])) {
+            $hookName = $configuration['hook'];
+        }
         $key = 'ps_linklist|' . $hookName;
 
         if (!$this->isCached($this->templateFile, $this->getCacheId($key))) {
