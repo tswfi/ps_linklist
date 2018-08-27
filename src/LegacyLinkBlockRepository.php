@@ -1,15 +1,18 @@
 <?php
 
+namespace PrestaShop\Modules\LinkList;
+
+use PrestaShop\Modules\LinkList\Model\LinkBlock;
 use Symfony\Component\Translation\TranslatorInterface as Translator;
 
-class LinkBlockRepository
+class LegacyLinkBlockRepository
 {
     private $db;
     private $shop;
     private $db_prefix;
     private $translator;
 
-    public function __construct(Db $db, Shop $shop, Translator $translator)
+    public function __construct(\Db $db, \Shop $shop, Translator $translator)
     {
         $this->db = $db;
         $this->shop = $shop;
@@ -64,8 +67,8 @@ class LinkBlockRepository
 
     public function getCMSBlocksSortedByHook($id_shop = null, $id_lang = null)
     {
-        $id_lang = (int) (($id_lang) ?: Context::getContext()->language->id);
-        $id_shop = (int) (($id_shop) ?: Context::getContext()->shop->id);
+        $id_lang = (int) (($id_lang) ?: \Context::getContext()->language->id);
+        $id_shop = (int) (($id_shop) ?: \Context::getContext()->shop->id);
 
         $sql = 'SELECT
                 bc.`id_link_block`,
@@ -150,7 +153,7 @@ class LinkBlockRepository
 
     public function getCmsPages($id_lang = null)
     {
-        $id_lang = (int) (($id_lang) ?: Context::getContext()->language->id);
+        $id_lang = (int) (($id_lang) ?: \Context::getContext()->language->id);
         $this->shop->id = (int) $this->shop->id;
 
         $categories = "SELECT  cc.`id_cms_category`,
@@ -204,7 +207,7 @@ class LinkBlockRepository
         );
 
         foreach ($productPages as $productPage) {
-            $meta = Meta::getMetaByPage($productPage, ($id_lang) ? (int)$id_lang : (int)Context::getContext()->language->id);
+            $meta = \Meta::getMetaByPage($productPage, ($id_lang) ? (int)$id_lang : (int)\Context::getContext()->language->id);
             $products[] = array(
                 'id_cms' => $productPage,
                 'title' => $meta['title'],
@@ -228,7 +231,7 @@ class LinkBlockRepository
         );
 
         foreach ($staticPages as $staticPage) {
-            $meta = Meta::getMetaByPage($staticPage, ($id_lang) ? (int)$id_lang : (int)Context::getContext()->language->id);
+            $meta = \Meta::getMetaByPage($staticPage, ($id_lang) ? (int)$id_lang : (int)\Context::getContext()->language->id);
             $statics[] = [
                 'id_cms' => $staticPage,
                 'title' => $meta['title'],
@@ -243,7 +246,7 @@ class LinkBlockRepository
     public function getCustomPages(LinkBlock $block, $id_lang = null)
     {
         if (!$id_lang) {
-            $id_lang = Context::getContext()->language->id;
+            $id_lang = \Context::getContext()->language->id;
         }
 
         return $block->custom_content;
@@ -262,7 +265,7 @@ class LinkBlockRepository
     public function installFixtures()
     {
         $success = true;
-        $id_hook = (int)Hook::getIdByName('displayFooter');
+        $id_hook = (int)\Hook::getIdByName('displayFooter');
 
         $queries = [
             'INSERT INTO `'.$this->db_prefix.'link_block` (`id_link_block`, `id_hook`, `position`, `content`) VALUES
@@ -270,7 +273,7 @@ class LinkBlockRepository
                 (2, '.$id_hook.', 2, \'{"cms":["1","2","3","4","5"],"product":[false],"static":["contact","sitemap","stores"]}\');'
         ];
 
-        foreach (Language::getLanguages(true, Context::getContext()->shop->id) as $lang) {
+        foreach (\Language::getLanguages(true, \Context::getContext()->shop->id) as $lang) {
             $queries[] = 'INSERT INTO `'.$this->db_prefix.'link_block_lang` (`id_link_block`, `id_lang`, `name`) VALUES
                 (1, '.(int)$lang['id_lang'].', "'.pSQL($this->translator->trans('Products', array(), 'Modules.Linklist.Shop', $lang['locale'])).'"),
                 (2, '.(int)$lang['id_lang'].', "'.pSQL($this->translator->trans('Our company', array(), 'Modules.Linklist.Shop', $lang['locale'])).'")'
@@ -292,38 +295,38 @@ class LinkBlockRepository
             $query = 'INSERT INTO `'._DB_PREFIX_.'link_block` (`id_hook`, `position`, `content`)
                 SELECT ' . $id_hook . ', MAX(`position`) + 1, \''.$content. '\' FROM '._DB_PREFIX_.'link_block WHERE id_hook = ' . $id_hook;
 
-            $success &= Db::getInstance()->execute($query);
-            $id_link_block = (int) Db::getInstance()->Insert_ID();
+            $success &= \Db::getInstance()->execute($query);
+            $id_link_block = (int) \Db::getInstance()->Insert_ID();
 
             if (!empty($success) && !empty($id_link_block)) {
-                $languages = Language::getLanguages(true, Context::getContext()->shop->id);
+                $languages = \Language::getLanguages(true, \Context::getContext()->shop->id);
 
                 if (!empty($languages)) {
                     $query = 'INSERT INTO `' . _DB_PREFIX_ . 'link_block_lang` (`id_link_block`, `id_lang`, `name`, `custom_content`) VALUES ';
 
                     foreach ($languages as $lang) {
-                        $query .= '(' . $id_link_block . ',' . (int)$lang['id_lang'] . ',\'' . bqSQL(Tools::getValue('name_'.(int)$lang['id_lang'])) . '\', \'' . bqSQL($custom_content[(int)$lang['id_lang']]) . '\'),';
+                        $query .= '(' . $id_link_block . ',' . (int)$lang['id_lang'] . ',\'' . bqSQL(\Tools::getValue('name_'.(int)$lang['id_lang'])) . '\', \'' . bqSQL($custom_content[(int)$lang['id_lang']]) . '\'),';
                     }
 
-                    $success &= Db::getInstance()->execute(rtrim($query, ','));
+                    $success &= \Db::getInstance()->execute(rtrim($query, ','));
                 }
             }
         } else {
             $query = 'UPDATE `'._DB_PREFIX_.'link_block` 
                     SET `content` = \''.$content.'\', `id_hook` = '.$id_hook.' 
                     WHERE `id_link_block` = '.$id_link_block;
-            $success &= Db::getInstance()->execute($query);
+            $success &= \Db::getInstance()->execute($query);
 
             if (!empty($success) && !empty($id_link_block)) {
-                $languages = Language::getLanguages(true, Context::getContext()->shop->id);
+                $languages = \Language::getLanguages(true, \Context::getContext()->shop->id);
 
                 if (!empty($languages)) {
                     foreach ($languages as $lang) {
                         $query = 'UPDATE `' . _DB_PREFIX_ . 'link_block_lang` 
-                                SET `name` = \''.bqSQL(Tools::getValue('name_'.(int)$lang['id_lang'])).'\',
+                                SET `name` = \''.bqSQL(\Tools::getValue('name_'.(int)$lang['id_lang'])).'\',
                                 `custom_content` = \''.bqSQL($custom_content[$lang['id_lang']]).'\'
                                 WHERE `id_link_block` = '.$id_link_block.' AND `id_lang` = '.(int)$lang['id_lang'];
-                        $success &= Db::getInstance()->execute($query);
+                        $success &= \Db::getInstance()->execute($query);
                     }
                 }
             }

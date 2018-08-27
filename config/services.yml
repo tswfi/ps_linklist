@@ -1,0 +1,4 @@
+services:
+  link_block_repository:
+    class: PrestaShop\Modules\LinkList\Repository\LinkBlockRepository
+    arguments: ['@doctrine.dbal.default_connection', '%database_prefix%']

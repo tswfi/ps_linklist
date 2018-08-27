@@ -1,8 +1,11 @@
 <?php
 
+use PrestaShop\Modules\LinkList\Model\LinkBlock;
+use PrestaShop\Modules\LinkList\LegacyLinkBlockRepository;
+
 class AdminLinkWidgetController extends ModuleAdminController
 {
-    public $className = 'LinkBlock';
+    public $className = LinkBlock::class;
     private $name;
     private $repository;
 
@@ -19,12 +22,6 @@ class AdminLinkWidgetController extends ModuleAdminController
         }
 
         $this->name = 'LinkWidget';
-
-        $this->repository = new LinkBlockRepository(
-            Db::getInstance(),
-            $this->context->shop,
-            $this->context->getTranslator()
-        );
     }
 
     public function init()
@@ -86,7 +83,7 @@ class AdminLinkWidgetController extends ModuleAdminController
                     'type' => 'link_blocks',
                     'label' => $this->trans('Link Blocks', array(), 'Modules.Linklist.Admin'),
                     'name' => 'link_blocks',
-                    'values' => $this->repository->getCMSBlocksSortedByHook(),
+                    'values' => $this->getLinkBlockRepository()->getCMSBlocksSortedByHook(),
                 ),
             ),
             'buttons' => array(
@@ -139,7 +136,7 @@ class AdminLinkWidgetController extends ModuleAdminController
                     'name' => 'id_hook',
                     'class' => 'input-lg',
                     'options' => array(
-                        'query' => $this->repository->getDisplayHooksForHelper(),
+                        'query' => $this->getLinkBlockRepository()->getDisplayHooksForHelper(),
                         'id' => 'id',
                         'name' => 'name'
                     )
@@ -148,28 +145,28 @@ class AdminLinkWidgetController extends ModuleAdminController
                     'type' => 'cms_pages',
                     'label' => $this->trans('Content pages', array(), 'Modules.Linklist.Admin'),
                     'name' => 'cms[]',
-                    'values' => $this->repository->getCmsPages(),
+                    'values' => $this->getLinkBlockRepository()->getCmsPages(),
                     'desc' => $this->trans('Please mark every page that you want to display in this block.', array(), 'Modules.Linklist.Admin')
                 ),
                 array(
                     'type' => 'product_pages',
                     'label' => $this->trans('Product pages', array(), 'Modules.Linklist.Admin'),
                     'name' => 'product[]',
-                    'values' => $this->repository->getProductPages(),
+                    'values' => $this->getLinkBlockRepository()->getProductPages(),
                     'desc' => $this->trans('Please mark every page that you want to display in this block.', array(), 'Modules.Linklist.Admin')
                 ),
                 array(
                     'type' => 'static_pages',
                     'label' => $this->trans('Static content', array(), 'Modules.Linklist.Admin'),
                     'name' => 'static[]',
-                    'values' => $this->repository->getStaticPages(),
+                    'values' => $this->getLinkBlockRepository()->getStaticPages(),
                     'desc' => $this->trans('Please mark every page that you want to display in this block.', array(), 'Modules.Linklist.Admin')
                 ),
                 array(
                     'type' => 'custom_pages',
                     'label' => $this->trans('Custom content', array(), 'Modules.Linklist.Admin'),
                     'name' => 'custom[]',
-                    'values' => $this->repository->getCustomPages($block),
+                    'values' => $this->getLinkBlockRepository()->getCustomPages($block),
                     'desc' => $this->trans('Please add every page that you want to display in this block.', array(), 'Modules.Linklist.Admin')
                 ),
             ),
@@ -289,7 +286,7 @@ class AdminLinkWidgetController extends ModuleAdminController
                 }));
             }
 
-            return $this->repository->createOrUpdateLinkList(
+            return $this->getLinkBlockRepository()->createOrUpdateLinkList(
                 $id_link_block,
                 $id_hook,
                 $content,
@@ -315,5 +312,25 @@ class AdminLinkWidgetController extends ModuleAdminController
         }
 
         return $success;
+    }
+
+    private function getLinkBlockRepository()
+    {
+        if (null === $this->repository) {
+            if ($this->module->isSymfonyContext() &&
+                null !== $this->container &&
+                $this->container->has('link_block_repository')
+            ) {
+                $this->repository = $this->container->get('link_block_repository');
+            } else {
+                $this->repository = new LegacyLinkBlockRepository(
+                    Db::getInstance(),
+                    Context::getContext()->shop,
+                    Context::getContext()->getTranslator()
+                );
+            }
+        }
+
+        return $this->repository;
     }
 }
