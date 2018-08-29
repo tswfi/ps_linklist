@@ -1,4 +1,28 @@
+parameters:
+  hello_world: "Hello world!"
+
 services:
   link_block_repository:
-    class: PrestaShop\Modules\LinkList\Repository\LinkBlockRepository
+    class: PrestaShop\LinkList\Repository\LinkBlockRepository
     arguments: ['@doctrine.dbal.default_connection', '%database_prefix%']
+
+  # Grid data query builder
+  prestashop.core.grid.link_block.query_builder:
+    class: PrestaShop\LinkList\Core\Grid\Query\LinkBlockQueryBuilder
+    arguments: ['@doctrine.dbal.default_connection', '%database_prefix%']
+
+  # Grid Data Factory
+  prestashop.core.grid.data_factory.link_block:
+    class: PrestaShop\PrestaShop\Core\Grid\Data\Factory\DoctrineGridDataFactory
+    arguments:
+    - '@prestashop.core.grid.link_block.query_builder'
+    - '@prestashop.core.hook.dispatcher'
+
+  # Hook grid Factory
+  prestashop.core.grid.factory.hook:
+    autowire: true
+    class: PrestaShop\LinkList\Core\Grid\HookGridFactory
+    arguments:
+      $hookDispatcher: '@prestashop.core.hook.dispatcher'
+      $dataFactory: '@prestashop.core.grid.data_factory.link_block'
+      $filterFormFactory: '@prestashop.core.grid.filter.form_factory'

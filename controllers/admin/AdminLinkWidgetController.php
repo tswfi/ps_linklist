@@ -1,7 +1,7 @@
 <?php
 
-use PrestaShop\Modules\LinkList\Model\LinkBlock;
-use PrestaShop\Modules\LinkList\LegacyLinkBlockRepository;
+use PrestaShop\LinkList\Model\LinkBlock;
+use PrestaShop\LinkList\LegacyLinkBlockRepository;
 
 class AdminLinkWidgetController extends ModuleAdminController
 {

@@ -31,8 +31,8 @@ if (!defined('_CAN_LOAD_FILES_')) {
 require_once __DIR__.'/vendor/autoload.php';
 
 use PrestaShop\PrestaShop\Core\Module\WidgetInterface;
-use PrestaShop\Modules\LinkList\Repository\LegacyLinkBlockRepository;
-use PrestaShop\Modules\LinkList\Presenter\LinkBlockPresenter;
+use PrestaShop\LinkList\LegacyLinkBlockRepository;
+use PrestaShop\LinkList\Presenter\LinkBlockPresenter;
 
 class Ps_Linklist extends Module implements WidgetInterface
 {
@@ -63,7 +63,7 @@ class Ps_Linklist extends Module implements WidgetInterface
         $this->description = $this->trans('Adds a block with several links.', array(), 'Modules.Linklist.Admin');
         $this->secure_key = Tools::encrypt($this->name);
 
-        $this->ps_versions_compliancy = array('min' => '1.7.1.0', 'max' => _PS_VERSION_);
+        $this->ps_versions_compliancy = array('min' => '1.7.5.0', 'max' => _PS_VERSION_);
         $this->templateFile = 'module:ps_linklist/views/templates/hook/linkblock.tpl';
 
         $this->linkBlockPresenter = new LinkBlockPresenter(new Link(), $this->context->language);

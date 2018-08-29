@@ -24,7 +24,7 @@
  * International Registered Trademark & Property of PrestaShop SA
  */
 
-namespace PrestaShop\Modules\LinkList\Model;
+namespace PrestaShop\LinkList\Model;
 
 class LinkBlock extends \ObjectModel
 {

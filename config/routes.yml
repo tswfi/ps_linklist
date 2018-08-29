@@ -1,0 +1,20 @@
+admin_link_widget_list:
+  path: /link_widget/list
+  methods: [GET]
+  defaults:
+    _controller: 'PrestaShop\LinkList\Controller\Admin\Improve\Design\LinkWidgetController::listAction'
+    _legacy_controller: AdminLinkWidget
+
+admin_link_block_edit:
+  path: /link_widget/edit/{linkBlockId}
+  methods: [GET]
+  defaults:
+    _controller: 'PrestaShop\LinkList\Controller\Admin\Improve\Design\LinkWidgetController::editAction'
+    _legacy_controller: AdminLinkWidget
+
+admin_link_block_delete:
+  path: /link_widget/delete/{linkBlockId}
+  methods: [DELETE]
+  defaults:
+    _controller: 'PrestaShop\LinkList\Controller\Admin\Improve\Design\LinkWidgetController::deleteAction'
+    _legacy_controller: AdminLinkWidget

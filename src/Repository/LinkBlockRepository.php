@@ -24,11 +24,11 @@
  * International Registered Trademark & Property of PrestaShop SA
  */
 
-namespace PrestaShop\Modules\LinkList\Repository;
+namespace PrestaShop\LinkList\Repository;
 
 use Doctrine\DBAL\Connection;
 use Symfony\Component\Translation\TranslatorInterface as Translator;
-use PrestaShop\Modules\LinkList\Model\LinkBlock;
+use PrestaShop\LinkList\Model\LinkBlock;
 
 class LinkBlockRepository
 {
@@ -86,11 +86,8 @@ class LinkBlockRepository
         return (bool)$this->connection->exec($sql);
     }
 
-    public function getCMSBlocksSortedByHook($id_shop = null, $id_lang = null)
+    public function getCMSBlocksSortedByHook($langId)
     {
-        $id_lang = (int) (($id_lang) ?: Context::getContext()->language->id);
-        $id_shop = (int) (($id_shop) ?: Context::getContext()->shop->id);
-
         $sql = 'SELECT
                 bc.`id_link_block`,
                 bcl.`name` as block_name,
@@ -104,7 +101,7 @@ class LinkBlockRepository
                     ON (bc.`id_link_block` = bcl.`id_link_block`)
                 LEFT JOIN `'.$this->databasePrefix.'hook` h
                     ON (bc.`id_hook` = h.`id_hook`)
-            WHERE bcl.`id_lang` = '.$id_lang.'
+            WHERE bcl.`id_lang` = '.$langId.'
             ORDER BY bc.`position`';
 
         $blocks = $this->connection->fetchAll($sql);
@@ -133,6 +130,21 @@ class LinkBlockRepository
         }
 
         return $orderedBlocks;
+    }
+
+    public function getHooksWithLinks()
+    {
+        $sql = 'SELECT
+                h.`id_hook`,
+                h.`name`,
+                h.`title`
+            FROM `'.$this->databasePrefix.'link_block` lb
+                LEFT JOIN `'.$this->databasePrefix.'hook` h
+                    ON (lb.`id_hook` = h.`id_hook`)
+            GROUP BY h.`id_hook`
+            ORDER BY h.`name`';
+
+        return $this->connection->fetchAll($sql);
     }
 
     public function getDisplayHooksForHelper()
@@ -172,10 +184,10 @@ class LinkBlockRepository
         return $cmsBlock;
     }
 
-    public function getCmsPages($id_lang = null, $id_shop = null)
+    public function getCmsPages($langId = null, $shopId = null)
     {
-        $id_lang = (int) (($id_lang) ?: Context::getContext()->language->id);
-        $id_shop = (int) (($id_shop) ?: Context::getContext()->shop->id);
+        $langId = (int) (($langId) ?: Context::getContext()->language->id);
+        $shopId = (int) (($shopId) ?: Context::getContext()->shop->id);
 
         $categories = "SELECT  cc.`id_cms_category`,
                         ccl.`name`,
@@ -190,8 +202,8 @@ class LinkBlockRepository
             INNER JOIN {$this->databasePrefix}cms_category_shop ccs
                 ON (cc.`id_cms_category` = ccs.`id_cms_category`)
             WHERE `active` = 1
-                AND ccl.`id_lang`= $id_lang
-                AND ccs.`id_shop`= $id_shop
+                AND ccl.`id_lang`= $langId
+                AND ccs.`id_shop`= $shopId
         ";
 
         $pages = $this->connection->fetchAll($categories);
@@ -210,15 +222,15 @@ class LinkBlockRepository
                         ON (c.`id_cms` = cs.`id_cms`)
                     WHERE c.`active` = 1
                         AND c.`id_cms_category` = {$category['id_cms_category']}
-                        AND cl.`id_lang` = $id_lang
-                        AND cs.`id_shop` = $id_shop
+                        AND cl.`id_lang` = $langId
+                        AND cs.`id_shop` = $shopId
                 ");
         }
 
         return $pages;
     }
 
-    public function getProductPages($id_lang = null)
+    public function getProductPages($langId = null)
     {
         $products = array();
         $productPages = array(
@@ -228,7 +240,7 @@ class LinkBlockRepository
         );
 
         foreach ($productPages as $productPage) {
-            $meta = Meta::getMetaByPage($productPage, ($id_lang) ? (int)$id_lang : (int)Context::getContext()->language->id);
+            $meta = Meta::getMetaByPage($productPage, ($langId) ? (int)$langId : (int)Context::getContext()->language->id);
             $products[] = array(
                 'id_cms' => $productPage,
                 'title' => $meta['title'],
@@ -240,7 +252,7 @@ class LinkBlockRepository
         return $pages;
     }
 
-    public function getStaticPages($id_lang = null)
+    public function getStaticPages($langId = null)
     {
         $statics = array();
         $staticPages = array(
@@ -252,7 +264,7 @@ class LinkBlockRepository
         );
 
         foreach ($staticPages as $staticPage) {
-            $meta = Meta::getMetaByPage($staticPage, ($id_lang) ? (int)$id_lang : (int)Context::getContext()->language->id);
+            $meta = Meta::getMetaByPage($staticPage, ($langId) ? (int)$langId : (int)Context::getContext()->language->id);
             $statics[] = [
                 'id_cms' => $staticPage,
                 'title' => $meta['title'],
@@ -264,10 +276,10 @@ class LinkBlockRepository
         return $pages;
     }
 
-    public function getCustomPages(LinkBlock $block, $id_lang = null)
+    public function getCustomPages(LinkBlock $block, $langId = null)
     {
-        if (!$id_lang) {
-            $id_lang = Context::getContext()->language->id;
+        if (!$langId) {
+            $langId = Context::getContext()->language->id;
         }
 
         return $block->custom_content;

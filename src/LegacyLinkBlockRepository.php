@@ -1,8 +1,8 @@
 <?php
 
-namespace PrestaShop\Modules\LinkList;
+namespace PrestaShop\LinkList;
 
-use PrestaShop\Modules\LinkList\Model\LinkBlock;
+use PrestaShop\LinkList\Model\LinkBlock;
 use Symfony\Component\Translation\TranslatorInterface as Translator;
 
 class LegacyLinkBlockRepository
