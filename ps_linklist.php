@@ -67,15 +67,15 @@ class Ps_Linklist extends Module implements WidgetInterface
         $this->templateFile = 'module:ps_linklist/views/templates/hook/linkblock.tpl';
 
         $this->linkBlockPresenter = new LinkBlockPresenter(new Link(), $this->context->language);
+        $this->linkBlockRepository = new LegacyLinkBlockRepository(Db::getInstance(), $this->context->shop, $this->context->getTranslator());
     }
 
     public function install()
     {
         return parent::install()
             && $this->installTab()
-            && $this->linkBlockRepository = $this->get('link_block_repository')
             && $this->linkBlockRepository->createTables()
-            && $this->linkBlockRepository->installFixtures($this->context->getTranslator())
+            && $this->linkBlockRepository->installFixtures()
             && $this->registerHook('actionSymfonyModuleRoutes')
             && $this->registerHook('displayFooter')
             && $this->registerHook('actionUpdateLangAfter');
@@ -85,7 +85,6 @@ class Ps_Linklist extends Module implements WidgetInterface
     {
         return parent::uninstall()
             && $this->uninstallTab()
-            && $this->linkBlockRepository = $this->get('link_block_repository')
             && $this->linkBlockRepository->dropTables();
     }
 
