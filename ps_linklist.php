@@ -109,6 +109,13 @@ class Ps_Linklist extends Module implements WidgetInterface
         return $tab->delete();
     }
 
+    public function hookActionSymfonyModuleRoutes()
+    {
+        return [
+            ['controller' => 'AdminLinkWidget', 'route_name' => 'admin_link_widget_list'],
+        ];
+    }
+
     public function hookActionUpdateLangAfter($params)
     {
         if (!empty($params['lang']) && $params['lang'] instanceOf Language) {

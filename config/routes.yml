@@ -4,6 +4,7 @@ admin_link_widget_list:
   defaults:
     _controller: 'PrestaShop\LinkList\Controller\Admin\Improve\Design\LinkWidgetController::listAction'
     _legacy_controller: AdminLinkWidget
+#    _legacy_link: AdminLinkWidget
 
 admin_link_block_edit:
   path: /link_widget/edit/{linkBlockId}
