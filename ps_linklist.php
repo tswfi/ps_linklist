@@ -76,6 +76,7 @@ class Ps_Linklist extends Module implements WidgetInterface
             && $this->linkBlockRepository = $this->get('link_block_repository')
             && $this->linkBlockRepository->createTables()
             && $this->linkBlockRepository->installFixtures($this->context->getTranslator())
+            && $this->registerHook('actionSymfonyModuleRoutes')
             && $this->registerHook('displayFooter')
             && $this->registerHook('actionUpdateLangAfter');
     }
