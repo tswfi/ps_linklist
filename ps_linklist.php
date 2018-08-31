@@ -111,6 +111,7 @@ class Ps_Linklist extends Module implements WidgetInterface
 
     public function hookActionSymfonyModuleRoutes()
     {
+        return [];
         return [
             ['controller' => 'AdminLinkWidget', 'route_name' => 'admin_link_widget_list'],
         ];

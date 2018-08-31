@@ -2,27 +2,49 @@ parameters:
   hello_world: "Hello world!"
 
 services:
-  link_block_repository:
+  prestashop.link_block.repository:
     class: PrestaShop\LinkList\Repository\LinkBlockRepository
     arguments: ['@doctrine.dbal.default_connection', '%database_prefix%']
 
   # Grid data query builder
-  prestashop.core.grid.link_block.query_builder:
+  prestashop.link_block.grid.query_builder:
     class: PrestaShop\LinkList\Core\Grid\Query\LinkBlockQueryBuilder
     arguments: ['@doctrine.dbal.default_connection', '%database_prefix%']
 
   # Grid Data Factory
-  prestashop.core.grid.data_factory.link_block:
+  prestashop.link_block.grid.data_factory:
     class: PrestaShop\PrestaShop\Core\Grid\Data\Factory\DoctrineGridDataFactory
     arguments:
-    - '@prestashop.core.grid.link_block.query_builder'
+    - '@prestashop.link_block.grid.query_builder'
     - '@prestashop.core.hook.dispatcher'
 
-  # Hook grid Factory
-  prestashop.core.grid.factory.hook:
+  # Link block grid Factory
+  prestashop.link_block.grid.factory:
     autowire: true
-    class: PrestaShop\LinkList\Core\Grid\HookGridFactory
+    class: PrestaShop\LinkList\Core\Grid\LinkBlockGridFactory
     arguments:
       $hookDispatcher: '@prestashop.core.hook.dispatcher'
-      $dataFactory: '@prestashop.core.grid.data_factory.link_block'
+      $dataFactory: '@prestashop.link_block.grid.data_factory'
       $filterFormFactory: '@prestashop.core.grid.filter.form_factory'
+
+  # Link block form data provider
+  prestashop.link_block.form_provider:
+    class: PrestaShop\LinkList\Form\LinkBlockFormDataProvider
+
+  prestashop.link_block.form_type:
+    class: PrestaShop\LinkList\Form\Type\LinkBlockType
+    parent: 'form.type.translatable.aware'
+    public: true
+    tags:
+      - { name: form.type }
+
+  # Link block form handler
+  prestashop.link_block.form_handler:
+    class: 'PrestaShop\PrestaShop\Core\Form\FormHandler'
+    arguments:
+    - '@=service("form.factory").createBuilder()'
+    - '@prestashop.core.hook.dispatcher'
+    - '@prestashop.link_block.form_provider'
+    -
+      'link_block': 'PrestaShop\LinkList\Form\Type\LinkBlockType'
+    - 'AdminLinkWidget'

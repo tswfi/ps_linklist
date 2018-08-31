@@ -26,7 +26,7 @@
 
 namespace PrestaShop\LinkList\Controller\Admin\Improve\Design;
 
-use PrestaShop\LinkList\Core\Grid\HookGridFactory;
+use PrestaShop\LinkList\Core\Grid\LinkBlockGridFactory;
 use PrestaShop\LinkList\Core\Search\Filters\LinkBlockFilters;
 use PrestaShop\LinkList\Repository\LinkBlockRepository;
 use PrestaShop\PrestaShop\Core\Grid\Presenter\GridPresenter;
@@ -49,11 +49,11 @@ class LinkWidgetController extends FrameworkBundleAdminController
     {
         //Get hook list, then loop through hooks setting it in in the filter
         /** @var LinkBlockRepository $repository */
-        $repository = $this->get('link_block_repository');
+        $repository = $this->get('prestashop.link_block.repository');
         $hooks = $repository->getHooksWithLinks();
 
-        /** @var HookGridFactory $hookGridFactory */
-        $hookGridFactory = $this->get('prestashop.core.grid.factory.hook');
+        /** @var LinkBlockGridFactory $linkBlockGridFactory */
+        $linkBlockGridFactory = $this->get('prestashop.link_block.grid.factory');
         /** @var GridPresenter $gridPresenter */
         $gridPresenter = $this->get('prestashop.core.grid.presenter.grid_presenter');
 
@@ -61,7 +61,7 @@ class LinkWidgetController extends FrameworkBundleAdminController
         foreach ($hooks as $hook) {
             $filters = $this->buildFiltersByRequestAndHook($request, $hook);
 
-            $gridLinkBlockFactory = $hookGridFactory->buildGridFactoryByHook($hook);
+            $gridLinkBlockFactory = $linkBlockGridFactory->buildGridFactoryByHook($hook);
             $grid = $gridLinkBlockFactory->getGrid($filters);
             $grids[] = $gridPresenter->present($grid);
         }
@@ -69,22 +69,44 @@ class LinkWidgetController extends FrameworkBundleAdminController
         return [
             'grids' => $grids,
             'enableSidebar' => true,
+            'layoutHeaderToolbarBtn' => $this->getToolbarButtons(),
             'help_link' => $this->generateSidebarLink($request->attributes->get('_legacy_controller')),
         ];
     }
 
     /**
-     * @AdminSecurity("is_granted('update', request.get('_legacy_controller'))", message="Access denied.")
+     * @AdminSecurity("is_granted('create', request.get('_legacy_controller'))", message="Access denied.")
      *
-     * @Template("@Modules/ps_linklist/views/templates/admin/link_block/edit.html.twig")
+     * @Template("@Modules/ps_linklist/views/templates/admin/link_block/form.html.twig")
+     *
+     * @return array
+     * @throws \Exception
+     */
+    public function newAction()
+    {
+        $form = $this->get('prestashop.link_block.form_handler')->getForm();
+
+        return [
+            'linkBlockForm' => $form->createView(),
+        ];
+    }
+
+    /**
+     * @AdminSecurity("is_granted('update', request.get('_legacy_controller'))", message="Access denied.")
+     * @Template("@Modules/ps_linklist/views/templates/admin/link_block/form.html.twig")
      *
      * @param int $linkBlockId
      *
      * @return array
+     * @throws \Exception
      */
     public function editAction($linkBlockId)
     {
+        $form = $this->get('prestashop.link_block.form_handler')->getForm();
 
+        return [
+            'form' => $form->createView(),
+        ];
     }
 
     /**
@@ -109,5 +131,22 @@ class LinkWidgetController extends FrameworkBundleAdminController
         $filtersParams['filters']['id_hook'] = $hook['id_hook'];
 
         return new LinkBlockFilters($filtersParams);
+    }
+
+    /**
+     * Gets the header toolbar buttons.
+     *
+     * @return array
+     */
+    private function getToolbarButtons()
+    {
+        $toolbarButtons = array();
+        $toolbarButtons['add'] = array(
+            'href' => $this->generateUrl('admin_link_block_new'),
+            'desc' => $this->trans('New block', 'Modules.Linklist.Admin'),
+            'icon' => 'add_circle_outline',
+        );
+
+        return $toolbarButtons;
     }
 }

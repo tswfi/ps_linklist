@@ -33,7 +33,7 @@ use PrestaShop\PrestaShop\Core\Grid\GridFactory;
 use PrestaShop\PrestaShop\Core\Hook\HookDispatcherInterface;
 use Symfony\Component\Translation\TranslatorInterface;
 
-class HookGridFactory
+class LinkBlockGridFactory
 {
     /** @var TranslatorInterface */
     private $translator;

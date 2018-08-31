@@ -6,6 +6,13 @@ admin_link_widget_list:
     _legacy_controller: AdminLinkWidget
 #    _legacy_link: AdminLinkWidget
 
+admin_link_block_new:
+  path: /link_widget/new
+  methods: [GET]
+  defaults:
+    _controller: 'PrestaShop\LinkList\Controller\Admin\Improve\Design\LinkWidgetController::newAction'
+    _legacy_controller: AdminLinkWidget
+
 admin_link_block_edit:
   path: /link_widget/edit/{linkBlockId}
   methods: [GET]
