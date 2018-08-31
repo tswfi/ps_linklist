@@ -33,12 +33,12 @@ use PrestaShop\LinkList\Model\LinkBlock;
 class LinkBlockRepository
 {
     private $connection;
-    private $databasePrefix;
+    private $dbPrefix;
 
-    public function __construct(Connection $connection, $databasePrefix)
+    public function __construct(Connection $connection, $dbPrefix)
     {
         $this->connection = $connection;
-        $this->databasePrefix = $databasePrefix;
+        $this->dbPrefix = $dbPrefix;
     }
 
     public function createTables()
@@ -48,21 +48,21 @@ class LinkBlockRepository
         $this->dropTables();
 
         $queries = [
-            "CREATE TABLE IF NOT EXISTS `{$this->databasePrefix}link_block`(
+            "CREATE TABLE IF NOT EXISTS `{$this->dbPrefix}link_block`(
     			`id_link_block` int(10) unsigned NOT NULL auto_increment,
     			`id_hook` int(1) unsigned DEFAULT NULL,
     			`position` int(10) unsigned NOT NULL default '0',
     			`content` text default NULL,
     			PRIMARY KEY (`id_link_block`)
             ) ENGINE=$engine DEFAULT CHARSET=utf8",
-            "CREATE TABLE IF NOT EXISTS `{$this->databasePrefix}link_block_lang`(
+            "CREATE TABLE IF NOT EXISTS `{$this->dbPrefix}link_block_lang`(
     			`id_link_block` int(10) unsigned NOT NULL,
     			`id_lang` int(10) unsigned NOT NULL,
     			`name` varchar(40) NOT NULL default '',
     			`custom_content` text default NULL,
     			PRIMARY KEY (`id_link_block`, `id_lang`)
             ) ENGINE=$engine DEFAULT CHARSET=utf8",
-            "CREATE TABLE IF NOT EXISTS `{$this->databasePrefix}link_block_shop` (
+            "CREATE TABLE IF NOT EXISTS `{$this->dbPrefix}link_block_shop` (
     			`id_link_block` int(10) unsigned NOT NULL auto_increment,
     			`id_shop` int(10) unsigned NOT NULL,
     			PRIMARY KEY (`id_link_block`, `id_shop`)
@@ -79,9 +79,9 @@ class LinkBlockRepository
     public function dropTables()
     {
         $sql = "DROP TABLE IF EXISTS
-			`{$this->databasePrefix}link_block`,
-			`{$this->databasePrefix}link_block_lang`,
-			`{$this->databasePrefix}link_block_shop`";
+			`{$this->dbPrefix}link_block`,
+			`{$this->dbPrefix}link_block_lang`,
+			`{$this->dbPrefix}link_block_shop`";
 
         return (bool)$this->connection->exec($sql);
     }
@@ -96,10 +96,10 @@ class LinkBlockRepository
                 h.`title` as hook_title,
                 h.`description` as hook_description,
                 bc.`position`
-            FROM `'.$this->databasePrefix.'link_block` bc
-                INNER JOIN `'.$this->databasePrefix.'link_block_lang` bcl
+            FROM `'.$this->dbPrefix.'link_block` bc
+                INNER JOIN `'.$this->dbPrefix.'link_block_lang` bcl
                     ON (bc.`id_link_block` = bcl.`id_link_block`)
-                LEFT JOIN `'.$this->databasePrefix.'hook` h
+                LEFT JOIN `'.$this->dbPrefix.'hook` h
                     ON (bc.`id_hook` = h.`id_hook`)
             WHERE bcl.`id_lang` = '.$langId.'
             ORDER BY bc.`position`';
@@ -138,8 +138,8 @@ class LinkBlockRepository
                 h.`id_hook`,
                 h.`name`,
                 h.`title`
-            FROM `'.$this->databasePrefix.'link_block` lb
-                LEFT JOIN `'.$this->databasePrefix.'hook` h
+            FROM `'.$this->dbPrefix.'link_block` lb
+                LEFT JOIN `'.$this->dbPrefix.'hook` h
                     ON (lb.`id_hook` = h.`id_hook`)
             GROUP BY h.`id_hook`
             ORDER BY h.`name`';
@@ -150,7 +150,7 @@ class LinkBlockRepository
     public function getDisplayHooksForHelper()
     {
         $sql = "SELECT h.id_hook as id, h.name as name
-                FROM {$this->databasePrefix}hook h
+                FROM {$this->dbPrefix}hook h
                 WHERE (lower(h.`name`) LIKE 'display%')
                 ORDER BY h.name ASC
             ";
@@ -170,7 +170,7 @@ class LinkBlockRepository
         $id_hook = (int) $id_hook;
 
         $sql = "SELECT cb.`id_link_block`
-                    FROM {$this->databasePrefix}link_block cb
+                    FROM {$this->dbPrefix}link_block cb
                     WHERE `id_hook` = $id_hook
                     ORDER by cb.`position`
                 ";
@@ -196,10 +196,10 @@ class LinkBlockRepository
                         cc.`id_parent`,
                         cc.`level_depth`,
                         NULL as pages
-            FROM {$this->databasePrefix}cms_category cc
-            INNER JOIN {$this->databasePrefix}cms_category_lang ccl
+            FROM {$this->dbPrefix}cms_category cc
+            INNER JOIN {$this->dbPrefix}cms_category_lang ccl
                 ON (cc.`id_cms_category` = ccl.`id_cms_category`)
-            INNER JOIN {$this->databasePrefix}cms_category_shop ccs
+            INNER JOIN {$this->dbPrefix}cms_category_shop ccs
                 ON (cc.`id_cms_category` = ccs.`id_cms_category`)
             WHERE `active` = 1
                 AND ccl.`id_lang`= $langId
@@ -215,10 +215,10 @@ class LinkBlockRepository
                         cl.`meta_title` as title,
                         cl.`meta_description` as description,
                         cl.`link_rewrite`
-                    FROM {$this->databasePrefix}cms c
-                    INNER JOIN {$this->databasePrefix}cms_lang cl
+                    FROM {$this->dbPrefix}cms c
+                    INNER JOIN {$this->dbPrefix}cms_lang cl
                         ON (c.`id_cms` = cl.`id_cms`)
-                    INNER JOIN {$this->databasePrefix}cms_shop cs
+                    INNER JOIN {$this->dbPrefix}cms_shop cs
                         ON (c.`id_cms` = cs.`id_cms`)
                     WHERE c.`active` = 1
                         AND c.`id_cms_category` = {$category['id_cms_category']}
@@ -289,7 +289,7 @@ class LinkBlockRepository
     {
         $id_hook = (int) $id_hook;
 
-        $sql = "SELECT COUNT(*) FROM {$this->databasePrefix}link_block
+        $sql = "SELECT COUNT(*) FROM {$this->dbPrefix}link_block
                     WHERE `id_hook` = $id_hook";
 
         return $this->connection->fetchColumn($sql);
@@ -301,13 +301,13 @@ class LinkBlockRepository
         $id_hook = (int)Hook::getIdByName('displayFooter');
 
         $queries = [
-            'INSERT INTO `'.$this->databasePrefix.'link_block` (`id_link_block`, `id_hook`, `position`, `content`) VALUES
+            'INSERT INTO `'.$this->dbPrefix.'link_block` (`id_link_block`, `id_hook`, `position`, `content`) VALUES
                 (1, '.$id_hook.', 1, \'{"cms":[false],"product":["prices-drop","new-products","best-sales"],"static":[false]}\'),
                 (2, '.$id_hook.', 2, \'{"cms":["1","2","3","4","5"],"product":[false],"static":["contact","sitemap","stores"]}\');'
         ];
 
         foreach (Language::getLanguages(true, Context::getContext()->shop->id) as $lang) {
-            $queries[] = 'INSERT INTO `'.$this->databasePrefix.'link_block_lang` (`id_link_block`, `id_lang`, `name`) VALUES
+            $queries[] = 'INSERT INTO `'.$this->dbPrefix.'link_block_lang` (`id_link_block`, `id_lang`, `name`) VALUES
                 (1, '.(int)$lang['id_lang'].', "'.pSQL($translator->trans('Products', array(), 'Modules.Linklist.Shop', $lang['locale'])).'"),
                 (2, '.(int)$lang['id_lang'].', "'.pSQL($translator->trans('Our company', array(), 'Modules.Linklist.Shop', $lang['locale'])).'")'
             ;

@@ -20,6 +20,20 @@ admin_link_block_edit:
     _controller: 'PrestaShop\LinkList\Controller\Admin\Improve\Design\LinkWidgetController::editAction'
     _legacy_controller: AdminLinkWidget
 
+admin_link_block_create:
+  path: /link_widget/create
+  methods: [POST]
+  defaults:
+    _controller: 'PrestaShop\LinkList\Controller\Admin\Improve\Design\LinkWidgetController::createAction'
+    _legacy_controller: AdminLinkWidget
+
+admin_link_block_update:
+  path: /link_widget/update
+  methods: [POST]
+  defaults:
+    _controller: 'PrestaShop\LinkList\Controller\Admin\Improve\Design\LinkWidgetController::updateAction'
+    _legacy_controller: AdminLinkWidget
+
 admin_link_block_delete:
   path: /link_widget/delete/{linkBlockId}
   methods: [DELETE]

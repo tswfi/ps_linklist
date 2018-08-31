@@ -4,19 +4,22 @@ parameters:
 services:
   prestashop.link_block.repository:
     class: PrestaShop\LinkList\Repository\LinkBlockRepository
-    arguments: ['@doctrine.dbal.default_connection', '%database_prefix%']
+    arguments:
+      $connection: '@doctrine.dbal.default_connection'
+      $dbPrefix: '%database_prefix%'
 
   # Grid data query builder
   prestashop.link_block.grid.query_builder:
     class: PrestaShop\LinkList\Core\Grid\Query\LinkBlockQueryBuilder
-    arguments: ['@doctrine.dbal.default_connection', '%database_prefix%']
+    arguments:
+      $connection: '@doctrine.dbal.default_connection'
+      $dbPrefix: '%database_prefix%'
 
   # Grid Data Factory
   prestashop.link_block.grid.data_factory:
     class: PrestaShop\PrestaShop\Core\Grid\Data\Factory\DoctrineGridDataFactory
     arguments:
-    - '@prestashop.link_block.grid.query_builder'
-    - '@prestashop.core.hook.dispatcher'
+      $gridQueryBuilder: '@prestashop.link_block.grid.query_builder'
 
   # Link block grid Factory
   prestashop.link_block.grid.factory:
@@ -31,10 +34,58 @@ services:
   prestashop.link_block.form_provider:
     class: PrestaShop\LinkList\Form\LinkBlockFormDataProvider
 
+  prestashop.link_block.choice_provider.hook:
+    class: PrestaShop\LinkList\Form\ChoiceProvider\HookChoiceProvider
+    arguments:
+      $connection: '@doctrine.dbal.default_connection'
+      $dbPrefix: '%database_prefix%'
+
+  prestashop.link_block.choice_provider.cms_category:
+    class: PrestaShop\LinkList\Form\ChoiceProvider\CMSCategoryChoiceProvider
+    arguments:
+      $connection: '@doctrine.dbal.default_connection'
+      $dbPrefix: '%database_prefix%'
+      $idLang: '@=service("prestashop.adapter.legacy.context").getLanguage().id'
+      $idShop: '@=service("prestashop.adapter.shop.context").getContextShopID()'
+
+  prestashop.link_block.choice_provider.cms_page:
+    class: PrestaShop\LinkList\Form\ChoiceProvider\CMSPageChoiceProvider
+    arguments:
+      $cmsCategoryChoiceProvider: '@prestashop.link_block.choice_provider.cms_category'
+      $connection: '@doctrine.dbal.default_connection'
+      $dbPrefix: '%database_prefix%'
+      $idLang: '@=service("prestashop.adapter.legacy.context").getLanguage().id'
+      $idShop: '@=service("prestashop.adapter.shop.context").getContextShopID()'
+
+  prestashop.link_block.choice_provider.product_page:
+    class: PrestaShop\LinkList\Form\ChoiceProvider\PageChoiceProvider
+    arguments:
+      $idLang: '@=service("prestashop.adapter.legacy.context").getLanguage().id'
+      $pageNames:
+        - 'prices-drop'
+        - 'new-products'
+        - 'best-sales'
+
+  prestashop.link_block.choice_provider.static_page:
+    class: PrestaShop\LinkList\Form\ChoiceProvider\PageChoiceProvider
+    arguments:
+      $idLang: '@=service("prestashop.adapter.legacy.context").getLanguage().id'
+      $pageNames:
+        - 'contact'
+        - 'sitemap'
+        - 'stores'
+        - 'authentication'
+        - 'my-account'
+
   prestashop.link_block.form_type:
     class: PrestaShop\LinkList\Form\Type\LinkBlockType
     parent: 'form.type.translatable.aware'
     public: true
+    arguments:
+      $hookChoiceProvider: '@prestashop.link_block.choice_provider.hook'
+      $cmsPageChoiceProvider: '@prestashop.link_block.choice_provider.cms_page'
+      $productPageChoiceProvider: '@prestashop.link_block.choice_provider.product_page'
+      $staticPageChoiceProvider: '@prestashop.link_block.choice_provider.static_page'
     tags:
       - { name: form.type }
 
@@ -42,9 +93,9 @@ services:
   prestashop.link_block.form_handler:
     class: 'PrestaShop\PrestaShop\Core\Form\FormHandler'
     arguments:
-    - '@=service("form.factory").createBuilder()'
-    - '@prestashop.core.hook.dispatcher'
-    - '@prestashop.link_block.form_provider'
-    -
-      'link_block': 'PrestaShop\LinkList\Form\Type\LinkBlockType'
-    - 'AdminLinkWidget'
+      $formBuilder: '@=service("form.factory").createBuilder()'
+      $hookDispatcher: '@prestashop.core.hook.dispatcher'
+      $formDataProvider: '@prestashop.link_block.form_provider'
+      $formTypes:
+        'link_block': 'PrestaShop\LinkList\Form\Type\LinkBlockType'
+      $hookName: 'AdminLinkWidget'

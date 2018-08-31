@@ -26,16 +26,37 @@
 
 namespace PrestaShop\LinkList\Form;
 
+use PrestaShop\LinkList\Model\LinkBlock;
 use PrestaShop\PrestaShop\Core\Form\FormDataProviderInterface;
 
 class LinkBlockFormDataProvider implements FormDataProviderInterface
 {
+    /** @var int|null */
+    private $idLinkBlock;
+
     /**
      * @return array
+     * @throws \PrestaShopDatabaseException
+     * @throws \PrestaShopException
      */
     public function getData()
     {
-        return [];
+        if (null === $this->idLinkBlock) {
+            return [];
+        }
+
+        $linkBlock = new LinkBlock($this->idLinkBlock);
+
+        $arrayLinkBlock = (array) $linkBlock;
+
+        return ['link_block' => [
+            'id_link_block' => $arrayLinkBlock['id_link_block'],
+            'block_name' => $arrayLinkBlock['name'],
+            'id_hook' => $arrayLinkBlock['id_hook'],
+            'cms' => $arrayLinkBlock['content']['cms'],
+            'product' => $arrayLinkBlock['content']['product'],
+            'static' => $arrayLinkBlock['content']['static'],
+        ]];
     }
 
     /**
@@ -45,5 +66,24 @@ class LinkBlockFormDataProvider implements FormDataProviderInterface
     public function setData(array $data)
     {
         return [];
+    }
+
+    /**
+     * @return int
+     */
+    public function getIdLinkBlock()
+    {
+        return $this->idLinkBlock;
+    }
+
+    /**
+     * @param int $idLinkBlock
+     * @return LinkBlockFormDataProvider
+     */
+    public function setIdLinkBlock($idLinkBlock)
+    {
+        $this->idLinkBlock = $idLinkBlock;
+
+        return $this;
     }
 }

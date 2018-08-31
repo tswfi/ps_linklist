@@ -84,6 +84,7 @@ class LinkWidgetController extends FrameworkBundleAdminController
      */
     public function newAction()
     {
+        $this->get('prestashop.link_block.form_provider')->setIdLinkBlock(null);
         $form = $this->get('prestashop.link_block.form_handler')->getForm();
 
         return [
@@ -102,11 +103,36 @@ class LinkWidgetController extends FrameworkBundleAdminController
      */
     public function editAction($linkBlockId)
     {
+        $this->get('prestashop.link_block.form_provider')->setIdLinkBlock($linkBlockId);
         $form = $this->get('prestashop.link_block.form_handler')->getForm();
 
         return [
-            'form' => $form->createView(),
+            'linkBlockForm' => $form->createView(),
         ];
+    }
+
+    /**
+     * @AdminSecurity("is_granted('update', request.get('_legacy_controller'))", message="Access denied.")
+     *
+     * @param Request $request
+     *
+     * @return RedirectResponse
+     */
+    public function createAction(Request $request)
+    {
+        return $this->redirectToRoute('admin_link_block_edit', array('linkBlockId' => $request->get('id_link_block')));
+    }
+
+    /**
+     * @AdminSecurity("is_granted('update', request.get('_legacy_controller'))", message="Access denied.")
+     *
+     * @param Request $request
+     *
+     * @return RedirectResponse
+     */
+    public function updateAction(Request $request)
+    {
+        return $this->redirectToRoute('admin_link_block_edit', array('linkBlockId' => $request->get('id_link_block')));
     }
 
     /**
