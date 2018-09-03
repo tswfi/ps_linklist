@@ -24,20 +24,25 @@
  * International Registered Trademark & Property of PrestaShop SA
  */
 
-namespace PrestaShop\LinkList\Form\ChoiceProvider;
+namespace PrestaShop\Module\LinkList\Form\ChoiceProvider;
 
 use Doctrine\DBAL\Connection;
 use PrestaShop\PrestaShop\Core\Form\FormChoiceProviderInterface;
 
-class CMSCategoryChoiceProvider implements FormChoiceProviderInterface
+/**
+ * Class CMSCategoryChoiceProvider
+ * @package PrestaShop\Module\LinkList\Form\ChoiceProvider
+ */
+final class CMSCategoryChoiceProvider extends AbstractDatabaseChoiceProvider
 {
-    /** @var Connection */
-    private $connection;
-    /** @var string */
-    private $dbPrefix;
-    /** @var integer */
+    /**
+     * @var int
+     */
     private $idLang;
-    /** @var integer */
+
+    /**
+     * @var int
+     */
     private $idShop;
 
     /**
@@ -53,8 +58,7 @@ class CMSCategoryChoiceProvider implements FormChoiceProviderInterface
         $idLang,
         $idShop
     ) {
-        $this->connection = $connection;
-        $this->dbPrefix = $dbPrefix;
+        parent::__construct($connection, $dbPrefix);
         $this->idLang = $idLang;
         $this->idShop = $idShop;
     }

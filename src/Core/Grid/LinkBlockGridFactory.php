@@ -24,16 +24,22 @@
  * International Registered Trademark & Property of PrestaShop SA
  */
 
-namespace PrestaShop\LinkList\Core\Grid;
+namespace PrestaShop\Module\LinkList\Core\Grid;
 
-use PrestaShop\LinkList\Core\Grid\Definition\Factory\LinkBlockDefinitionFactory;
+use PrestaShop\Module\LinkList\Core\Grid\Definition\Factory\LinkBlockDefinitionFactory;
+use PrestaShop\Module\LinkList\Core\Search\Filters\LinkBlockFilters;
 use PrestaShop\PrestaShop\Core\Grid\Data\Factory\GridDataFactoryInterface;
 use PrestaShop\PrestaShop\Core\Grid\Filter\FilterFormFactoryInterface;
+use PrestaShop\PrestaShop\Core\Grid\Grid;
 use PrestaShop\PrestaShop\Core\Grid\GridFactory;
 use PrestaShop\PrestaShop\Core\Hook\HookDispatcherInterface;
 use Symfony\Component\Translation\TranslatorInterface;
 
-class LinkBlockGridFactory
+/**
+ * Class LinkBlockGridFactory
+ * @package PrestaShop\Module\LinkList\Core\Grid
+ */
+final class LinkBlockGridFactory
 {
     /** @var TranslatorInterface */
     private $translator;
@@ -64,13 +70,34 @@ class LinkBlockGridFactory
     }
 
     /**
+     * @param array $hooks
+     * @param array $filtersParams
+     * @return Grid[]
+     */
+    public function getGrids(array $hooks, array $filtersParams)
+    {
+        $grids = [];
+        foreach ($hooks as $hook) {
+            $hookParams = $filtersParams;
+            $hookParams['filters']['id_hook'] = $hook['id_hook'];
+
+            $filters = new LinkBlockFilters($hookParams);
+
+            $gridFactory = $this->buildGridFactoryByHook($hook);
+            $grids[] = $gridFactory->getGrid($filters);
+        }
+
+        return $grids;
+    }
+
+    /**
      * Each definition depends on the hook, therefore each factory also
      * depends on the hook
      *
      * @param array $hook
      * @return GridFactory
      */
-    public function buildGridFactoryByHook(array $hook)
+    private function buildGridFactoryByHook(array $hook)
     {
         $definitionFactory = new LinkBlockDefinitionFactory($hook);
         $definitionFactory->setTranslator($this->translator);

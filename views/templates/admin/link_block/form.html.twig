@@ -28,10 +28,10 @@
 
 
 {% block content %}
-    {% if linkBlockForm.vars.data.link_block and linkBlockForm.vars.data.link_block.id_link_block %}
-        {% set actionRoute = 'admin_link_block_update' %}
+    {% if linkBlockForm.vars.data.link_block.id_link_block is defined %}
+        {% set actionRoute = 'admin_link_block_edit_process' %}
     {% else %}
-        {% set actionRoute = 'admin_link_block_create' %}
+        {% set actionRoute = 'admin_link_block_create_process' %}
     {% endif %}
     {{ form_start(linkBlockForm, {'action': url(actionRoute), 'attr': {'class': 'form', 'id': 'link_block_form'}}) }}
     <div class="row justify-content-center">
@@ -40,7 +40,7 @@
                 <div class="card">
                     <h3 class="card-header">
                         <i class="material-icons">mode_edit</i>
-                        {% if linkBlockForm.vars.data.link_block and linkBlockForm.vars.data.link_block.id_link_block %}
+                        {% if linkBlockForm.vars.data.link_block.id_link_block is defined %}
                             {{ 'Edit the link block.'|trans({}, 'Modules.Linklist.Admin') }}
                         {% else %}
                         {{ 'New link block'|trans({}, 'Modules.Linklist.Admin') }}

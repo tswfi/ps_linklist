@@ -24,9 +24,9 @@
  * International Registered Trademark & Property of PrestaShop SA
  */
 
-namespace PrestaShop\LinkList\Form;
+namespace PrestaShop\Module\LinkList\Form;
 
-use PrestaShop\LinkList\Model\LinkBlock;
+use PrestaShop\Module\LinkList\Model\LinkBlock;
 use PrestaShop\PrestaShop\Core\Form\FormDataProviderInterface;
 
 class LinkBlockFormDataProvider implements FormDataProviderInterface

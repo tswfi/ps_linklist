@@ -24,7 +24,7 @@
  * International Registered Trademark & Property of PrestaShop SA
  */
 
-namespace PrestaShop\LinkList\Core\Grid\Definition\Factory;
+namespace PrestaShop\Module\LinkList\Core\Grid\Definition\Factory;
 
 use PrestaShop\PrestaShop\Core\Grid\Action\Row\RowActionCollection;
 use PrestaShop\PrestaShop\Core\Grid\Action\Row\Type\LinkRowAction;
@@ -38,6 +38,10 @@ use PrestaShop\PrestaShop\Core\Grid\Filter\FilterCollection;
 use Symfony\Component\Form\Extension\Core\Type\IntegerType;
 use Symfony\Component\Form\Extension\Core\Type\TextType;
 
+/**
+ * Class LinkBlockDefinitionFactory
+ * @package PrestaShop\Module\LinkList\Core\Grid\Definition\Factory
+ */
 final class LinkBlockDefinitionFactory extends AbstractGridDefinitionFactory
 {
     const FACTORY_ID = 'link_widget_grid_';
@@ -45,21 +49,35 @@ final class LinkBlockDefinitionFactory extends AbstractGridDefinitionFactory
     /** @var array */
     private $hook;
 
+    /**
+     * LinkBlockDefinitionFactory constructor.
+     * @param array $hook
+     */
     public function __construct(array $hook)
     {
         $this->hook = $hook;
     }
 
+    /**
+     * @inheritDoc
+     */
     protected function getId()
     {
         return self::FACTORY_ID . $this->hook['id_hook'];
     }
 
+
+    /**
+     * @inheritDoc
+     */
     protected function getName()
     {
         return $this->hook['name'] . ' ' . $this->hook['title'];
     }
 
+    /**
+     * @inheritDoc
+     */
     protected function getColumns()
     {
         return (new ColumnCollection())

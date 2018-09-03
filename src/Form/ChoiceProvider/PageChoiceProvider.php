@@ -24,16 +24,32 @@
  * International Registered Trademark & Property of PrestaShop SA
  */
 
-namespace PrestaShop\LinkList\Form\ChoiceProvider;
+namespace PrestaShop\Module\LinkList\Form\ChoiceProvider;
 
+use Doctrine\DBAL\Connection;
 use PrestaShop\PrestaShop\Core\Form\FormChoiceProviderInterface;
+use PrestaShop\PrestaShop\Core\Foundation\Database\EntityNotFoundException;
 
-class PageChoiceProvider implements FormChoiceProviderInterface
+/**
+ * Class PageChoiceProvider
+ * @package PrestaShop\Module\LinkList\Form\ChoiceProvider
+ */
+final class PageChoiceProvider extends AbstractDatabaseChoiceProvider
 {
-    /** @var array */
+    /**
+     * @var array
+     */
     private $pageNames;
-    /** @var integer */
+
+    /**
+     * @var int
+     */
     private $idLang;
+
+    /**
+     * @var int
+     */
+    private $idShop;
 
     /**
      * ProductPageChoiceProvider constructor.
@@ -41,22 +57,47 @@ class PageChoiceProvider implements FormChoiceProviderInterface
      * @param int   $idLang
      */
     public function __construct(
+        Connection $connection,
+        $dbPrefix,
         array $pageNames,
-        $idLang
+        $idLang,
+        $idShop
     ) {
+        parent::__construct($connection, $dbPrefix);
         $this->pageNames = $pageNames;
         $this->idLang = $idLang;
+        $this->idShop = $idShop;
     }
 
     /**
      * @return array
+     * @throws EntityNotFoundException
      */
     public function getChoices()
     {
         $choices = [];
         foreach ($this->pageNames as $pageName) {
-            $meta = \Meta::getMetaByPage($pageName, $this->idLang);
-            $choices[$meta['title']] = $pageName;
+            $qb = $this->connection->createQueryBuilder();
+            $qb
+                ->select('m.id_meta, ml.title')
+                ->from($this->dbPrefix.'meta', 'm')
+                ->leftJoin('m', $this->dbPrefix.'meta_lang', 'ml', 'm.id_meta = ml.id_meta')
+                ->andWhere($qb->expr()->orX(
+                    'm.page = :page',
+                        'm.page = :pageSlug'
+                ))
+                ->andWhere('ml.id_lang = :idLang')
+                ->andWhere('ml.id_shop = :idShop')
+                ->setParameter('idLang', $this->idLang)
+                ->setParameter('idShop', $this->idShop)
+                ->setParameter('page', $pageName)
+                ->setParameter('pageSlug', str_replace('-', '', strtolower($pageName)))
+            ;
+            $meta = $qb->execute()->fetchAll();
+            if (empty($meta)) {
+                throw new EntityNotFoundException(sprintf('Could not find page matching "%s" identifier', $pageName));
+            }
+            $choices[$meta[0]['title']] = $pageName;
         }
 
         return $choices;

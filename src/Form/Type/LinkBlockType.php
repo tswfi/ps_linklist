@@ -24,7 +24,7 @@
  * International Registered Trademark & Property of PrestaShop SA
  */
 
-namespace PrestaShop\LinkList\Form\Type;
+namespace PrestaShop\Module\LinkList\Form\Type;
 
 use PrestaShop\PrestaShop\Core\Form\FormChoiceProviderInterface;
 use PrestaShopBundle\Form\Admin\Type\TranslateTextType;
@@ -37,28 +37,48 @@ use Symfony\Component\Translation\TranslatorInterface;
 
 class LinkBlockType extends TranslatorAwareType
 {
-    /** @var FormChoiceProviderInterface */
-    private $hookChoiceProvider;
-    /** @var FormChoiceProviderInterface */
-    private $cmsPageChoiceProvider;
-    /** @var FormChoiceProviderInterface */
-    private $productPageChoiceProvider;
-    /** @var FormChoiceProviderInterface */
-    private $staticPageChoiceProvider;
+    /**
+     * @var array
+     */
+    private $hookChoices;
 
+    /**
+     * @var array
+     */
+    private $cmsPageChoices;
+
+    /**
+     * @var array
+     */
+    private $productPageChoices;
+
+    /**
+     * @var array
+     */
+    private $staticPageChoices;
+
+    /**
+     * LinkBlockType constructor.
+     * @param TranslatorInterface $translator
+     * @param array               $locales
+     * @param array               $hookChoices
+     * @param array               $cmsPageChoices
+     * @param array               $productPageChoices
+     * @param array               $staticPageChoices
+     */
     public function __construct(
         TranslatorInterface $translator,
         array $locales,
-        FormChoiceProviderInterface $hookChoiceProvider,
-        FormChoiceProviderInterface $cmsPageChoiceProvider,
-        FormChoiceProviderInterface $productPageChoiceProvider,
-        FormChoiceProviderInterface $staticPageChoiceProvider
+        array $hookChoices,
+        array $cmsPageChoices,
+        array $productPageChoices,
+        array $staticPageChoices
     ) {
         parent::__construct($translator, $locales);
-        $this->hookChoiceProvider = $hookChoiceProvider;
-        $this->cmsPageChoiceProvider = $cmsPageChoiceProvider;
-        $this->productPageChoiceProvider = $productPageChoiceProvider;
-        $this->staticPageChoiceProvider = $staticPageChoiceProvider;
+        $this->hookChoices = $hookChoices;
+        $this->cmsPageChoices = $cmsPageChoices;
+        $this->productPageChoices = $productPageChoices;
+        $this->staticPageChoices = $staticPageChoices;
     }
 
     /**
@@ -74,23 +94,23 @@ class LinkBlockType extends TranslatorAwareType
                 'label' => $this->trans('Name of the block', 'Modules.Linklist.Admin')
             ])
             ->add('id_hook', ChoiceType::class, [
-                'choices' => $this->hookChoiceProvider->getChoices(),
+                'choices' => $this->hookChoices,
                 'label' => $this->trans('Hook', 'Admin.Global'),
             ])
             ->add('cms', ChoiceType::class, [
-                'choices' => $this->cmsPageChoiceProvider->getChoices(),
+                'choices' => $this->cmsPageChoices,
                 'label' => $this->trans('Content pages', 'Modules.Linklist.Admin'),
                 'multiple' => true,
                 'expanded' => true,
             ])
             ->add('product', ChoiceType::class, [
-                'choices' => $this->productPageChoiceProvider->getChoices(),
+                'choices' => $this->productPageChoices,
                 'label' => $this->trans('Product pages', 'Modules.Linklist.Admin'),
                 'multiple' => true,
                 'expanded' => true,
             ])
             ->add('static', ChoiceType::class, [
-                'choices' => $this->staticPageChoiceProvider->getChoices(),
+                'choices' => $this->staticPageChoices,
                 'label' => $this->trans('Static content', 'Modules.Linklist.Admin'),
                 'multiple' => true,
                 'expanded' => true,

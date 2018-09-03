@@ -24,14 +24,18 @@
  * International Registered Trademark & Property of PrestaShop SA
  */
 
-namespace PrestaShop\LinkList\Core\Grid\Query;
+namespace PrestaShop\Module\LinkList\Core\Grid\Query;
 
 use Doctrine\DBAL\Query\QueryBuilder;
 use PrestaShop\PrestaShop\Core\Grid\Query\AbstractDoctrineQueryBuilder;
 use PrestaShop\PrestaShop\Core\Grid\Query\DoctrineQueryBuilderInterface;
 use PrestaShop\PrestaShop\Core\Grid\Search\SearchCriteriaInterface;
 
-class LinkBlockQueryBuilder extends AbstractDoctrineQueryBuilder
+/**
+ * Class LinkBlockQueryBuilder
+ * @package PrestaShop\Module\LinkList\Core\Grid\Query
+ */
+final class LinkBlockQueryBuilder extends AbstractDoctrineQueryBuilder
 {
     /**
      * @param null|SearchCriteriaInterface $searchCriteria
@@ -61,7 +65,6 @@ class LinkBlockQueryBuilder extends AbstractDoctrineQueryBuilder
                 ->setMaxResults($searchCriteria->getLimit())
             ;
         }
-
 
         return $qb;
     }
@@ -111,9 +114,6 @@ class LinkBlockQueryBuilder extends AbstractDoctrineQueryBuilder
 
                 continue;
             }
-
-            //$qb->andWhere("$name LIKE :$name");
-            //$qb->setParameter($name, '%' . $value . '%');
         }
 
         return $qb;

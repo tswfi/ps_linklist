@@ -6,5 +6,5 @@ $vendorDir = dirname(dirname(__FILE__));
 $baseDir = dirname($vendorDir);
 
 return array(
-    'PrestaShop\\LinkList\\' => array($baseDir . '/src'),
+    'PrestaShop\\Module\\LinkList\\' => array($baseDir . '/src'),
 );

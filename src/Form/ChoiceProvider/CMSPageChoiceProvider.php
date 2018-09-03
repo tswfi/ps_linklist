@@ -24,42 +24,49 @@
  * International Registered Trademark & Property of PrestaShop SA
  */
 
-namespace PrestaShop\LinkList\Form\ChoiceProvider;
+namespace PrestaShop\Module\LinkList\Form\ChoiceProvider;
 
 use Doctrine\DBAL\Connection;
 use PrestaShop\PrestaShop\Core\Form\FormChoiceProviderInterface;
 
-class CMSPageChoiceProvider implements FormChoiceProviderInterface
+/**
+ * Class CMSPageChoiceProvider
+ * @package PrestaShop\Module\LinkList\Form\ChoiceProvider
+ */
+final class CMSPageChoiceProvider extends AbstractDatabaseChoiceProvider
 {
-    /** @var CMSCategoryChoiceProvider */
-    private $cmsCategoryChoiceProvider;
-    /** @var Connection */
-    private $connection;
-    /** @var string */
-    private $dbPrefix;
-    /** @var integer */
+    /**
+     * @var array
+     */
+    private $categories;
+
+    /**
+     * @var int
+     */
     private $idLang;
-    /** @var integer */
+
+    /**
+     * @var int
+     */
     private $idShop;
 
     /**
      * CMSPageChoiceProvider constructor.
-     * @param CMSCategoryChoiceProvider $cmsCategoryChoiceProvider
-     * @param Connection                $connection
-     * @param string                    $dbPrefix
-     * @param int                       $idLang
-     * @param int                       $idShop
+     * @param Connection $connection
+     * @param string     $dbPrefix
+     * @param array      $categories
+     * @param int        $idLang
+     * @param int        $idShop
      */
     public function __construct(
-        CMSCategoryChoiceProvider $cmsCategoryChoiceProvider,
         Connection $connection,
         $dbPrefix,
+        array $categories,
         $idLang,
         $idShop
     ) {
-        $this->cmsCategoryChoiceProvider = $cmsCategoryChoiceProvider;
-        $this->connection = $connection;
-        $this->dbPrefix = $dbPrefix;
+        parent::__construct($connection, $dbPrefix);
+        $this->categories = $categories;
         $this->idLang = $idLang;
         $this->idShop = $idShop;
     }
@@ -71,8 +78,7 @@ class CMSPageChoiceProvider implements FormChoiceProviderInterface
     {
         $choices = [];
 
-        $categories = $this->cmsCategoryChoiceProvider->getChoices();
-        foreach ($categories as $categoryName => $categoryId) {
+        foreach ($this->categories as $categoryName => $categoryId) {
             $qb = $this->connection->createQueryBuilder();
             $qb
                 ->select('c.id_cms, cl.meta_title')

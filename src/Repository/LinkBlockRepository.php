@@ -24,11 +24,11 @@
  * International Registered Trademark & Property of PrestaShop SA
  */
 
-namespace PrestaShop\LinkList\Repository;
+namespace PrestaShop\Module\LinkList\Repository;
 
 use Doctrine\DBAL\Connection;
 use Symfony\Component\Translation\TranslatorInterface as Translator;
-use PrestaShop\LinkList\Model\LinkBlock;
+use PrestaShop\Module\LinkList\Model\LinkBlock;
 
 class LinkBlockRepository
 {

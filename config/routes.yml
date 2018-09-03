@@ -2,41 +2,41 @@ admin_link_widget_list:
   path: /link_widget/list
   methods: [GET]
   defaults:
-    _controller: 'PrestaShop\LinkList\Controller\Admin\Improve\Design\LinkWidgetController::listAction'
+    _controller: 'PrestaShop\Module\LinkList\Controller\Admin\Improve\Design\LinkWidgetController::listAction'
     _legacy_controller: AdminLinkWidget
-#    _legacy_link: AdminLinkWidget
+    _legacy_link: AdminLinkWidget
 
-admin_link_block_new:
-  path: /link_widget/new
+admin_link_block_create:
+  path: /link_widget/create
   methods: [GET]
   defaults:
-    _controller: 'PrestaShop\LinkList\Controller\Admin\Improve\Design\LinkWidgetController::newAction'
+    _controller: 'PrestaShop\Module\LinkList\Controller\Admin\Improve\Design\LinkWidgetController::createAction'
+    _legacy_controller: AdminLinkWidget
+
+admin_link_block_create_process:
+  path: /link_widget/create
+  methods: [POST]
+  defaults:
+    _controller: 'PrestaShop\Module\LinkList\Controller\Admin\Improve\Design\LinkWidgetController::createProcessAction'
     _legacy_controller: AdminLinkWidget
 
 admin_link_block_edit:
   path: /link_widget/edit/{linkBlockId}
   methods: [GET]
   defaults:
-    _controller: 'PrestaShop\LinkList\Controller\Admin\Improve\Design\LinkWidgetController::editAction'
+    _controller: 'PrestaShop\Module\LinkList\Controller\Admin\Improve\Design\LinkWidgetController::editAction'
     _legacy_controller: AdminLinkWidget
 
-admin_link_block_create:
-  path: /link_widget/create
+admin_link_block_edit_process:
+  path: /link_widget/edit
   methods: [POST]
   defaults:
-    _controller: 'PrestaShop\LinkList\Controller\Admin\Improve\Design\LinkWidgetController::createAction'
-    _legacy_controller: AdminLinkWidget
-
-admin_link_block_update:
-  path: /link_widget/update
-  methods: [POST]
-  defaults:
-    _controller: 'PrestaShop\LinkList\Controller\Admin\Improve\Design\LinkWidgetController::updateAction'
+    _controller: 'PrestaShop\Module\LinkList\Controller\Admin\Improve\Design\LinkWidgetController::editProcessAction'
     _legacy_controller: AdminLinkWidget
 
 admin_link_block_delete:
   path: /link_widget/delete/{linkBlockId}
   methods: [DELETE]
   defaults:
-    _controller: 'PrestaShop\LinkList\Controller\Admin\Improve\Design\LinkWidgetController::deleteAction'
+    _controller: 'PrestaShop\Module\LinkList\Controller\Admin\Improve\Design\LinkWidgetController::deleteAction'
     _legacy_controller: AdminLinkWidget

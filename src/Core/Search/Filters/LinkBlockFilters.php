@@ -24,10 +24,14 @@
  * International Registered Trademark & Property of PrestaShop SA
  */
 
-namespace PrestaShop\LinkList\Core\Search\Filters;
+namespace PrestaShop\Module\LinkList\Core\Search\Filters;
 
 use PrestaShop\PrestaShop\Core\Search\Filters;
 
+/**
+ * Class LinkBlockFilters
+ * @package PrestaShop\Module\LinkList\Core\Search\Filters
+ */
 final class LinkBlockFilters extends Filters
 {
     /**

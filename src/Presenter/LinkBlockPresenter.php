@@ -24,9 +24,9 @@
  * International Registered Trademark & Property of PrestaShop SA
  */
 
-namespace PrestaShop\LinkList\Presenter;
+namespace PrestaShop\Module\LinkList\Presenter;
 
-use PrestaShop\LinkList\Model\LinkBlock;
+use PrestaShop\Module\LinkList\Model\LinkBlock;
 
 class LinkBlockPresenter
 {

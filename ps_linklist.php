@@ -31,8 +31,8 @@ if (!defined('_CAN_LOAD_FILES_')) {
 require_once __DIR__.'/vendor/autoload.php';
 
 use PrestaShop\PrestaShop\Core\Module\WidgetInterface;
-use PrestaShop\LinkList\LegacyLinkBlockRepository;
-use PrestaShop\LinkList\Presenter\LinkBlockPresenter;
+use PrestaShop\Module\LinkList\LegacyLinkBlockRepository;
+use PrestaShop\Module\LinkList\Presenter\LinkBlockPresenter;
 
 class Ps_Linklist extends Module implements WidgetInterface
 {
