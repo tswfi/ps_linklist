@@ -28,17 +28,32 @@ namespace PrestaShop\Module\LinkList\Presenter;
 
 use PrestaShop\Module\LinkList\Model\LinkBlock;
 
+/**
+ * Class LinkBlockPresenter
+ * @package PrestaShop\Module\LinkList\Presenter
+ */
 class LinkBlockPresenter
 {
     private $link;
     private $language;
 
+    /**
+     * LinkBlockPresenter constructor.
+     * @param \Link $link
+     * @param \Language $language
+     */
     public function __construct(\Link $link, \Language $language)
     {
         $this->link = $link;
         $this->language = $language;
     }
 
+    /**
+     * @param LinkBlock $cmsBlock
+     * @return array
+     * @throws \PrestaShopDatabaseException
+     * @throws \PrestaShopException
+     */
     public function present(LinkBlock $cmsBlock)
     {
         return array(
@@ -50,6 +65,11 @@ class LinkBlockPresenter
         );
     }
 
+    /**
+     * @param array $content
+     * @param array $custom_content
+     * @return array
+     */
     private function makeLinks($content, $custom_content)
     {
         $cmsLinks = $productLinks = $staticsLinks = $customLinks = array();
@@ -76,6 +96,12 @@ class LinkBlockPresenter
         );
     }
 
+    /**
+     * @param array $cmsIds
+     * @return array
+     * @throws \PrestaShopDatabaseException
+     * @throws \PrestaShopException
+     */
     private function makeCmsLinks($cmsIds)
     {
         $cmsLinks = array();
@@ -95,6 +121,10 @@ class LinkBlockPresenter
         return $cmsLinks;
     }
 
+    /**
+     * @param array $productIds
+     * @return array
+     */
     private function makeProductLinks($productIds)
     {
         $productLinks = array();
@@ -114,6 +144,10 @@ class LinkBlockPresenter
         return $productLinks;
     }
 
+    /**
+     * @param array $staticIds
+     * @return array
+     */
     private function makeStaticLinks($staticIds)
     {
         $staticLinks = array();
@@ -133,6 +167,10 @@ class LinkBlockPresenter
         return $staticLinks;
     }
 
+    /**
+     * @param array $customContent
+     * @return array
+     */
     private function makeCustomLinks($customContent)
     {
         $customLinks = array();

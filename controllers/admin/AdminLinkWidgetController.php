@@ -341,18 +341,11 @@ class AdminLinkWidgetController extends ModuleAdminController
     private function getLinkBlockRepository()
     {
         if (null === $this->repository) {
-            if ($this->module->isSymfonyContext() &&
-                null !== $this->container &&
-                $this->container->has('link_block_repository')
-            ) {
-                $this->repository = $this->container->get('link_block_repository');
-            } else {
-                $this->repository = new LegacyLinkBlockRepository(
-                    Db::getInstance(),
-                    Context::getContext()->shop,
-                    Context::getContext()->getTranslator()
-                );
-            }
+            $this->repository = new LegacyLinkBlockRepository(
+                Db::getInstance(),
+                Context::getContext()->shop,
+                Context::getContext()->getTranslator()
+            );
         }
 
         return $this->repository;

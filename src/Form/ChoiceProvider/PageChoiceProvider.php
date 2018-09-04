@@ -42,19 +42,12 @@ final class PageChoiceProvider extends AbstractDatabaseChoiceProvider
     private $pageNames;
 
     /**
-     * @var int
-     */
-    private $idLang;
-
-    /**
-     * @var int
-     */
-    private $idShop;
-
-    /**
-     * ProductPageChoiceProvider constructor.
+     * PageChoiceProvider constructor.
+     * @param Connection $connection
+     * @param $dbPrefix
      * @param array $pageNames
-     * @param int   $idLang
+     * @param $idLang
+     * @param $idShop
      */
     public function __construct(
         Connection $connection,
@@ -63,10 +56,8 @@ final class PageChoiceProvider extends AbstractDatabaseChoiceProvider
         $idLang,
         $idShop
     ) {
-        parent::__construct($connection, $dbPrefix);
+        parent::__construct($connection, $dbPrefix, $idLang, $idShop);
         $this->pageNames = $pageNames;
-        $this->idLang = $idLang;
-        $this->idShop = $idShop;
     }
 
     /**

@@ -46,14 +46,28 @@ abstract class AbstractDatabaseChoiceProvider implements FormChoiceProviderInter
     protected $dbPrefix;
 
     /**
+     * @var int
+     */
+    protected $idLang;
+
+    /**
+     * @var int
+     */
+    protected $idShop;
+
+    /**
      * AbstractDatabaseChoiceProvider constructor.
      * @param Connection $connection
      * @param string     $dbPrefix
+     * @param int|null   $idLang
+     * @param int|null   $idShop
      */
-    public function __construct(Connection $connection, $dbPrefix)
+    public function __construct(Connection $connection, $dbPrefix, $idLang = null, $idShop = null)
     {
         $this->connection = $connection;
         $this->dbPrefix = $dbPrefix;
+        $this->idLang = $idLang;
+        $this->idShop = $idShop;
     }
 
     /**

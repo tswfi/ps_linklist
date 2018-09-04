@@ -28,7 +28,9 @@ namespace PrestaShop\Module\LinkList\Controller\Admin\Improve\Design;
 
 use PrestaShop\Module\LinkList\Core\Grid\LinkBlockGridFactory;
 use PrestaShop\Module\LinkList\Core\Search\Filters\LinkBlockFilters;
+use PrestaShop\Module\LinkList\Form\LinkBlockFormDataProvider;
 use PrestaShop\Module\LinkList\Repository\LinkBlockRepository;
+use PrestaShop\PrestaShop\Core\Form\FormHandlerInterface;
 use PrestaShop\PrestaShop\Core\Grid\Presenter\GridPresenter;
 use PrestaShopBundle\Controller\Admin\FrameworkBundleAdminController;
 use PrestaShopBundle\Security\Annotation\AdminSecurity;
@@ -36,6 +38,10 @@ use Sensio\Bundle\FrameworkExtraBundle\Configuration\Template;
 use Symfony\Component\HttpFoundation\RedirectResponse;
 use Symfony\Component\HttpFoundation\Request;
 
+/**
+ * Class LinkWidgetController
+ * @package PrestaShop\Module\LinkList\Controller\Admin\Improve\Design
+ */
 class LinkWidgetController extends FrameworkBundleAdminController
 {
     /**
@@ -112,14 +118,40 @@ class LinkWidgetController extends FrameworkBundleAdminController
 
     /**
      * @AdminSecurity("is_granted('update', request.get('_legacy_controller'))", message="Access denied.")
+     * @Template("@Modules/ps_linklist/views/templates/admin/link_block/form.html.twig")
      *
      * @param Request $request
      *
-     * @return RedirectResponse
+     * @return RedirectResponse|array
+     * @throws \Exception
      */
     public function createProcessAction(Request $request)
     {
-        return $this->redirectToRoute('admin_link_block_edit', ['linkBlockId' => $request->get('id_link_block')]);
+        /** @var LinkBlockFormDataProvider $formProvider */
+        $formProvider = $this->get('prestashop.module.link_block.form_provider');
+        $formProvider->setIdLinkBlock(null);
+
+        /** @var FormHandlerInterface $formHandler */
+        $formHandler = $this->get('prestashop.module.link_block.form_handler');
+        $form = $formHandler->getForm();
+        $form->handleRequest($request);
+
+        if ($form->isSubmitted()) {
+            $data = $form->getData();
+            $saveErrors = $formHandler->save($data);
+
+            if (0 === count($saveErrors)) {
+                $this->addFlash('success', $this->trans('Successful update.', 'Admin.Notifications.Success'));
+
+                return $this->redirectToRoute('admin_link_block_edit', ['linkBlockId' => $formProvider->getIdLinkBlock()]);
+            }
+
+            $this->flashErrors($saveErrors);
+        }
+
+        return [
+            'linkBlockForm' => $form->createView(),
+        ];
     }
 
     /**

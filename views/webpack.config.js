@@ -30,8 +30,11 @@ const keepLicense = require('uglify-save-license');
 
 const config = {
     entry: {
-        link_block: [
-            './js/link_block',
+        grid: [
+            './js/grid',
+        ],
+        form: [
+            './js/form',
         ]
     },
     output: {

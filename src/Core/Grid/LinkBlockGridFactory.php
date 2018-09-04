@@ -41,13 +41,24 @@ use Symfony\Component\Translation\TranslatorInterface;
  */
 final class LinkBlockGridFactory
 {
-    /** @var TranslatorInterface */
+    /**
+     * @var TranslatorInterface
+     */
     private $translator;
-    /** @var HookDispatcherInterface */
+
+    /**
+     * @var HookDispatcherInterface
+     */
     private $hookDispatcher;
-    /** @var GridDataFactoryInterface */
+
+    /**
+     * @var GridDataFactoryInterface
+     */
     private $dataFactory;
-    /** @var FilterFormFactoryInterface */
+
+    /**
+     * @var FilterFormFactoryInterface
+     */
     private $filterFormFactory;
 
     /**

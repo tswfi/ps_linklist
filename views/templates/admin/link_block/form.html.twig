@@ -28,12 +28,12 @@
 
 
 {% block content %}
-    {% if linkBlockForm.vars.data.link_block.id_link_block is defined %}
-        {% set actionRoute = 'admin_link_block_edit_process' %}
+    {% if linkBlockForm.vars.data.link_block.id_link_block is defined and linkBlockForm.vars.data.link_block.id_link_block is not null %}
+        {% set formAction = url('admin_link_block_edit_process', {'linkBlockId': linkBlockForm.vars.data.link_block.id_link_block}) %}
     {% else %}
-        {% set actionRoute = 'admin_link_block_create_process' %}
+        {% set formAction = url('admin_link_block_create_process') %}
     {% endif %}
-    {{ form_start(linkBlockForm, {'action': url(actionRoute), 'attr': {'class': 'form', 'id': 'link_block_form'}}) }}
+    {{ form_start(linkBlockForm, {'action': formAction, 'attr': {'class': 'form', 'id': 'link_block_form'}}) }}
     <div class="row justify-content-center">
         {% block link_block_form %}
             <div class="col-xl-10">
@@ -68,6 +68,13 @@
     </div>
     {{ form_end(linkBlockForm) }}
 {% endblock %}
+
+{% block javascripts %}
+    {{ parent() }}
+
+    <script src="{{ asset('/modules/ps_linklist/views/public/form.bundle.js') }}"></script>
+{% endblock %}
+
 
 {%- block choice_widget_expanded -%}
     <div {{ block('widget_container_attributes') }}>

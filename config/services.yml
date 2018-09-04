@@ -1,12 +1,10 @@
-parameters:
-  hello_world: "Hello world!"
-
 services:
   prestashop.module.link_block.repository:
     class: PrestaShop\Module\LinkList\Repository\LinkBlockRepository
     arguments:
       $connection: '@doctrine.dbal.default_connection'
       $dbPrefix: '%database_prefix%'
+      $languages: '@=service("prestashop.adapter.legacy.context").getLanguages(true, service("prestashop.adapter.shop.context").getContextShopID())'
 
   # Grid data query builder
   prestashop.module.link_block.grid.query_builder:
@@ -33,6 +31,9 @@ services:
   # Link block form data provider
   prestashop.module.link_block.form_provider:
     class: PrestaShop\Module\LinkList\Form\LinkBlockFormDataProvider
+    arguments:
+      $repository: '@prestashop.module.link_block.repository'
+      $languages: '@=service("prestashop.adapter.legacy.context").getLanguages(true, service("prestashop.adapter.shop.context").getContextShopID())'
 
   prestashop.module.link_block.choice_provider.hook:
     class: PrestaShop\Module\LinkList\Form\ChoiceProvider\HookChoiceProvider

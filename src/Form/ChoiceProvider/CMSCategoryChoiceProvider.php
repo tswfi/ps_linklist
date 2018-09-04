@@ -36,34 +36,6 @@ use PrestaShop\PrestaShop\Core\Form\FormChoiceProviderInterface;
 final class CMSCategoryChoiceProvider extends AbstractDatabaseChoiceProvider
 {
     /**
-     * @var int
-     */
-    private $idLang;
-
-    /**
-     * @var int
-     */
-    private $idShop;
-
-    /**
-     * CMSCategoryChoiceProvider constructor.
-     * @param Connection $connection
-     * @param string     $dbPrefix
-     * @param int        $idLang
-     * @param int        $idShop
-     */
-    public function __construct(
-        Connection $connection,
-        $dbPrefix,
-        $idLang,
-        $idShop
-    ) {
-        parent::__construct($connection, $dbPrefix);
-        $this->idLang = $idLang;
-        $this->idShop = $idShop;
-    }
-
-    /**
      * @return array
      */
     public function getChoices()

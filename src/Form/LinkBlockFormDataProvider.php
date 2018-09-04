@@ -27,12 +27,43 @@
 namespace PrestaShop\Module\LinkList\Form;
 
 use PrestaShop\Module\LinkList\Model\LinkBlock;
+use PrestaShop\Module\LinkList\Repository\LinkBlockRepository;
+use PrestaShop\PrestaShop\Adapter\Module\Module;
 use PrestaShop\PrestaShop\Core\Form\FormDataProviderInterface;
 
+/**
+ * Class LinkBlockFormDataProvider
+ * @package PrestaShop\Module\LinkList\Form
+ */
 class LinkBlockFormDataProvider implements FormDataProviderInterface
 {
-    /** @var int|null */
+    /**
+     * @var int|null
+     */
     private $idLinkBlock;
+
+    /**
+     * @var LinkBlockRepository
+     */
+    private $repository;
+
+    /**
+     * @var array
+     */
+    private $languages;
+
+    /**
+     * LinkBlockFormDataProvider constructor.
+     * @param LinkBlockRepository $repository
+     * @param array               $languages
+     */
+    public function __construct(
+        LinkBlockRepository $repository,
+        array $languages
+    ) {
+        $this->repository = $repository;
+        $this->languages = $languages;
+    }
 
     /**
      * @return array
@@ -62,9 +93,26 @@ class LinkBlockFormDataProvider implements FormDataProviderInterface
     /**
      * @param array $data
      * @return array
+     * @throws \PrestaShop\PrestaShop\Adapter\Entity\PrestaShopDatabaseException
      */
     public function setData(array $data)
     {
+        $linkBlock = $data['link_block'];
+        $errors = $this->validateLinkBlock($linkBlock);
+        if (!empty($errors)) {
+            return $errors;
+        }
+
+        $linkBlockId = $this->repository->createLinkBlock(
+            $linkBlock['block_name'],
+            $linkBlock['id_hook'],
+            $linkBlock['cms'],
+            $linkBlock['static'],
+            $linkBlock['product'],
+            array()
+        );
+        $this->setIdLinkBlock($linkBlockId);
+
         return [];
     }
 
@@ -85,5 +133,63 @@ class LinkBlockFormDataProvider implements FormDataProviderInterface
         $this->idLinkBlock = $idLinkBlock;
 
         return $this;
+    }
+
+    private function validateLinkBlock(array $data)
+    {
+        $checkAllLanguages = true;
+        $errors = [];
+        if (!isset($data['id_hook'])) {
+            $errors[] = [
+                'key' => "Missing id_hook",
+                'domain' => 'Admin.Catalog.Notification',
+                'parameters' => [],
+            ];
+        }
+        if (!isset($data['block_name'])) {
+            $errors[] = [
+                'key' => "Missing block_name",
+                'domain' => 'Admin.Catalog.Notification',
+                'parameters' => [],
+            ];
+        } elseif ($checkAllLanguages) {
+            foreach ($this->languages as $language) {
+                if (
+                    !isset($data['block_name'][$language['id_lang']]) ||
+                    empty($data['block_name'][$language['id_lang']])
+                ) {
+                    $errors[] = [
+                        'key' => "Missing block_name value for language %s",
+                        'domain' => 'Admin.Catalog.Notification',
+                        'parameters' => [$language['iso_code']],
+                    ];
+                }
+            }
+        }
+
+        return $errors;
+    }
+
+    /**
+     * Register the selected hook to this module if it was not registered yet
+     * @param int $hookId
+     * @throws \PrestaShopException
+     */
+    private function updateHook($hookId)
+    {
+        $hookName = \Hook::getNameById($hookId);
+        $module = \Module::getModuleIdByName('ps_linklist');
+        if (\Hook::isModuleRegisteredOnHook($module, $hookName, $this->getContext()->shop->id)) {
+            \Hook::registerHook($module, $hookName);
+        }
+    }
+
+    /**
+     * Clears the module cache
+     */
+    private function clearModuleCache()
+    {
+        $module = \Module::getModuleIdByName('ps_linklist');
+        $module->_clearCache($module->templateFile);
     }
 }

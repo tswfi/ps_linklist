@@ -26,13 +26,40 @@
 
 namespace PrestaShop\Module\LinkList\Model;
 
+/**
+ * Class LinkBlock
+ * @package PrestaShop\Module\LinkList\Model
+ */
 class LinkBlock extends \ObjectModel
 {
+    /**
+     * @var int
+     */
     public $id_link_block;
+
+    /**
+     * @var string
+     */
     public $name;
+
+    /**
+     * @var int
+     */
     public $id_hook;
+
+    /**
+     * @var int
+     */
     public $position;
+
+    /**
+     * @var array
+     */
     public $content;
+
+    /**
+     * @var array
+     */
     public $custom_content;
 
     /**

@@ -41,16 +41,6 @@ final class CMSPageChoiceProvider extends AbstractDatabaseChoiceProvider
     private $categories;
 
     /**
-     * @var int
-     */
-    private $idLang;
-
-    /**
-     * @var int
-     */
-    private $idShop;
-
-    /**
      * CMSPageChoiceProvider constructor.
      * @param Connection $connection
      * @param string     $dbPrefix
@@ -65,10 +55,8 @@ final class CMSPageChoiceProvider extends AbstractDatabaseChoiceProvider
         $idLang,
         $idShop
     ) {
-        parent::__construct($connection, $dbPrefix);
+        parent::__construct($connection, $dbPrefix, $idLang, $idShop);
         $this->categories = $categories;
-        $this->idLang = $idLang;
-        $this->idShop = $idShop;
     }
 
     /**

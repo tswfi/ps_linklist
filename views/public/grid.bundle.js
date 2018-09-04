@@ -63,19 +63,20 @@
 /******/ 	__webpack_require__.p = "";
 /******/
 /******/ 	// Load entry module and return exports
-/******/ 	return __webpack_require__(__webpack_require__.s = 7);
+/******/ 	return __webpack_require__(__webpack_require__.s = 10);
 /******/ })
 /************************************************************************/
 /******/ ([
-/* 0 */
+/* 0 */,
+/* 1 */
 /***/ (function(module, __webpack_exports__, __webpack_require__) {
 
 "use strict";
 Object.defineProperty(__webpack_exports__, "__esModule", { value: true });
-/* harmony import */ var __WEBPACK_IMPORTED_MODULE_0__admin_dev_themes_new_theme_js_components_grid_grid__ = __webpack_require__(5);
-/* harmony import */ var __WEBPACK_IMPORTED_MODULE_1__admin_dev_themes_new_theme_js_components_grid_extension_link_row_action_extension__ = __webpack_require__(3);
-/* harmony import */ var __WEBPACK_IMPORTED_MODULE_2__admin_dev_themes_new_theme_js_components_grid_extension_action_row_submit_row_action_extension__ = __webpack_require__(2);
-/* harmony import */ var __WEBPACK_IMPORTED_MODULE_3__admin_dev_themes_new_theme_js_components_grid_extension_sorting_extension__ = __webpack_require__(4);
+/* harmony import */ var __WEBPACK_IMPORTED_MODULE_0__admin_dev_themes_new_theme_js_components_grid_grid__ = __webpack_require__(6);
+/* harmony import */ var __WEBPACK_IMPORTED_MODULE_1__admin_dev_themes_new_theme_js_components_grid_extension_link_row_action_extension__ = __webpack_require__(4);
+/* harmony import */ var __WEBPACK_IMPORTED_MODULE_2__admin_dev_themes_new_theme_js_components_grid_extension_action_row_submit_row_action_extension__ = __webpack_require__(3);
+/* harmony import */ var __WEBPACK_IMPORTED_MODULE_3__admin_dev_themes_new_theme_js_components_grid_extension_sorting_extension__ = __webpack_require__(5);
 /**
  * 2007-2018 PrestaShop
  *
@@ -120,7 +121,7 @@ $(function () {
 });
 
 /***/ }),
-/* 1 */
+/* 2 */
 /***/ (function(module, __webpack_exports__, __webpack_require__) {
 
 "use strict";
@@ -229,10 +230,10 @@ class TableSorting {
 
 /* harmony default export */ __webpack_exports__["a"] = (TableSorting);
 
-/* WEBPACK VAR INJECTION */}.call(__webpack_exports__, __webpack_require__(6)))
+/* WEBPACK VAR INJECTION */}.call(__webpack_exports__, __webpack_require__(8)))
 
 /***/ }),
-/* 2 */
+/* 3 */
 /***/ (function(module, __webpack_exports__, __webpack_require__) {
 
 "use strict";
@@ -308,7 +309,7 @@ class SubmitRowActionExtension {
 
 
 /***/ }),
-/* 3 */
+/* 4 */
 /***/ (function(module, __webpack_exports__, __webpack_require__) {
 
 "use strict";
@@ -363,11 +364,11 @@ class LinkRowActionExtension {
 
 
 /***/ }),
-/* 4 */
+/* 5 */
 /***/ (function(module, __webpack_exports__, __webpack_require__) {
 
 "use strict";
-/* harmony import */ var __WEBPACK_IMPORTED_MODULE_0__app_utils_table_sorting__ = __webpack_require__(1);
+/* harmony import */ var __WEBPACK_IMPORTED_MODULE_0__app_utils_table_sorting__ = __webpack_require__(2);
 /**
  * 2007-2018 PrestaShop
  *
@@ -415,7 +416,7 @@ class SortingExtension {
 
 
 /***/ }),
-/* 5 */
+/* 6 */
 /***/ (function(module, __webpack_exports__, __webpack_require__) {
 
 "use strict";
@@ -492,7 +493,8 @@ class Grid {
 
 
 /***/ }),
-/* 6 */
+/* 7 */,
+/* 8 */
 /***/ (function(module, exports) {
 
 var g;
@@ -519,10 +521,11 @@ module.exports = g;
 
 
 /***/ }),
-/* 7 */
+/* 9 */,
+/* 10 */
 /***/ (function(module, exports, __webpack_require__) {
 
-module.exports = __webpack_require__(0);
+module.exports = __webpack_require__(1);
 
 
 /***/ })

@@ -46,7 +46,9 @@ final class LinkBlockDefinitionFactory extends AbstractGridDefinitionFactory
 {
     const FACTORY_ID = 'link_widget_grid_';
 
-    /** @var array */
+    /**
+     * @var array
+     */
     private $hook;
 
     /**
