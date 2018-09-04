@@ -127,43 +127,21 @@ class LinkWidgetController extends FrameworkBundleAdminController
      */
     public function createProcessAction(Request $request)
     {
-        /** @var LinkBlockFormDataProvider $formProvider */
-        $formProvider = $this->get('prestashop.module.link_block.form_provider');
-        $formProvider->setIdLinkBlock(null);
-
-        /** @var FormHandlerInterface $formHandler */
-        $formHandler = $this->get('prestashop.module.link_block.form_handler');
-        $form = $formHandler->getForm();
-        $form->handleRequest($request);
-
-        if ($form->isSubmitted()) {
-            $data = $form->getData();
-            $saveErrors = $formHandler->save($data);
-
-            if (0 === count($saveErrors)) {
-                $this->addFlash('success', $this->trans('Successful update.', 'Admin.Notifications.Success'));
-
-                return $this->redirectToRoute('admin_link_block_edit', ['linkBlockId' => $formProvider->getIdLinkBlock()]);
-            }
-
-            $this->flashErrors($saveErrors);
-        }
-
-        return [
-            'linkBlockForm' => $form->createView(),
-        ];
+        return $this->processForm($request, 'Successful creation.');
     }
 
     /**
      * @AdminSecurity("is_granted('update', request.get('_legacy_controller'))", message="Access denied.")
      *
      * @param Request $request
+     * @param $linkBlockId
      *
-     * @return RedirectResponse
+     * @return RedirectResponse|array
+     * @throws \Exception
      */
-    public function editProcessAction(Request $request)
+    public function editProcessAction(Request $request, $linkBlockId)
     {
-        return $this->redirectToRoute('admin_link_block_edit', ['linkBlockId' => $request->get('id_link_block')]);
+        return $this->processForm($request, 'Successful update.', $linkBlockId);
     }
 
     /**
@@ -175,9 +153,44 @@ class LinkWidgetController extends FrameworkBundleAdminController
     {
         $repository = $this->get('prestashop.module.link_block.repository');
         $repository->delete($linkBlockId);
-        $this->addFlash('success', $this->trans('Successful delete.', 'Admin.Notifications.Success'));
+        $this->addFlash('success', $this->trans('Successful deletion.', 'Admin.Notifications.Success'));
 
         return $this->redirectToRoute('admin_link_widget_list');
+    }
+
+    /**
+     * @param Request  $request
+     * @param int|null $linkBlockId
+     * @return array|RedirectResponse
+     * @throws \Exception
+     */
+    private function processForm(Request $request, $successMessage, $linkBlockId = null)
+    {
+        /** @var LinkBlockFormDataProvider $formProvider */
+        $formProvider = $this->get('prestashop.module.link_block.form_provider');
+        $formProvider->setIdLinkBlock($linkBlockId);
+
+        /** @var FormHandlerInterface $formHandler */
+        $formHandler = $this->get('prestashop.module.link_block.form_handler');
+        $form = $formHandler->getForm();
+        $form->handleRequest($request);
+
+        if ($form->isSubmitted()) {
+            $data = $form->getData();
+            $saveErrors = $formHandler->save($data);
+
+            if (0 === count($saveErrors)) {
+                $this->addFlash('success', $this->trans($successMessage, 'Admin.Notifications.Success'));
+
+                return $this->redirectToRoute('admin_link_block_edit', ['linkBlockId' => $formProvider->getIdLinkBlock()]);
+            }
+
+            $this->flashErrors($saveErrors);
+        }
+
+        return [
+            'linkBlockForm' => $form->createView(),
+        ];
     }
 
     /**

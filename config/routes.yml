@@ -28,7 +28,7 @@ admin_link_block_edit:
     _legacy_controller: AdminLinkWidget
 
 admin_link_block_edit_process:
-  path: /link_widget/edit
+  path: /link_widget/edit/{linkBlockId}
   methods: [POST]
   defaults:
     _controller: 'PrestaShop\Module\LinkList\Controller\Admin\Improve\Design\LinkWidgetController::editProcessAction'

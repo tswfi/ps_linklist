@@ -111,14 +111,27 @@ class LinkBlockFormDataProvider implements FormDataProviderInterface
             return $errors;
         }
 
-        $linkBlockId = $this->repository->create(
-            $linkBlock['block_name'],
-            $linkBlock['id_hook'],
-            $linkBlock['cms'],
-            $linkBlock['static'],
-            $linkBlock['product'],
-            array()
-        );
+        if (!isset($linkBlock['id_link_block']) || empty($linkBlock['id_link_block'])) {
+            $linkBlockId = $this->repository->create(
+                $linkBlock['block_name'],
+                $linkBlock['id_hook'],
+                $linkBlock['cms'],
+                $linkBlock['static'],
+                $linkBlock['product'],
+                array()
+            );
+        } else {
+            $linkBlockId = $linkBlock['id_link_block'];
+            $this->repository->update(
+                $linkBlockId,
+                $linkBlock['block_name'],
+                $linkBlock['id_hook'],
+                $linkBlock['cms'],
+                $linkBlock['static'],
+                $linkBlock['product'],
+                array()
+            );
+        }
         $this->setIdLinkBlock($linkBlockId);
         $this->updateHook($linkBlock['id_hook']);
 
