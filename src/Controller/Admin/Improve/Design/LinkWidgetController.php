@@ -168,11 +168,15 @@ class LinkWidgetController extends FrameworkBundleAdminController
 
     /**
      * @param int $linkBlockId
-     *
      * @return RedirectResponse
+     * @throws \PrestaShop\PrestaShop\Adapter\Entity\PrestaShopDatabaseException
      */
     public function deleteAction($linkBlockId)
     {
+        $repository = $this->get('prestashop.module.link_block.repository');
+        $repository->delete($linkBlockId);
+        $this->addFlash('success', $this->trans('Successful delete.', 'Admin.Notifications.Success'));
+
         return $this->redirectToRoute('admin_link_widget_list');
     }
 

@@ -34,6 +34,7 @@ services:
     arguments:
       $repository: '@prestashop.module.link_block.repository'
       $languages: '@=service("prestashop.adapter.legacy.context").getLanguages(true, service("prestashop.adapter.shop.context").getContextShopID())'
+      $shopId: '@=service("prestashop.adapter.shop.context").getContextShopID()'
 
   prestashop.module.link_block.choice_provider.hook:
     class: PrestaShop\Module\LinkList\Form\ChoiceProvider\HookChoiceProvider

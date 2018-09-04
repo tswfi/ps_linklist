@@ -53,16 +53,24 @@ class LinkBlockFormDataProvider implements FormDataProviderInterface
     private $languages;
 
     /**
+     * @var int
+     */
+    private $shopId;
+
+    /**
      * LinkBlockFormDataProvider constructor.
      * @param LinkBlockRepository $repository
      * @param array               $languages
+     * @param int                 $shopId
      */
     public function __construct(
         LinkBlockRepository $repository,
-        array $languages
+        array $languages,
+        $shopId
     ) {
         $this->repository = $repository;
         $this->languages = $languages;
+        $this->shopId = $shopId;
     }
 
     /**
@@ -103,7 +111,7 @@ class LinkBlockFormDataProvider implements FormDataProviderInterface
             return $errors;
         }
 
-        $linkBlockId = $this->repository->createLinkBlock(
+        $linkBlockId = $this->repository->create(
             $linkBlock['block_name'],
             $linkBlock['id_hook'],
             $linkBlock['cms'],
@@ -112,6 +120,7 @@ class LinkBlockFormDataProvider implements FormDataProviderInterface
             array()
         );
         $this->setIdLinkBlock($linkBlockId);
+        $this->updateHook($linkBlock['id_hook']);
 
         return [];
     }
@@ -178,18 +187,9 @@ class LinkBlockFormDataProvider implements FormDataProviderInterface
     private function updateHook($hookId)
     {
         $hookName = \Hook::getNameById($hookId);
-        $module = \Module::getModuleIdByName('ps_linklist');
-        if (\Hook::isModuleRegisteredOnHook($module, $hookName, $this->getContext()->shop->id)) {
+        $module = \Module::getInstanceByName('ps_linklist');
+        if (\Hook::isModuleRegisteredOnHook($module, $hookName, $this->shopId)) {
             \Hook::registerHook($module, $hookName);
         }
-    }
-
-    /**
-     * Clears the module cache
-     */
-    private function clearModuleCache()
-    {
-        $module = \Module::getModuleIdByName('ps_linklist');
-        $module->_clearCache($module->templateFile);
     }
 }

@@ -82,7 +82,17 @@ class LinkBlockRepository
         return $qb->execute()->fetchAll();
     }
 
-    public function createLinkBlock(array $blockName, $idHook, array $cms, array $static, array $product, array $custom)
+    /**
+     * @param array $blockName
+     * @param int   $idHook
+     * @param array $cms
+     * @param array $static
+     * @param array $product
+     * @param array $custom
+     * @return string
+     * @throws PrestaShopDatabaseException
+     */
+    public function create(array $blockName, $idHook, array $cms, array $static, array $product, array $custom)
     {
         $content = json_encode([
             'cms' => empty($cms) ? [false] : $cms,
@@ -133,9 +143,7 @@ class LinkBlockRepository
                     'linkBlockId' => $linkBlockId,
                     'idLang' => $language['id_lang'],
                     'name' => $blockName[$language['id_lang']],
-                    'customContent' => json_encode(
-                        empty($custom) ? [false] : $custom
-                    ),
+                    'customContent' => empty($custom) ? null : json_encode($custom),
                 ]);
             ;
 
@@ -144,8 +152,43 @@ class LinkBlockRepository
                 throw new PrestaShopDatabaseException('Insertion error: '.json_encode($statement->errorInfo()));
             }
         }
-
+        $this->clearModuleCache();
 
         return $linkBlockId;
+    }
+
+    /**
+     * @param int $idLinkBlock
+     * @throws PrestaShopDatabaseException
+     */
+    public function delete($idLinkBlock)
+    {
+        $tableNames = [
+            'link_block_shop',
+            'link_block_lang',
+            'link_block',
+        ];
+        foreach ($tableNames as $tableName) {
+            $qb = $this->connection->createQueryBuilder();
+            $qb
+                ->delete($this->dbPrefix.$tableName)
+                ->andWhere('id_link_block = :idLinkBlock')
+                ->setParameter('idLinkBlock', $idLinkBlock)
+            ;
+            $statement = $qb->execute();
+            if ($statement instanceof Statement && !empty($statement->errorInfo())) {
+                throw new PrestaShopDatabaseException('Insertion error: '.json_encode($statement->errorInfo()));
+            }
+        }
+        $this->clearModuleCache();
+    }
+
+    /**
+     * Clears the module cache
+     */
+    private function clearModuleCache()
+    {
+        $module = \Module::getInstanceByName('ps_linklist');
+        $module->_clearCache($module->templateFile);
     }
 }
