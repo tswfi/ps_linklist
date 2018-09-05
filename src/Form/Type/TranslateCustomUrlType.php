@@ -1,3 +1,4 @@
+<?php
 /**
  * 2007-2018 PrestaShop
  *
@@ -23,22 +24,31 @@
  * International Registered Trademark & Property of PrestaShop SA
  */
 
-import TranslatableInput from '../../../../../admin-dev/themes/new-theme/js/components/translatable-input';
+namespace PrestaShop\Module\LinkList\Form\Type;
 
-const $ = window.$;
+use PrestaShopBundle\Form\Admin\Type\TranslateTextType;
+use Symfony\Component\Form\FormBuilderInterface;
 
-$(() => {
-    new TranslatableInput({localeInputSelector: '.js-locale-input'});
-    $('body').on('click', '.add-collection-btn', appendPrototype);
+/**
+ * Class TranslatableUrlType
+ * @package PrestaShop\Module\LinkList\Form\Type
+ */
+class TranslateCustomUrlType extends TranslateTextType
+{
+    /**
+     * {@inheritdoc}
+     */
+    public function buildForm(FormBuilderInterface $builder, array $options)
+    {
+        foreach ($options['locales'] as $locale) {
+            $localeOptions = $options['options'];
+            $localeOptions['label'] = $locale['iso_code'];
 
-    function appendPrototype(event) {
-        event.stopImmediatePropagation();
+            if (!isset($localeOptions['required'])) {
+                $localeOptions['required'] = false;
+            }
 
-        const button = event.target;
-        const collectionId = button.dataset.collectionId;
-        const collection = document.getElementById(collectionId);
-        const collectionPrototype = collection.dataset.prototype;
-        const newChild = collectionPrototype.replace(/__name__/g, (collection.children.length + 1));
-        $('#'+collectionId).append($(newChild));
+            $builder->add($locale['id_lang'], CustomUrlType::class, $localeOptions);
+        }
     }
-});
+}

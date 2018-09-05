@@ -233,7 +233,7 @@ class LinkBlockRepository
                     'linkBlockId' => $linkBlockId,
                     'langId' => $language['id_lang'],
                     'name' => $blockName[$language['id_lang']],
-                    'customContent' => empty($custom) ? null : json_encode($custom),
+                    'customContent' => empty($custom) ? null : json_encode($custom[$language['id_lang']]),
                 ]);
             ;
             $this->executeQueryBuilder($qb, 'Link block language error: ');

@@ -24,8 +24,7 @@
   *#}
 {% extends '@PrestaShop/Admin/layout.html.twig' %}
 {% trans_default_domain "Admin.Design.Feature" %}
-{% form_theme linkBlockForm _self %}
-
+{% form_theme linkBlockForm '@Modules/ps_linklist/views/templates/admin/fields.html.twig' %}
 
 {% block content %}
     {% if linkBlockForm.vars.data.link_block.id_link_block is defined and linkBlockForm.vars.data.link_block.id_link_block is not null %}
@@ -53,6 +52,12 @@
                             {{ form_row(linkBlockForm.link_block.cms) }}
                             {{ form_row(linkBlockForm.link_block.product) }}
                             {{ form_row(linkBlockForm.link_block.static) }}
+                            <div class="form-group">
+                                {{ form_row(linkBlockForm.link_block.custom) }}
+                                <div class="d-flex justify-content-end">
+                                    <a data-collection-id="{{ linkBlockForm.link_block.custom.vars.id }}" class="btn btn-primary add-collection-btn">{{ 'Add'|trans({}, 'Admin.Actions') }}</a>
+                                </div>
+                            </div>
                             {{ form_rest(linkBlockForm) }}
                         </div>
                     </div>
@@ -74,32 +79,3 @@
 
     <script src="{{ asset('/modules/ps_linklist/views/public/form.bundle.js') }}"></script>
 {% endblock %}
-
-
-{%- block choice_widget_expanded -%}
-    <div {{ block('widget_container_attributes') }}>
-        {% for name, choices in form.vars.choices %}
-            {% if choices is iterable  %}
-
-                <label class="choice_category">
-                    <strong>
-                        {{ choice_translation_domain is same as(false) ? name : name|trans({}, choice_translation_domain) }}
-                    </strong>
-                </label>
-                <div>
-                    {% for key,choice in choices %}
-                        {{ form_widget(form[key]) }}
-                        {{ form_label(form[key]) }}
-                    {% endfor %}
-                </div>
-
-            {% else %}
-
-                {{- form_widget(form[name]) -}}
-                {{- form_label(form[name], null, {translation_domain: choice_translation_domain}) -}}
-
-            {% endif %}
-        {% endfor %}
-    </div>
-{%- endblock choice_widget_expanded -%}
-

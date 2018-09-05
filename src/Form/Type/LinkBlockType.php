@@ -30,6 +30,7 @@ use PrestaShop\PrestaShop\Core\Form\FormChoiceProviderInterface;
 use PrestaShopBundle\Form\Admin\Type\TranslateTextType;
 use PrestaShopBundle\Form\Admin\Type\TranslatorAwareType;
 use Symfony\Component\Form\Extension\Core\Type\ChoiceType;
+use Symfony\Component\Form\Extension\Core\Type\CollectionType;
 use Symfony\Component\Form\Extension\Core\Type\HiddenType;
 use Symfony\Component\Form\FormBuilderInterface;
 use Symfony\Component\OptionsResolver\OptionsResolver;
@@ -114,6 +115,16 @@ class LinkBlockType extends TranslatorAwareType
                 'label' => $this->trans('Static content', 'Modules.Linklist.Admin'),
                 'multiple' => true,
                 'expanded' => true,
+            ])
+            ->add('custom', CollectionType::class, [
+                'entry_type' => TranslateCustomUrlType::class,
+                'entry_options' => [
+                    'locales' => $this->locales,
+                    'label' => false,
+                ],
+                'allow_add' => true,
+                'allow_delete' => true,
+                'label' => $this->trans('Custom content', 'Modules.Linklist.Admin'),
             ])
         ;
     }

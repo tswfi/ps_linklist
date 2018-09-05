@@ -81,7 +81,6 @@ class LinkWidgetController extends FrameworkBundleAdminController
 
     /**
      * @AdminSecurity("is_granted('create', request.get('_legacy_controller'))", message="Access denied.")
-     *
      * @Template("@Modules/ps_linklist/views/templates/admin/link_block/form.html.twig")
      *
      * @return array
@@ -132,6 +131,7 @@ class LinkWidgetController extends FrameworkBundleAdminController
 
     /**
      * @AdminSecurity("is_granted('update', request.get('_legacy_controller'))", message="Access denied.")
+     * @Template("@Modules/ps_linklist/views/templates/admin/link_block/form.html.twig")
      *
      * @param Request $request
      * @param $linkBlockId

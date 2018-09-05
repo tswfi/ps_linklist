@@ -1,3 +1,4 @@
+<?php
 /**
  * 2007-2018 PrestaShop
  *
@@ -23,22 +24,28 @@
  * International Registered Trademark & Property of PrestaShop SA
  */
 
-import TranslatableInput from '../../../../../admin-dev/themes/new-theme/js/components/translatable-input';
+namespace PrestaShop\Module\LinkList\Form\Type;
 
-const $ = window.$;
+use PrestaShopBundle\Form\Admin\Type\TranslatorAwareType;
+use Symfony\Component\Form\Extension\Core\Type\TextType;
+use Symfony\Component\Form\FormBuilderInterface;
 
-$(() => {
-    new TranslatableInput({localeInputSelector: '.js-locale-input'});
-    $('body').on('click', '.add-collection-btn', appendPrototype);
-
-    function appendPrototype(event) {
-        event.stopImmediatePropagation();
-
-        const button = event.target;
-        const collectionId = button.dataset.collectionId;
-        const collection = document.getElementById(collectionId);
-        const collectionPrototype = collection.dataset.prototype;
-        const newChild = collectionPrototype.replace(/__name__/g, (collection.children.length + 1));
-        $('#'+collectionId).append($(newChild));
+class CustomUrlType extends TranslatorAwareType
+{
+    /**
+     * {@inheritdoc}
+     */
+    public function buildForm(FormBuilderInterface $builder, array $options)
+    {
+        $builder
+            ->add('title', TextType::class, [
+                'label' => $this->trans('Title', 'Modules.Linklist.Admin'),
+                'required' => true,
+            ])
+            ->add('url', TextType::class, [
+                'label' => $this->trans('URL', 'Modules.Linklist.Admin'),
+                'required' => true,
+            ])
+        ;
     }
-});
+}

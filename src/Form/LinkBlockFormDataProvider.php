@@ -88,6 +88,19 @@ class LinkBlockFormDataProvider implements FormDataProviderInterface
 
         $arrayLinkBlock = (array) $linkBlock;
 
+        //The form and the database model don't have the same architecture
+        //Transform array $custom[en][1][name] to $custom[1][en][name]
+        $arrayCustom = [];
+        foreach ($arrayLinkBlock['custom_content'] as $idLang => $customs) {
+            if (empty($customs)) {
+                continue;
+            }
+
+            foreach ($customs as $i => $custom) {
+                $arrayCustom[$i][$idLang] = $custom;
+            }
+        }
+
         return ['link_block' => [
             'id_link_block' => $arrayLinkBlock['id_link_block'],
             'block_name' => $arrayLinkBlock['name'],
@@ -95,6 +108,7 @@ class LinkBlockFormDataProvider implements FormDataProviderInterface
             'cms' => $arrayLinkBlock['content']['cms'],
             'product' => $arrayLinkBlock['content']['product'],
             'static' => $arrayLinkBlock['content']['static'],
+            'custom' => $arrayCustom,
         ]];
     }
 
@@ -110,6 +124,14 @@ class LinkBlockFormDataProvider implements FormDataProviderInterface
         if (!empty($errors)) {
             return $errors;
         }
+        $customContent = [];
+        if (isset($linkBlock['custom']) && count($linkBlock['custom']) > 0) {
+            foreach ($linkBlock['custom'] as $customIndex => $customLanguages) {
+                foreach ($customLanguages as $idLang => $custom) {
+                    $customContent[$idLang][$customIndex] = $custom;
+                }
+            }
+        }
 
         if (!isset($linkBlock['id_link_block']) || empty($linkBlock['id_link_block'])) {
             $linkBlockId = $this->repository->create(
@@ -118,7 +140,7 @@ class LinkBlockFormDataProvider implements FormDataProviderInterface
                 $linkBlock['cms'],
                 $linkBlock['static'],
                 $linkBlock['product'],
-                array()
+                $customContent
             );
         } else {
             $linkBlockId = $linkBlock['id_link_block'];
@@ -129,7 +151,7 @@ class LinkBlockFormDataProvider implements FormDataProviderInterface
                 $linkBlock['cms'],
                 $linkBlock['static'],
                 $linkBlock['product'],
-                array()
+                $customContent
             );
         }
         $this->setIdLinkBlock($linkBlockId);
@@ -159,7 +181,6 @@ class LinkBlockFormDataProvider implements FormDataProviderInterface
 
     private function validateLinkBlock(array $data)
     {
-        $checkAllLanguages = true;
         $errors = [];
         if (!isset($data['id_hook'])) {
             $errors[] = [
@@ -168,13 +189,14 @@ class LinkBlockFormDataProvider implements FormDataProviderInterface
                 'parameters' => [],
             ];
         }
+
         if (!isset($data['block_name'])) {
             $errors[] = [
                 'key' => "Missing block_name",
                 'domain' => 'Admin.Catalog.Notification',
                 'parameters' => [],
             ];
-        } elseif ($checkAllLanguages) {
+        } else {
             foreach ($this->languages as $language) {
                 if (
                     !isset($data['block_name'][$language['id_lang']]) ||
@@ -188,6 +210,33 @@ class LinkBlockFormDataProvider implements FormDataProviderInterface
                 }
             }
         }
+
+        if (isset($data['custom'])) {
+            foreach ($data['custom'] as $customIndex => $custom) {
+                foreach ($this->languages as $language) {
+                    if (!isset($custom[$language['id_lang']])) {
+                        $errors[] = [
+                            'key' => "Missing block_name value for language %s",
+                            'domain' => 'Admin.Catalog.Notification',
+                            'parameters' => [$language['iso_code']],
+                        ];
+                    } else {
+                        $langCustom = $custom[$language['id_lang']];
+                        $fields = ['title', 'url'];
+                        foreach ($fields as $field) {
+                            if (!isset($langCustom[$field]) || empty($langCustom[$field])) {
+                                $errors[] = [
+                                    'key' => "Missing %s value in custom[%s] for language %s",
+                                    'domain' => 'Admin.Catalog.Notification',
+                                    'parameters' => [$field, $customIndex, $language['iso_code']],
+                                ];
+                            }
+                        }
+                    }
+                }
+            }
+        }
+
 
         return $errors;
     }

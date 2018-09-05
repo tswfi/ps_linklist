@@ -97,6 +97,12 @@ services:
     tags:
       - { name: form.type }
 
+  prestashop.module.link_block.custom_url_type:
+    class: PrestaShop\Module\LinkList\Form\Type\CustomUrlType
+    parent: 'form.type.translatable.aware'
+    tags:
+    - { name: form.type }
+
   # Link block form handler
   prestashop.module.link_block.form_handler:
     class: 'PrestaShop\PrestaShop\Core\Form\FormHandler'
