@@ -30,13 +30,10 @@ use PrestaShop\PrestaShop\Core\Grid\Action\Row\RowActionCollection;
 use PrestaShop\PrestaShop\Core\Grid\Action\Row\Type\LinkRowAction;
 use PrestaShop\PrestaShop\Core\Grid\Action\Row\Type\SubmitRowAction;
 use PrestaShop\PrestaShop\Core\Grid\Column\ColumnCollection;
+use PrestaShop\PrestaShop\Core\Grid\Column\Type\Catalog\PositionColumn;
 use PrestaShop\PrestaShop\Core\Grid\Column\Type\Common\ActionColumn;
 use PrestaShop\PrestaShop\Core\Grid\Column\Type\DataColumn;
 use PrestaShop\PrestaShop\Core\Grid\Definition\Factory\AbstractGridDefinitionFactory;
-use PrestaShop\PrestaShop\Core\Grid\Filter\Filter;
-use PrestaShop\PrestaShop\Core\Grid\Filter\FilterCollection;
-use Symfony\Component\Form\Extension\Core\Type\IntegerType;
-use Symfony\Component\Form\Extension\Core\Type\TextType;
 
 /**
  * Class LinkBlockDefinitionFactory
@@ -95,10 +92,13 @@ final class LinkBlockDefinitionFactory extends AbstractGridDefinitionFactory
                     'field' => 'block_name'
                 ])
             )
-            ->add((new DataColumn('position'))
-                ->setName($this->trans('Position', [], 'Modules.Linklist.Admin'))
+            ->add((new PositionColumn('position'))
+                ->setName($this->trans('Position', [], 'Admin.Global'))
                 ->setOptions([
-                    'field' => 'position'
+                    'field' => 'position',
+                    'id_field' => 'id_link_block',
+                    'id_parent_field' => 'id_hook',
+                    'position_update_route' => 'admin_link_block_update_positions',
                 ])
             )
             ->add((new ActionColumn('actions'))
