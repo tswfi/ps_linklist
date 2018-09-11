@@ -85,10 +85,9 @@ final class PageChoiceProvider extends AbstractDatabaseChoiceProvider
                 ->setParameter('pageSlug', str_replace('-', '', strtolower($pageName)))
             ;
             $meta = $qb->execute()->fetchAll();
-            if (empty($meta)) {
-                throw new EntityNotFoundException(sprintf('Could not find page matching "%s" identifier', $pageName));
+            if (!empty($meta)) {
+                $choices[$meta[0]['title']] = $pageName;
             }
-            $choices[$meta[0]['title']] = $pageName;
         }
 
         return $choices;

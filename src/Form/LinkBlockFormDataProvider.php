@@ -26,9 +26,9 @@
 
 namespace PrestaShop\Module\LinkList\Form;
 
+use PrestaShop\Module\LinkList\Cache\LinkBlockCacheInterface;
 use PrestaShop\Module\LinkList\Model\LinkBlock;
 use PrestaShop\Module\LinkList\Repository\LinkBlockRepository;
-use PrestaShop\PrestaShop\Adapter\Module\Module;
 use PrestaShop\PrestaShop\Core\Form\FormDataProviderInterface;
 
 /**
@@ -48,6 +48,11 @@ class LinkBlockFormDataProvider implements FormDataProviderInterface
     private $repository;
 
     /**
+     * @var LinkBlockCacheInterface
+     */
+    private $cache;
+
+    /**
      * @var array
      */
     private $languages;
@@ -59,16 +64,19 @@ class LinkBlockFormDataProvider implements FormDataProviderInterface
 
     /**
      * LinkBlockFormDataProvider constructor.
-     * @param LinkBlockRepository $repository
-     * @param array               $languages
-     * @param int                 $shopId
+     * @param LinkBlockRepository     $repository
+     * @param LinkBlockCacheInterface $cache
+     * @param array                   $languages
+     * @param int                     $shopId
      */
     public function __construct(
         LinkBlockRepository $repository,
+        LinkBlockCacheInterface $cache,
         array $languages,
         $shopId
     ) {
         $this->repository = $repository;
+        $this->cache = $cache;
         $this->languages = $languages;
         $this->shopId = $shopId;
     }
@@ -88,7 +96,7 @@ class LinkBlockFormDataProvider implements FormDataProviderInterface
 
         $arrayLinkBlock = (array) $linkBlock;
 
-        //The form and the database model don't have the same architecture
+        //The form and the database model don't have the same data hierarchy
         //Transform array $custom[en][1][name] to $custom[1][en][name]
         $arrayCustom = [];
         foreach ($arrayLinkBlock['custom_content'] as $idLang => $customs) {
@@ -156,6 +164,7 @@ class LinkBlockFormDataProvider implements FormDataProviderInterface
         }
         $this->setIdLinkBlock($linkBlockId);
         $this->updateHook($linkBlock['id_hook']);
+        $this->cache->clearModuleCache();
 
         return [];
     }
@@ -179,6 +188,10 @@ class LinkBlockFormDataProvider implements FormDataProviderInterface
         return $this;
     }
 
+    /**
+     * @param array $data
+     * @return array
+     */
     private function validateLinkBlock(array $data)
     {
         $errors = [];
@@ -243,7 +256,9 @@ class LinkBlockFormDataProvider implements FormDataProviderInterface
 
     /**
      * Register the selected hook to this module if it was not registered yet
+     *
      * @param int $hookId
+     *
      * @throws \PrestaShopException
      */
     private function updateHook($hookId)

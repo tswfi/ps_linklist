@@ -30,10 +30,13 @@ use PrestaShop\Module\LinkList\Core\Grid\LinkBlockGridFactory;
 use PrestaShop\Module\LinkList\Core\Search\Filters\LinkBlockFilters;
 use PrestaShop\Module\LinkList\Form\LinkBlockFormDataProvider;
 use PrestaShop\Module\LinkList\Repository\LinkBlockRepository;
+use PrestaShop\PrestaShop\Adapter\Entity\PrestaShopDatabaseException;
 use PrestaShop\PrestaShop\Core\Form\FormHandlerInterface;
 use PrestaShop\PrestaShop\Core\Grid\Presenter\GridPresenter;
+use PrestaShopBundle\Controller\Admin\AbstractModuleFrameworkBundleAdminController;
 use PrestaShopBundle\Controller\Admin\FrameworkBundleAdminController;
 use PrestaShopBundle\Security\Annotation\AdminSecurity;
+use PrestaShopBundle\Security\Annotation\ModuleActivated;
 use Sensio\Bundle\FrameworkExtraBundle\Configuration\Template;
 use Symfony\Component\HttpFoundation\RedirectResponse;
 use Symfony\Component\HttpFoundation\Request;
@@ -41,6 +44,8 @@ use Symfony\Component\HttpFoundation\Request;
 /**
  * Class LinkWidgetController
  * @package PrestaShop\Module\LinkList\Controller\Admin\Improve\Design
+ *
+ * @ModuleActivated(moduleName="ps_linklist", redirectRoute="admin_module_manage")
  */
 class LinkWidgetController extends FrameworkBundleAdminController
 {
@@ -147,19 +152,34 @@ class LinkWidgetController extends FrameworkBundleAdminController
     /**
      * @param int $linkBlockId
      * @return RedirectResponse
-     * @throws \PrestaShop\PrestaShop\Adapter\Entity\PrestaShopDatabaseException
      */
     public function deleteAction($linkBlockId)
     {
         $repository = $this->get('prestashop.module.link_block.repository');
-        $repository->delete($linkBlockId);
-        $this->addFlash('success', $this->trans('Successful deletion.', 'Admin.Notifications.Success'));
+        $errors = [];
+        try {
+            $repository->delete($linkBlockId);
+        } catch (PrestaShopDatabaseException $e) {
+            $errors[] = [
+                'key' => "Could not delete #%i",
+                'domain' => 'Admin.Catalog.Notification',
+                'parameters' => [$linkBlockId],
+            ];
+        }
+
+        if (0 === count($errors)) {
+            $this->clearModuleCache();
+            $this->addFlash('success', $this->trans('Successful deletion.', 'Admin.Notifications.Success'));
+        } else {
+            $this->flashErrors($errors);
+        }
 
         return $this->redirectToRoute('admin_link_widget_list');
     }
 
     /**
      * @param Request  $request
+     * @param string   $successMessage
      * @param int|null $linkBlockId
      * @return array|RedirectResponse
      * @throws \Exception
@@ -220,5 +240,13 @@ class LinkWidgetController extends FrameworkBundleAdminController
         ];
 
         return $toolbarButtons;
+    }
+
+    /**
+     * Clear module cache
+     */
+    private function clearModuleCache()
+    {
+        $this->get('prestashop.module.link_block.cache')->clearModuleCache();
     }
 }

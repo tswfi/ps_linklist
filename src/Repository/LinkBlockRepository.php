@@ -120,8 +120,6 @@ class LinkBlockRepository
 
         $this->updateLanguages($linkBlockId, $blockName, $custom);
 
-        $this->clearModuleCache();
-
         return $linkBlockId;
     }
 
@@ -158,8 +156,6 @@ class LinkBlockRepository
 
         $this->updateLanguages($linkBlockId, $blockName, $custom);
 
-        $this->clearModuleCache();
-
         return $linkBlockId;
     }
 
@@ -184,7 +180,6 @@ class LinkBlockRepository
             ;
             $this->executeQueryBuilder($qb, 'Delete error: ');
         }
-        $this->clearModuleCache();
     }
 
     /**
@@ -270,14 +265,5 @@ class LinkBlockRepository
         ;
 
         return $qb->execute()->fetchColumn(0);
-    }
-
-    /**
-     * Clears the module cache
-     */
-    private function clearModuleCache()
-    {
-        $module = \Module::getInstanceByName('ps_linklist');
-        $module->_clearCache($module->templateFile);
     }
 }

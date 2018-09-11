@@ -44,6 +44,8 @@ final class HookChoiceProvider extends AbstractDatabaseChoiceProvider
         $qb
             ->select('h.id_hook, h.name')
             ->from($this->dbPrefix.'hook', 'h')
+            ->andWhere('h.name LIKE :displayHook')
+            ->setParameter('displayHook', 'display%')
             ->orderBy('h.name')
         ;
 

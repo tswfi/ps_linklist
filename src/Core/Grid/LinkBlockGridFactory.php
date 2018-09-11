@@ -30,6 +30,7 @@ use PrestaShop\Module\LinkList\Core\Grid\Definition\Factory\LinkBlockDefinitionF
 use PrestaShop\Module\LinkList\Core\Search\Filters\LinkBlockFilters;
 use PrestaShop\PrestaShop\Core\Grid\Data\Factory\GridDataFactoryInterface;
 use PrestaShop\PrestaShop\Core\Grid\Filter\FilterFormFactoryInterface;
+use PrestaShop\PrestaShop\Core\Grid\Filter\GridFilterFormFactoryInterface;
 use PrestaShop\PrestaShop\Core\Grid\Grid;
 use PrestaShop\PrestaShop\Core\Grid\GridFactory;
 use PrestaShop\PrestaShop\Core\Hook\HookDispatcherInterface;
@@ -57,22 +58,22 @@ final class LinkBlockGridFactory
     private $dataFactory;
 
     /**
-     * @var FilterFormFactoryInterface
+     * @var GridFilterFormFactoryInterface
      */
     private $filterFormFactory;
 
     /**
      * HookGridFactory constructor.
-     * @param TranslatorInterface        $translator
-     * @param HookDispatcherInterface    $hookDispatcher
-     * @param GridDataFactoryInterface   $dataFactory
-     * @param FilterFormFactoryInterface $filterFormFactory
+     * @param TranslatorInterface            $translator
+     * @param HookDispatcherInterface        $hookDispatcher
+     * @param GridDataFactoryInterface       $dataFactory
+     * @param GridFilterFormFactoryInterface $filterFormFactory
      */
     public function __construct(
         TranslatorInterface $translator,
         GridDataFactoryInterface $dataFactory,
         HookDispatcherInterface $hookDispatcher,
-        FilterFormFactoryInterface $filterFormFactory
+        GridFilterFormFactoryInterface $filterFormFactory
     ) {
         $this->translator = $translator;
         $this->hookDispatcher = $hookDispatcher;
