@@ -27,12 +27,15 @@ if (!defined('_CAN_LOAD_FILES_')) {
     exit;
 }
 
-//require_once __DIR__.'/vendor/autoload.php';
+require_once __DIR__.'/vendor/autoload.php';
 
 use PrestaShop\PrestaShop\Core\Module\WidgetInterface;
 use PrestaShop\Module\LinkList\LegacyLinkBlockRepository;
 use PrestaShop\Module\LinkList\Presenter\LinkBlockPresenter;
 
+/**
+ * Class Ps_Linklist.
+ */
 class Ps_Linklist extends Module implements WidgetInterface
 {
     protected $_html;
