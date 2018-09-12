@@ -1,6 +1,8 @@
 services:
   prestashop.module.link_block.cache:
     class: PrestaShop\Module\LinkList\Cache\LegacyLinkBlockCache
+    arguments:
+      $moduleRepository: '@prestashop.core.admin.module.repository'
 
   prestashop.module.link_block.repository:
     class: PrestaShop\Module\LinkList\Repository\LinkBlockRepository
@@ -40,6 +42,7 @@ services:
     arguments:
       $repository: '@prestashop.module.link_block.repository'
       $cache: '@prestashop.module.link_block.cache'
+      $moduleRepository: '@prestashop.core.admin.module.repository'
       $languages: '@=service("prestashop.adapter.legacy.context").getLanguages(true, service("prestashop.adapter.shop.context").getContextShopID())'
       $shopId: '@=service("prestashop.adapter.shop.context").getContextShopID()'
 

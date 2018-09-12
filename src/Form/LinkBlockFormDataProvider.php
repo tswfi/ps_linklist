@@ -29,7 +29,9 @@ namespace PrestaShop\Module\LinkList\Form;
 use PrestaShop\Module\LinkList\Cache\LinkBlockCacheInterface;
 use PrestaShop\Module\LinkList\Model\LinkBlock;
 use PrestaShop\Module\LinkList\Repository\LinkBlockRepository;
+use PrestaShop\PrestaShop\Core\Addon\Module\ModuleRepository;
 use PrestaShop\PrestaShop\Core\Form\FormDataProviderInterface;
+use Hook;
 
 /**
  * Class LinkBlockFormDataProvider
@@ -53,6 +55,11 @@ class LinkBlockFormDataProvider implements FormDataProviderInterface
     private $cache;
 
     /**
+     * @var ModuleRepository
+     */
+    private $moduleRepository;
+
+    /**
      * @var array
      */
     private $languages;
@@ -66,17 +73,20 @@ class LinkBlockFormDataProvider implements FormDataProviderInterface
      * LinkBlockFormDataProvider constructor.
      * @param LinkBlockRepository     $repository
      * @param LinkBlockCacheInterface $cache
+     * @param ModuleRepository        $moduleRepository
      * @param array                   $languages
      * @param int                     $shopId
      */
     public function __construct(
         LinkBlockRepository $repository,
         LinkBlockCacheInterface $cache,
+        ModuleRepository $moduleRepository,
         array $languages,
         $shopId
     ) {
         $this->repository = $repository;
         $this->cache = $cache;
+        $this->moduleRepository = $moduleRepository;
         $this->languages = $languages;
         $this->shopId = $shopId;
     }
@@ -133,7 +143,7 @@ class LinkBlockFormDataProvider implements FormDataProviderInterface
             return $errors;
         }
         $customContent = [];
-        if (isset($linkBlock['custom']) && count($linkBlock['custom']) > 0) {
+        if (!empty($linkBlock['custom'])) {
             foreach ($linkBlock['custom'] as $customIndex => $customLanguages) {
                 foreach ($customLanguages as $idLang => $custom) {
                     $customContent[$idLang][$customIndex] = $custom;
@@ -141,7 +151,7 @@ class LinkBlockFormDataProvider implements FormDataProviderInterface
             }
         }
 
-        if (!isset($linkBlock['id_link_block']) || empty($linkBlock['id_link_block'])) {
+        if (empty($linkBlock['id_link_block'])) {
             $linkBlockId = $this->repository->create(
                 $linkBlock['block_name'],
                 $linkBlock['id_hook'],
@@ -211,10 +221,7 @@ class LinkBlockFormDataProvider implements FormDataProviderInterface
             ];
         } else {
             foreach ($this->languages as $language) {
-                if (
-                    !isset($data['block_name'][$language['id_lang']]) ||
-                    empty($data['block_name'][$language['id_lang']])
-                ) {
+                if (empty($data['block_name'][$language['id_lang']])) {
                     $errors[] = [
                         'key' => "Missing block_name value for language %s",
                         'domain' => 'Admin.Catalog.Notification',
@@ -237,7 +244,7 @@ class LinkBlockFormDataProvider implements FormDataProviderInterface
                         $langCustom = $custom[$language['id_lang']];
                         $fields = ['title', 'url'];
                         foreach ($fields as $field) {
-                            if (!isset($langCustom[$field]) || empty($langCustom[$field])) {
+                            if (empty($langCustom[$field])) {
                                 $errors[] = [
                                     'key' => "Missing %s value in custom[%s] for language %s",
                                     'domain' => 'Admin.Catalog.Notification',
@@ -263,10 +270,10 @@ class LinkBlockFormDataProvider implements FormDataProviderInterface
      */
     private function updateHook($hookId)
     {
-        $hookName = \Hook::getNameById($hookId);
-        $module = \Module::getInstanceByName('ps_linklist');
-        if (\Hook::isModuleRegisteredOnHook($module, $hookName, $this->shopId)) {
-            \Hook::registerHook($module, $hookName);
+        $hookName = Hook::getNameById($hookId);
+        $module = $this->moduleRepository->getInstanceByName('ps_linklist');
+        if (Hook::isModuleRegisteredOnHook($module, $hookName, $this->shopId)) {
+            Hook::registerHook($module, $hookName);
         }
     }
 }

@@ -27,6 +27,8 @@
 
 namespace PrestaShop\Module\LinkList\Cache;
 
+use PrestaShop\PrestaShop\Core\Addon\Module\ModuleRepository;
+
 /**
  * Class LegacyBlockCache
  * @package PrestaShop\Module\LinkList\Cache
@@ -39,11 +41,12 @@ final class LegacyLinkBlockCache implements LinkBlockCacheInterface
     private $module;
 
     /**
-     * LegacyBlockCache constructor.
+     * LegacyLinkBlockCache constructor.
+     * @param ModuleRepository $moduleRepository
      */
-    public function __construct()
+    public function __construct(ModuleRepository $moduleRepository)
     {
-        $this->module = \Module::getInstanceByName('ps_linklist');
+        $this->module = $moduleRepository->getInstanceByName('ps_linklist');
     }
 
     /**

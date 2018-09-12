@@ -115,7 +115,7 @@ class LinkBlockRepository
                 ]),
             ]);
         ;
-        $this->executeQueryBuilder($qb, 'Link block error: ');
+        $this->executeQueryBuilder($qb, 'Link block error');
         $linkBlockId = $this->connection->lastInsertId();
 
         $this->updateLanguages($linkBlockId, $blockName, $custom);
@@ -152,7 +152,7 @@ class LinkBlockRepository
                 ]),
             ])
         ;
-        $this->executeQueryBuilder($qb, 'Link block error: ');
+        $this->executeQueryBuilder($qb, 'Link block error');
 
         $this->updateLanguages($linkBlockId, $blockName, $custom);
 
@@ -178,7 +178,7 @@ class LinkBlockRepository
                 ->andWhere('id_link_block = :idLinkBlock')
                 ->setParameter('idLinkBlock', $idLinkBlock)
             ;
-            $this->executeQueryBuilder($qb, 'Delete error: ');
+            $this->executeQueryBuilder($qb, 'Delete error');
         }
     }
 
@@ -231,7 +231,7 @@ class LinkBlockRepository
                     'customContent' => empty($custom) ? null : json_encode($custom[$language['id_lang']]),
                 ]);
             ;
-            $this->executeQueryBuilder($qb, 'Link block language error: ');
+            $this->executeQueryBuilder($qb, 'Link block language error');
         }
     }
 
@@ -241,11 +241,11 @@ class LinkBlockRepository
      * @return Statement|int
      * @throws PrestaShopDatabaseException
      */
-    private function executeQueryBuilder(QueryBuilder $qb, $errorPrefix = 'SQL error: ')
+    private function executeQueryBuilder(QueryBuilder $qb, $errorPrefix = 'SQL error')
     {
         $statement = $qb->execute();
         if ($statement instanceof Statement && !empty($statement->errorInfo())) {
-            throw new PrestaShopDatabaseException($errorPrefix.json_encode($statement->errorInfo()));
+            throw new PrestaShopDatabaseException($errorPrefix . ': ' . var_export($statement->errorInfo(), true));
         }
 
         return $statement;

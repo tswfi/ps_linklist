@@ -33,7 +33,6 @@ use PrestaShop\Module\LinkList\Repository\LinkBlockRepository;
 use PrestaShop\PrestaShop\Adapter\Entity\PrestaShopDatabaseException;
 use PrestaShop\PrestaShop\Core\Form\FormHandlerInterface;
 use PrestaShop\PrestaShop\Core\Grid\Presenter\GridPresenter;
-use PrestaShopBundle\Controller\Admin\AbstractModuleFrameworkBundleAdminController;
 use PrestaShopBundle\Controller\Admin\FrameworkBundleAdminController;
 use PrestaShopBundle\Security\Annotation\AdminSecurity;
 use PrestaShopBundle\Security\Annotation\ModuleActivated;
@@ -195,7 +194,7 @@ class LinkWidgetController extends FrameworkBundleAdminController
         $form = $formHandler->getForm();
         $form->handleRequest($request);
 
-        if ($form->isSubmitted()) {
+        if ($form->isSubmitted() && $form->isValid()) {
             $data = $form->getData();
             $saveErrors = $formHandler->save($data);
 

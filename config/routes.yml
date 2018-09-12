@@ -36,13 +36,13 @@ admin_link_block_edit_process:
 
 admin_link_block_delete:
   path: /link_widget/delete/{linkBlockId}
-  methods: [DELETE]
+  methods: [POST]
   defaults:
     _controller: 'PrestaShop\Module\LinkList\Controller\Admin\Improve\Design\LinkWidgetController::deleteAction'
     _legacy_controller: AdminLinkWidget
 
 admin_link_block_update_positions:
-  path: /link_widget/update_positions
+  path: /link_widget/update-positions
   methods: [POST]
   defaults:
     _controller: 'PrestaShop\Module\LinkList\Controller\Admin\Improve\Design\LinkWidgetController::updatePositionsAction'

@@ -1,10 +1,45 @@
 <?php
+/**
+ * 2007-2018 PrestaShop.
+ *
+ * NOTICE OF LICENSE
+ *
+ * This source file is subject to the Academic Free License 3.0 (AFL-3.0)
+ * that is bundled with this package in the file LICENSE.txt.
+ * It is also available through the world-wide-web at this URL:
+ * https://opensource.org/licenses/AFL-3.0
+ * If you did not receive a copy of the license and are unable to
+ * obtain it through the world-wide-web, please send an email
+ * to license@prestashop.com so we can send you a copy immediately.
+ *
+ * DISCLAIMER
+ *
+ * Do not edit or add to this file if you wish to upgrade PrestaShop to newer
+ * versions in the future. If you wish to customize PrestaShop for your
+ * needs please refer to http://www.prestashop.com for more information.
+ *
+ * @author    PrestaShop SA <contact@prestashop.com>
+ * @copyright 2007-2018 PrestaShop SA
+ * @license   https://opensource.org/licenses/AFL-3.0 Academic Free License 3.0 (AFL-3.0)
+ * International Registered Trademark & Property of PrestaShop SA
+ */
 
 namespace PrestaShop\Module\LinkList;
 
 use PrestaShop\Module\LinkList\Model\LinkBlock;
 use Symfony\Component\Translation\TranslatorInterface as Translator;
+use Language;
+use Context;
+use Tools;
+use Shop;
+use Meta;
+use Hook;
+use DB;
 
+/**
+ * Class LegacyLinkBlockRepository
+ * @package PrestaShop\Module\LinkList
+ */
 class LegacyLinkBlockRepository
 {
     private $db;
@@ -12,7 +47,7 @@ class LegacyLinkBlockRepository
     private $db_prefix;
     private $translator;
 
-    public function __construct(\Db $db, \Shop $shop, Translator $translator)
+    public function __construct(Db $db, Shop $shop, Translator $translator)
     {
         $this->db = $db;
         $this->shop = $shop;
@@ -67,8 +102,8 @@ class LegacyLinkBlockRepository
 
     public function getCMSBlocksSortedByHook($id_shop = null, $id_lang = null)
     {
-        $id_lang = (int) (($id_lang) ?: \Context::getContext()->language->id);
-        $id_shop = (int) (($id_shop) ?: \Context::getContext()->shop->id);
+        $id_lang = (int) (($id_lang) ?: Context::getContext()->language->id);
+        $id_shop = (int) (($id_shop) ?: Context::getContext()->shop->id);
 
         $sql = 'SELECT
                 bc.`id_link_block`,
@@ -153,7 +188,7 @@ class LegacyLinkBlockRepository
 
     public function getCmsPages($id_lang = null)
     {
-        $id_lang = (int) (($id_lang) ?: \Context::getContext()->language->id);
+        $id_lang = (int) (($id_lang) ?: Context::getContext()->language->id);
         $this->shop->id = (int) $this->shop->id;
 
         $categories = "SELECT  cc.`id_cms_category`,
@@ -207,7 +242,7 @@ class LegacyLinkBlockRepository
         );
 
         foreach ($productPages as $productPage) {
-            $meta = \Meta::getMetaByPage($productPage, ($id_lang) ? (int)$id_lang : (int)\Context::getContext()->language->id);
+            $meta = Meta::getMetaByPage($productPage, ($id_lang) ? (int)$id_lang : (int)Context::getContext()->language->id);
             $products[] = array(
                 'id_cms' => $productPage,
                 'title' => $meta['title'],
@@ -231,7 +266,7 @@ class LegacyLinkBlockRepository
         );
 
         foreach ($staticPages as $staticPage) {
-            $meta = \Meta::getMetaByPage($staticPage, ($id_lang) ? (int)$id_lang : (int)\Context::getContext()->language->id);
+            $meta = Meta::getMetaByPage($staticPage, ($id_lang) ? (int)$id_lang : (int)Context::getContext()->language->id);
             $statics[] = [
                 'id_cms' => $staticPage,
                 'title' => $meta['title'],
@@ -246,7 +281,7 @@ class LegacyLinkBlockRepository
     public function getCustomPages(LinkBlock $block, $id_lang = null)
     {
         if (!$id_lang) {
-            $id_lang = \Context::getContext()->language->id;
+            $id_lang = Context::getContext()->language->id;
         }
 
         return $block->custom_content;
@@ -265,7 +300,7 @@ class LegacyLinkBlockRepository
     public function installFixtures()
     {
         $success = true;
-        $id_hook = (int)\Hook::getIdByName('displayFooter');
+        $id_hook = (int)Hook::getIdByName('displayFooter');
 
         $queries = [
             'INSERT INTO `'.$this->db_prefix.'link_block` (`id_link_block`, `id_hook`, `position`, `content`) VALUES
@@ -273,7 +308,7 @@ class LegacyLinkBlockRepository
                 (2, '.$id_hook.', 2, \'{"cms":["1","2","3","4","5"],"product":[false],"static":["contact","sitemap","stores"]}\');'
         ];
 
-        foreach (\Language::getLanguages(true, \Context::getContext()->shop->id) as $lang) {
+        foreach (Language::getLanguages(true, Context::getContext()->shop->id) as $lang) {
             $queries[] = 'INSERT INTO `'.$this->db_prefix.'link_block_lang` (`id_link_block`, `id_lang`, `name`) VALUES
                 (1, '.(int)$lang['id_lang'].', "'.pSQL($this->translator->trans('Products', array(), 'Modules.Linklist.Shop', $lang['locale'])).'"),
                 (2, '.(int)$lang['id_lang'].', "'.pSQL($this->translator->trans('Our company', array(), 'Modules.Linklist.Shop', $lang['locale'])).'")'
@@ -295,38 +330,38 @@ class LegacyLinkBlockRepository
             $query = 'INSERT INTO `'._DB_PREFIX_.'link_block` (`id_hook`, `position`, `content`)
                 SELECT ' . $id_hook . ', MAX(`position`) + 1, \''.$content. '\' FROM '._DB_PREFIX_.'link_block WHERE id_hook = ' . $id_hook;
 
-            $success &= \Db::getInstance()->execute($query);
-            $id_link_block = (int) \Db::getInstance()->Insert_ID();
+            $success &= Db::getInstance()->execute($query);
+            $id_link_block = (int) Db::getInstance()->Insert_ID();
 
             if (!empty($success) && !empty($id_link_block)) {
-                $languages = \Language::getLanguages(true, \Context::getContext()->shop->id);
+                $languages = Language::getLanguages(true, Context::getContext()->shop->id);
 
                 if (!empty($languages)) {
                     $query = 'INSERT INTO `' . _DB_PREFIX_ . 'link_block_lang` (`id_link_block`, `id_lang`, `name`, `custom_content`) VALUES ';
 
                     foreach ($languages as $lang) {
-                        $query .= '(' . $id_link_block . ',' . (int)$lang['id_lang'] . ',\'' . bqSQL(\Tools::getValue('name_'.(int)$lang['id_lang'])) . '\', \'' . bqSQL($custom_content[(int)$lang['id_lang']]) . '\'),';
+                        $query .= '(' . $id_link_block . ',' . (int)$lang['id_lang'] . ',\'' . bqSQL(Tools::getValue('name_'.(int)$lang['id_lang'])) . '\', \'' . bqSQL($custom_content[(int)$lang['id_lang']]) . '\'),';
                     }
 
-                    $success &= \Db::getInstance()->execute(rtrim($query, ','));
+                    $success &= Db::getInstance()->execute(rtrim($query, ','));
                 }
             }
         } else {
             $query = 'UPDATE `'._DB_PREFIX_.'link_block` 
                     SET `content` = \''.$content.'\', `id_hook` = '.$id_hook.' 
                     WHERE `id_link_block` = '.$id_link_block;
-            $success &= \Db::getInstance()->execute($query);
+            $success &= Db::getInstance()->execute($query);
 
             if (!empty($success) && !empty($id_link_block)) {
-                $languages = \Language::getLanguages(true, \Context::getContext()->shop->id);
+                $languages = Language::getLanguages(true, Context::getContext()->shop->id);
 
                 if (!empty($languages)) {
                     foreach ($languages as $lang) {
                         $query = 'UPDATE `' . _DB_PREFIX_ . 'link_block_lang` 
-                                SET `name` = \''.bqSQL(\Tools::getValue('name_'.(int)$lang['id_lang'])).'\',
+                                SET `name` = \''.bqSQL(Tools::getValue('name_'.(int)$lang['id_lang'])).'\',
                                 `custom_content` = \''.bqSQL($custom_content[$lang['id_lang']]).'\'
                                 WHERE `id_link_block` = '.$id_link_block.' AND `id_lang` = '.(int)$lang['id_lang'];
-                        $success &= \Db::getInstance()->execute($query);
+                        $success &= Db::getInstance()->execute($query);
                     }
                 }
             }

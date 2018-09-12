@@ -28,7 +28,7 @@ if (!defined('_CAN_LOAD_FILES_')) {
     exit;
 }
 
-require_once __DIR__.'/vendor/autoload.php';
+#require_once __DIR__.'/vendor/autoload.php';
 
 use PrestaShop\PrestaShop\Core\Module\WidgetInterface;
 use PrestaShop\Module\LinkList\LegacyLinkBlockRepository;
@@ -76,7 +76,6 @@ class Ps_Linklist extends Module implements WidgetInterface
             && $this->installTab()
             && $this->linkBlockRepository->createTables()
             && $this->linkBlockRepository->installFixtures()
-            && $this->registerHook('actionSymfonyModuleRoutes')
             && $this->registerHook('displayFooter')
             && $this->registerHook('actionUpdateLangAfter');
     }
@@ -107,14 +106,6 @@ class Ps_Linklist extends Module implements WidgetInterface
         $id_tab = (int)Tab::getIdFromClassName('AdminLinkWidget');
         $tab = new Tab($id_tab);
         return $tab->delete();
-    }
-
-    public function hookActionSymfonyModuleRoutes()
-    {
-        return [];
-        return [
-            ['controller' => 'AdminLinkWidget', 'route_name' => 'admin_link_widget_list'],
-        ];
     }
 
     public function hookActionUpdateLangAfter($params)

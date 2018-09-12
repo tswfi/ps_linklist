@@ -117,7 +117,7 @@ final class LinkBlockDefinitionFactory extends AbstractGridDefinitionFactory
                             ->setName($this->trans('Delete', [], 'Admin.Actions'))
                             ->setIcon('delete')
                             ->setOptions([
-                                'method' => 'DELETE',
+                                'method' => 'POST',
                                 'route' => 'admin_link_block_delete',
                                 'route_param_name' => 'linkBlockId',
                                 'route_param_field' => 'id_link_block',

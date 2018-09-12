@@ -83,10 +83,8 @@ final class CMSPageChoiceProvider extends AbstractDatabaseChoiceProvider
                 ->orderBy('c.position')
             ;
             $pages = $qb->execute()->fetchAll();
-            if (count($pages) > 0) {
-                foreach ($pages as $page) {
-                    $choices[$categoryName][$page['id_cms']. ' ' . $page['meta_title']] = $page['id_cms'];
-                }
+            foreach ($pages as $page) {
+                $choices[$categoryName][$page['id_cms']. ' ' . $page['meta_title']] = $page['id_cms'];
             }
         }
 
