@@ -1,6 +1,6 @@
 <?php
 /**
- * 2007-2018 PrestaShop
+ * 2007-2018 PrestaShop.
  *
  * NOTICE OF LICENSE
  *
@@ -24,14 +24,12 @@
  * International Registered Trademark & Property of PrestaShop SA
  */
 
-
 namespace PrestaShop\Module\LinkList\Cache;
 
 use PrestaShop\PrestaShop\Core\Addon\Module\ModuleRepository;
 
 /**
- * Class LegacyBlockCache
- * @package PrestaShop\Module\LinkList\Cache
+ * Class LegacyBlockCache.
  */
 final class LegacyLinkBlockCache implements LinkBlockCacheInterface
 {
@@ -42,6 +40,7 @@ final class LegacyLinkBlockCache implements LinkBlockCacheInterface
 
     /**
      * LegacyLinkBlockCache constructor.
+     *
      * @param ModuleRepository $moduleRepository
      */
     public function __construct(ModuleRepository $moduleRepository)
@@ -50,7 +49,7 @@ final class LegacyLinkBlockCache implements LinkBlockCacheInterface
     }
 
     /**
-     * @inheritdoc
+     * {@inheritdoc}
      */
     public function clearModuleCache()
     {

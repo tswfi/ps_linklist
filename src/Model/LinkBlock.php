@@ -27,8 +27,7 @@
 namespace PrestaShop\Module\LinkList\Model;
 
 /**
- * Class LinkBlock
- * @package PrestaShop\Module\LinkList\Model
+ * Class LinkBlock.
  */
 class LinkBlock extends \ObjectModel
 {
@@ -70,11 +69,11 @@ class LinkBlock extends \ObjectModel
         'primary' => 'id_link_block',
         'multilang' => true,
         'fields' => array(
-            'name' =>       array('type' => self::TYPE_STRING, 'lang' => true, 'required' => true, 'size' => 128),
-            'id_hook' =>    array('type' => self::TYPE_INT, 'validate' => 'isUnsignedInt', 'required' => true),
-            'position' =>   array('type' => self::TYPE_INT, 'validate' => 'isUnsignedInt', 'required' => true),
-            'content' =>    array('type' => self::TYPE_STRING, 'validate' => 'isJson'),
-            'custom_content' =>    array('type' => self::TYPE_STRING, 'lang' => true, 'validate' => 'isJson'),
+            'name' => array('type' => self::TYPE_STRING, 'lang' => true, 'required' => true, 'size' => 128),
+            'id_hook' => array('type' => self::TYPE_INT, 'validate' => 'isUnsignedInt', 'required' => true),
+            'position' => array('type' => self::TYPE_INT, 'validate' => 'isUnsignedInt', 'required' => true),
+            'content' => array('type' => self::TYPE_STRING, 'validate' => 'isJson'),
+            'custom_content' => array('type' => self::TYPE_STRING, 'lang' => true, 'validate' => 'isJson'),
         ),
     );
 
@@ -115,6 +114,7 @@ class LinkBlock extends \ObjectModel
 
         $return = parent::add($auto_date, $null_values);
         $this->content = json_decode($this->content, true);
+
         return $return;
     }
 
@@ -126,6 +126,7 @@ class LinkBlock extends \ObjectModel
 
         $return = parent::update($auto_date, $null_values);
         $this->content = json_decode($this->content, true);
+
         return $return;
     }
 }

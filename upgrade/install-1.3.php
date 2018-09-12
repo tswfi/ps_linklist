@@ -6,5 +6,5 @@ if (!defined('_PS_VERSION_')) {
 
 function upgrade_module_1_3($object)
 {
-    return ($object->registerHook('actionObjectCmsUpdateAfter') && $object->registerHook('actionObjectCmsDeleteAfter'));
+    return $object->registerHook('actionObjectCmsUpdateAfter') && $object->registerHook('actionObjectCmsDeleteAfter');
 }

@@ -26,7 +26,6 @@
 
 namespace PrestaShop\Module\LinkList\Form\Type;
 
-use PrestaShop\PrestaShop\Core\Form\FormChoiceProviderInterface;
 use PrestaShopBundle\Form\Admin\Type\TranslateTextType;
 use PrestaShopBundle\Form\Admin\Type\TranslatorAwareType;
 use Symfony\Component\Form\Extension\Core\Type\ChoiceType;
@@ -60,12 +59,13 @@ class LinkBlockType extends TranslatorAwareType
 
     /**
      * LinkBlockType constructor.
+     *
      * @param TranslatorInterface $translator
-     * @param array               $locales
-     * @param array               $hookChoices
-     * @param array               $cmsPageChoices
-     * @param array               $productPageChoices
-     * @param array               $staticPageChoices
+     * @param array $locales
+     * @param array $hookChoices
+     * @param array $cmsPageChoices
+     * @param array $productPageChoices
+     * @param array $staticPageChoices
      */
     public function __construct(
         TranslatorInterface $translator,
@@ -92,7 +92,7 @@ class LinkBlockType extends TranslatorAwareType
             ->add('block_name', TranslateTextType::class, [
                 'locales' => $this->locales,
                 'required' => true,
-                'label' => $this->trans('Name of the block', 'Modules.Linklist.Admin')
+                'label' => $this->trans('Name of the block', 'Modules.Linklist.Admin'),
             ])
             ->add('id_hook', ChoiceType::class, [
                 'choices' => $this->hookChoices,

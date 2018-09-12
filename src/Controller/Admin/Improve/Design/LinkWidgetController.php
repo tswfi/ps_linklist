@@ -41,8 +41,7 @@ use Symfony\Component\HttpFoundation\RedirectResponse;
 use Symfony\Component\HttpFoundation\Request;
 
 /**
- * Class LinkWidgetController
- * @package PrestaShop\Module\LinkList\Controller\Admin\Improve\Design
+ * Class LinkWidgetController.
  *
  * @ModuleActivated(moduleName="ps_linklist", redirectRoute="admin_module_manage")
  */
@@ -88,6 +87,7 @@ class LinkWidgetController extends FrameworkBundleAdminController
      * @Template("@Modules/ps_linklist/views/templates/admin/link_block/form.html.twig")
      *
      * @return array
+     *
      * @throws \Exception
      */
     public function createAction()
@@ -107,6 +107,7 @@ class LinkWidgetController extends FrameworkBundleAdminController
      * @param int $linkBlockId
      *
      * @return array
+     *
      * @throws \Exception
      */
     public function editAction($linkBlockId)
@@ -126,6 +127,7 @@ class LinkWidgetController extends FrameworkBundleAdminController
      * @param Request $request
      *
      * @return RedirectResponse|array
+     *
      * @throws \Exception
      */
     public function createProcessAction(Request $request)
@@ -141,6 +143,7 @@ class LinkWidgetController extends FrameworkBundleAdminController
      * @param $linkBlockId
      *
      * @return RedirectResponse|array
+     *
      * @throws \Exception
      */
     public function editProcessAction(Request $request, $linkBlockId)
@@ -150,6 +153,7 @@ class LinkWidgetController extends FrameworkBundleAdminController
 
     /**
      * @param int $linkBlockId
+     *
      * @return RedirectResponse
      */
     public function deleteAction($linkBlockId)
@@ -160,7 +164,7 @@ class LinkWidgetController extends FrameworkBundleAdminController
             $repository->delete($linkBlockId);
         } catch (PrestaShopDatabaseException $e) {
             $errors[] = [
-                'key' => "Could not delete #%i",
+                'key' => 'Could not delete #%i',
                 'domain' => 'Admin.Catalog.Notification',
                 'parameters' => [$linkBlockId],
             ];
@@ -177,10 +181,12 @@ class LinkWidgetController extends FrameworkBundleAdminController
     }
 
     /**
-     * @param Request  $request
-     * @param string   $successMessage
+     * @param Request $request
+     * @param string $successMessage
      * @param int|null $linkBlockId
+     *
      * @return array|RedirectResponse
+     *
      * @throws \Exception
      */
     private function processForm(Request $request, $successMessage, $linkBlockId = null)
@@ -214,6 +220,7 @@ class LinkWidgetController extends FrameworkBundleAdminController
 
     /**
      * @param Request $request
+     *
      * @return array
      */
     private function buildFiltersParamsByRequest(Request $request)
@@ -242,7 +249,7 @@ class LinkWidgetController extends FrameworkBundleAdminController
     }
 
     /**
-     * Clear module cache
+     * Clear module cache.
      */
     private function clearModuleCache()
     {

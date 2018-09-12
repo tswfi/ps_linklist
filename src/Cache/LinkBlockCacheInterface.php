@@ -27,13 +27,12 @@
 namespace PrestaShop\Module\LinkList\Cache;
 
 /**
- * Interface LinkBlockCacheInterface
- * @package PrestaShop\Module\LinkList\Cache
+ * Interface LinkBlockCacheInterface.
  */
 interface LinkBlockCacheInterface
 {
     /**
-     * Clear module cache
+     * Clear module cache.
      */
     public function clearModuleCache();
 }

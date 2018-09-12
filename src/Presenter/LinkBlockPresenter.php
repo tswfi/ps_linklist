@@ -29,8 +29,7 @@ namespace PrestaShop\Module\LinkList\Presenter;
 use PrestaShop\Module\LinkList\Model\LinkBlock;
 
 /**
- * Class LinkBlockPresenter
- * @package PrestaShop\Module\LinkList\Presenter
+ * Class LinkBlockPresenter.
  */
 class LinkBlockPresenter
 {
@@ -39,6 +38,7 @@ class LinkBlockPresenter
 
     /**
      * LinkBlockPresenter constructor.
+     *
      * @param \Link $link
      * @param \Language $language
      */
@@ -50,16 +50,18 @@ class LinkBlockPresenter
 
     /**
      * @param LinkBlock $cmsBlock
+     *
      * @return array
+     *
      * @throws \PrestaShopDatabaseException
      * @throws \PrestaShopException
      */
     public function present(LinkBlock $cmsBlock)
     {
         return array(
-            'id' => (int)$cmsBlock->id,
-            'title' => $cmsBlock->name[(int)$this->language->id],
-            'hook' => (new \Hook((int)$cmsBlock->id_hook))->name,
+            'id' => (int) $cmsBlock->id,
+            'title' => $cmsBlock->name[(int) $this->language->id],
+            'hook' => (new \Hook((int) $cmsBlock->id_hook))->name,
             'position' => $cmsBlock->position,
             'links' => $this->makeLinks($cmsBlock->content, $cmsBlock->custom_content),
         );
@@ -68,6 +70,7 @@ class LinkBlockPresenter
     /**
      * @param array $content
      * @param array $custom_content
+     *
      * @return array
      */
     private function makeLinks($content, $custom_content)
@@ -98,7 +101,9 @@ class LinkBlockPresenter
 
     /**
      * @param array $cmsIds
+     *
      * @return array
+     *
      * @throws \PrestaShopDatabaseException
      * @throws \PrestaShopException
      */
@@ -106,13 +111,13 @@ class LinkBlockPresenter
     {
         $cmsLinks = array();
         foreach ($cmsIds as $cmsId) {
-            $cms = new \CMS((int)$cmsId);
+            $cms = new \CMS((int) $cmsId);
             if (null !== $cms->id && $cms->active) {
                 $cmsLinks[] = array(
-                    'id' => 'link-cms-page-'.$cms->id,
+                    'id' => 'link-cms-page-' . $cms->id,
                     'class' => 'cms-page-link',
-                    'title' => $cms->meta_title[(int)$this->language->id],
-                    'description' => $cms->meta_description[(int)$this->language->id],
+                    'title' => $cms->meta_title[(int) $this->language->id],
+                    'description' => $cms->meta_description[(int) $this->language->id],
                     'url' => $this->link->getCMSLink($cms),
                 );
             }
@@ -123,6 +128,7 @@ class LinkBlockPresenter
 
     /**
      * @param array $productIds
+     *
      * @return array
      */
     private function makeProductLinks($productIds)
@@ -130,9 +136,9 @@ class LinkBlockPresenter
         $productLinks = array();
         foreach ($productIds as $productId) {
             if (false !== $productId) {
-                $meta = \Meta::getMetaByPage($productId, (int)$this->language->id);
+                $meta = \Meta::getMetaByPage($productId, (int) $this->language->id);
                 $productLinks[] = array(
-                    'id' => 'link-product-page-'.$productId,
+                    'id' => 'link-product-page-' . $productId,
                     'class' => 'cms-page-link',
                     'title' => $meta['title'],
                     'description' => $meta['description'],
@@ -146,6 +152,7 @@ class LinkBlockPresenter
 
     /**
      * @param array $staticIds
+     *
      * @return array
      */
     private function makeStaticLinks($staticIds)
@@ -153,9 +160,9 @@ class LinkBlockPresenter
         $staticLinks = array();
         foreach ($staticIds as $staticId) {
             if (false !== $staticId) {
-                $meta = \Meta::getMetaByPage($staticId, (int)$this->language->id);
+                $meta = \Meta::getMetaByPage($staticId, (int) $this->language->id);
                 $staticLinks[] = array(
-                    'id' => 'link-static-page-'.$staticId,
+                    'id' => 'link-static-page-' . $staticId,
                     'class' => 'cms-page-link',
                     'title' => $meta['title'],
                     'description' => $meta['description'],
@@ -169,6 +176,7 @@ class LinkBlockPresenter
 
     /**
      * @param array $customContent
+     *
      * @return array
      */
     private function makeCustomLinks($customContent)
@@ -180,7 +188,7 @@ class LinkBlockPresenter
 
             $customLinks = array_map(function ($el) {
                 return array(
-                    'id' => 'link-custom-page-'.$el['title'],
+                    'id' => 'link-custom-page-' . $el['title'],
                     'class' => 'custom-page-link',
                     'title' => $el['title'],
                     'description' => '',
@@ -195,8 +203,10 @@ class LinkBlockPresenter
     }
 
     /**
-     * Check the url if is an external link
+     * Check the url if is an external link.
+     *
      * @param $url
+     *
      * @return bool
      */
     private function isExternalLink($url)
@@ -210,5 +220,4 @@ class LinkBlockPresenter
 
         return false;
     }
-
 }

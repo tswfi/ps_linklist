@@ -26,12 +26,8 @@
 
 namespace PrestaShop\Module\LinkList\Form\ChoiceProvider;
 
-use Doctrine\DBAL\Connection;
-use PrestaShop\PrestaShop\Core\Form\FormChoiceProviderInterface;
-
 /**
- * Class CMSCategoryChoiceProvider
- * @package PrestaShop\Module\LinkList\Form\ChoiceProvider
+ * Class CMSCategoryChoiceProvider.
  */
 final class CMSCategoryChoiceProvider extends AbstractDatabaseChoiceProvider
 {
@@ -43,9 +39,9 @@ final class CMSCategoryChoiceProvider extends AbstractDatabaseChoiceProvider
         $qb = $this->connection->createQueryBuilder();
         $qb
             ->select('cc.id_cms_category, ccl.name')
-            ->from($this->dbPrefix.'cms_category', 'cc')
-            ->innerJoin('cc', $this->dbPrefix.'cms_category_lang', 'ccl', 'cc.id_cms_category = ccl.id_cms_category')
-            ->innerJoin('cc', $this->dbPrefix.'cms_category_shop', 'ccs', 'cc.id_cms_category = ccs.id_cms_category')
+            ->from($this->dbPrefix . 'cms_category', 'cc')
+            ->innerJoin('cc', $this->dbPrefix . 'cms_category_lang', 'ccl', 'cc.id_cms_category = ccl.id_cms_category')
+            ->innerJoin('cc', $this->dbPrefix . 'cms_category_shop', 'ccs', 'cc.id_cms_category = ccs.id_cms_category')
             ->andWhere('cc.active = 1')
             ->andWhere('ccl.id_lang = :idLang')
             ->andWhere('ccs.id_shop = :idShop')

@@ -34,8 +34,7 @@ use PrestaShop\PrestaShop\Core\Form\FormDataProviderInterface;
 use Hook;
 
 /**
- * Class LinkBlockFormDataProvider
- * @package PrestaShop\Module\LinkList\Form
+ * Class LinkBlockFormDataProvider.
  */
 class LinkBlockFormDataProvider implements FormDataProviderInterface
 {
@@ -71,11 +70,12 @@ class LinkBlockFormDataProvider implements FormDataProviderInterface
 
     /**
      * LinkBlockFormDataProvider constructor.
-     * @param LinkBlockRepository     $repository
+     *
+     * @param LinkBlockRepository $repository
      * @param LinkBlockCacheInterface $cache
-     * @param ModuleRepository        $moduleRepository
-     * @param array                   $languages
-     * @param int                     $shopId
+     * @param ModuleRepository $moduleRepository
+     * @param array $languages
+     * @param int $shopId
      */
     public function __construct(
         LinkBlockRepository $repository,
@@ -93,6 +93,7 @@ class LinkBlockFormDataProvider implements FormDataProviderInterface
 
     /**
      * @return array
+     *
      * @throws \PrestaShopDatabaseException
      * @throws \PrestaShopException
      */
@@ -132,7 +133,9 @@ class LinkBlockFormDataProvider implements FormDataProviderInterface
 
     /**
      * @param array $data
+     *
      * @return array
+     *
      * @throws \PrestaShop\PrestaShop\Adapter\Entity\PrestaShopDatabaseException
      */
     public function setData(array $data)
@@ -189,6 +192,7 @@ class LinkBlockFormDataProvider implements FormDataProviderInterface
 
     /**
      * @param int $idLinkBlock
+     *
      * @return LinkBlockFormDataProvider
      */
     public function setIdLinkBlock($idLinkBlock)
@@ -200,6 +204,7 @@ class LinkBlockFormDataProvider implements FormDataProviderInterface
 
     /**
      * @param array $data
+     *
      * @return array
      */
     private function validateLinkBlock(array $data)
@@ -207,7 +212,7 @@ class LinkBlockFormDataProvider implements FormDataProviderInterface
         $errors = [];
         if (!isset($data['id_hook'])) {
             $errors[] = [
-                'key' => "Missing id_hook",
+                'key' => 'Missing id_hook',
                 'domain' => 'Admin.Catalog.Notification',
                 'parameters' => [],
             ];
@@ -215,7 +220,7 @@ class LinkBlockFormDataProvider implements FormDataProviderInterface
 
         if (!isset($data['block_name'])) {
             $errors[] = [
-                'key' => "Missing block_name",
+                'key' => 'Missing block_name',
                 'domain' => 'Admin.Catalog.Notification',
                 'parameters' => [],
             ];
@@ -223,7 +228,7 @@ class LinkBlockFormDataProvider implements FormDataProviderInterface
             foreach ($this->languages as $language) {
                 if (empty($data['block_name'][$language['id_lang']])) {
                     $errors[] = [
-                        'key' => "Missing block_name value for language %s",
+                        'key' => 'Missing block_name value for language %s',
                         'domain' => 'Admin.Catalog.Notification',
                         'parameters' => [$language['iso_code']],
                     ];
@@ -236,7 +241,7 @@ class LinkBlockFormDataProvider implements FormDataProviderInterface
                 foreach ($this->languages as $language) {
                     if (!isset($custom[$language['id_lang']])) {
                         $errors[] = [
-                            'key' => "Missing block_name value for language %s",
+                            'key' => 'Missing block_name value for language %s',
                             'domain' => 'Admin.Catalog.Notification',
                             'parameters' => [$language['iso_code']],
                         ];
@@ -246,7 +251,7 @@ class LinkBlockFormDataProvider implements FormDataProviderInterface
                         foreach ($fields as $field) {
                             if (empty($langCustom[$field])) {
                                 $errors[] = [
-                                    'key' => "Missing %s value in custom[%s] for language %s",
+                                    'key' => 'Missing %s value in custom[%s] for language %s',
                                     'domain' => 'Admin.Catalog.Notification',
                                     'parameters' => [$field, $customIndex, $language['iso_code']],
                                 ];
@@ -257,12 +262,11 @@ class LinkBlockFormDataProvider implements FormDataProviderInterface
             }
         }
 
-
         return $errors;
     }
 
     /**
-     * Register the selected hook to this module if it was not registered yet
+     * Register the selected hook to this module if it was not registered yet.
      *
      * @param int $hookId
      *

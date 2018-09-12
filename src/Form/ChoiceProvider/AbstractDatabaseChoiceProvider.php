@@ -1,6 +1,6 @@
 <?php
 /**
- * 2007-2018 PrestaShop
+ * 2007-2018 PrestaShop.
  *
  * NOTICE OF LICENSE
  *
@@ -30,8 +30,7 @@ use Doctrine\DBAL\Connection;
 use PrestaShop\PrestaShop\Core\Form\FormChoiceProviderInterface;
 
 /**
- * Class AbstractDatabaseChoiceProvider
- * @package PrestaShop\Module\LinkList\Form\ChoiceProvider
+ * Class AbstractDatabaseChoiceProvider.
  */
 abstract class AbstractDatabaseChoiceProvider implements FormChoiceProviderInterface
 {
@@ -57,10 +56,11 @@ abstract class AbstractDatabaseChoiceProvider implements FormChoiceProviderInter
 
     /**
      * AbstractDatabaseChoiceProvider constructor.
+     *
      * @param Connection $connection
-     * @param string     $dbPrefix
-     * @param int|null   $idLang
-     * @param int|null   $idShop
+     * @param string $dbPrefix
+     * @param int|null $idLang
+     * @param int|null $idShop
      */
     public function __construct(Connection $connection, $dbPrefix, $idLang = null, $idShop = null)
     {
@@ -71,7 +71,7 @@ abstract class AbstractDatabaseChoiceProvider implements FormChoiceProviderInter
     }
 
     /**
-     * @inheritDoc
+     * {@inheritdoc}
      */
     abstract public function getChoices();
 }

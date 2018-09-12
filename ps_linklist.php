@@ -23,12 +23,11 @@
  * @license   https://opensource.org/licenses/AFL-3.0 Academic Free License 3.0 (AFL-3.0)
  * International Registered Trademark & Property of PrestaShop SA
  */
-
 if (!defined('_CAN_LOAD_FILES_')) {
     exit;
 }
 
-#require_once __DIR__.'/vendor/autoload.php';
+//require_once __DIR__.'/vendor/autoload.php';
 
 use PrestaShop\PrestaShop\Core\Module\WidgetInterface;
 use PrestaShop\Module\LinkList\LegacyLinkBlockRepository;
@@ -91,26 +90,28 @@ class Ps_Linklist extends Module implements WidgetInterface
     {
         $tab = new Tab();
         $tab->active = 1;
-        $tab->class_name = "AdminLinkWidget";
+        $tab->class_name = 'AdminLinkWidget';
         $tab->name = array();
         foreach (Language::getLanguages(true) as $lang) {
-            $tab->name[$lang['id_lang']] = "Link Widget";
+            $tab->name[$lang['id_lang']] = 'Link Widget';
         }
-        $tab->id_parent = (int)Tab::getIdFromClassName('AdminParentThemes');
+        $tab->id_parent = (int) Tab::getIdFromClassName('AdminParentThemes');
         $tab->module = $this->name;
+
         return $tab->add();
     }
 
     public function uninstallTab()
     {
-        $id_tab = (int)Tab::getIdFromClassName('AdminLinkWidget');
+        $id_tab = (int) Tab::getIdFromClassName('AdminLinkWidget');
         $tab = new Tab($id_tab);
+
         return $tab->delete();
     }
 
     public function hookActionUpdateLangAfter($params)
     {
-        if (!empty($params['lang']) && $params['lang'] instanceOf Language) {
+        if (!empty($params['lang']) && $params['lang'] instanceof Language) {
             include_once _PS_MODULE_DIR_ . $this->name . '/lang/LinkBlockLang.php';
 
             Language::updateMultilangFromClass(_DB_PREFIX_ . 'link_block_lang', 'LinkBlockLang', $params['lang']);
@@ -152,7 +153,7 @@ class Ps_Linklist extends Module implements WidgetInterface
         }
 
         return array(
-            'linkBlocks' => $blocks
+            'linkBlocks' => $blocks,
         );
     }
 }

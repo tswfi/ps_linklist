@@ -27,11 +27,9 @@
 namespace PrestaShop\Module\LinkList\Form\ChoiceProvider;
 
 use Doctrine\DBAL\Connection;
-use PrestaShop\PrestaShop\Core\Form\FormChoiceProviderInterface;
 
 /**
- * Class CMSPageChoiceProvider
- * @package PrestaShop\Module\LinkList\Form\ChoiceProvider
+ * Class CMSPageChoiceProvider.
  */
 final class CMSPageChoiceProvider extends AbstractDatabaseChoiceProvider
 {
@@ -42,11 +40,12 @@ final class CMSPageChoiceProvider extends AbstractDatabaseChoiceProvider
 
     /**
      * CMSPageChoiceProvider constructor.
+     *
      * @param Connection $connection
-     * @param string     $dbPrefix
-     * @param array      $categories
-     * @param int        $idLang
-     * @param int        $idShop
+     * @param string $dbPrefix
+     * @param array $categories
+     * @param int $idLang
+     * @param int $idShop
      */
     public function __construct(
         Connection $connection,
@@ -70,9 +69,9 @@ final class CMSPageChoiceProvider extends AbstractDatabaseChoiceProvider
             $qb = $this->connection->createQueryBuilder();
             $qb
                 ->select('c.id_cms, cl.meta_title')
-                ->from($this->dbPrefix.'cms', 'c')
-                ->innerJoin('c', $this->dbPrefix.'cms_lang', 'cl', 'c.id_cms = cl.id_cms')
-                ->innerJoin('c', $this->dbPrefix.'cms_shop', 'cs', 'c.id_cms = cs.id_cms')
+                ->from($this->dbPrefix . 'cms', 'c')
+                ->innerJoin('c', $this->dbPrefix . 'cms_lang', 'cl', 'c.id_cms = cl.id_cms')
+                ->innerJoin('c', $this->dbPrefix . 'cms_shop', 'cs', 'c.id_cms = cs.id_cms')
                 ->andWhere('c.active = 1')
                 ->andWhere('cl.id_lang = :idLang')
                 ->andWhere('cs.id_shop = :idShop')
@@ -84,7 +83,7 @@ final class CMSPageChoiceProvider extends AbstractDatabaseChoiceProvider
             ;
             $pages = $qb->execute()->fetchAll();
             foreach ($pages as $page) {
-                $choices[$categoryName][$page['id_cms']. ' ' . $page['meta_title']] = $page['id_cms'];
+                $choices[$categoryName][$page['id_cms'] . ' ' . $page['meta_title']] = $page['id_cms'];
             }
         }
 

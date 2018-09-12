@@ -36,8 +36,7 @@ use PrestaShop\PrestaShop\Core\Grid\Column\Type\DataColumn;
 use PrestaShop\PrestaShop\Core\Grid\Definition\Factory\AbstractGridDefinitionFactory;
 
 /**
- * Class LinkBlockDefinitionFactory
- * @package PrestaShop\Module\LinkList\Core\Grid\Definition\Factory
+ * Class LinkBlockDefinitionFactory.
  */
 final class LinkBlockDefinitionFactory extends AbstractGridDefinitionFactory
 {
@@ -50,6 +49,7 @@ final class LinkBlockDefinitionFactory extends AbstractGridDefinitionFactory
 
     /**
      * LinkBlockDefinitionFactory constructor.
+     *
      * @param array $hook
      */
     public function __construct(array $hook)
@@ -58,16 +58,15 @@ final class LinkBlockDefinitionFactory extends AbstractGridDefinitionFactory
     }
 
     /**
-     * @inheritDoc
+     * {@inheritdoc}
      */
     protected function getId()
     {
         return self::FACTORY_ID . $this->hook['id_hook'];
     }
 
-
     /**
-     * @inheritDoc
+     * {@inheritdoc}
      */
     protected function getName()
     {
@@ -75,7 +74,7 @@ final class LinkBlockDefinitionFactory extends AbstractGridDefinitionFactory
     }
 
     /**
-     * @inheritDoc
+     * {@inheritdoc}
      */
     protected function getColumns()
     {
@@ -83,13 +82,13 @@ final class LinkBlockDefinitionFactory extends AbstractGridDefinitionFactory
             ->add((new DataColumn('id_link_block'))
                 ->setName($this->trans('ID', [], 'Modules.Linklist.Admin'))
                 ->setOptions([
-                    'field' => 'id_hook'
+                    'field' => 'id_hook',
                 ])
             )
             ->add((new DataColumn('block_name'))
                 ->setName($this->trans('Name of the block', [], 'Modules.Linklist.Admin'))
                 ->setOptions([
-                    'field' => 'block_name'
+                    'field' => 'block_name',
                 ])
             )
             ->add((new PositionColumn('position'))

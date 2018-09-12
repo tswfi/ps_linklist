@@ -37,8 +37,7 @@ use Hook;
 use DB;
 
 /**
- * Class LegacyLinkBlockRepository
- * @package PrestaShop\Module\LinkList
+ * Class LegacyLinkBlockRepository.
  */
 class LegacyLinkBlockRepository
 {
@@ -80,7 +79,7 @@ class LegacyLinkBlockRepository
     			`id_link_block` int(10) unsigned NOT NULL auto_increment,
     			`id_shop` int(10) unsigned NOT NULL,
     			PRIMARY KEY (`id_link_block`, `id_shop`)
-            ) ENGINE=$engine DEFAULT CHARSET=utf8"
+            ) ENGINE=$engine DEFAULT CHARSET=utf8",
         ];
 
         foreach ($queries as $query) {
@@ -113,12 +112,12 @@ class LegacyLinkBlockRepository
                 h.`title` as hook_title,
                 h.`description` as hook_description,
                 bc.`position`
-            FROM `'.$this->db_prefix.'link_block` bc
-                INNER JOIN `'.$this->db_prefix.'link_block_lang` bcl
+            FROM `' . $this->db_prefix . 'link_block` bc
+                INNER JOIN `' . $this->db_prefix . 'link_block_lang` bcl
                     ON (bc.`id_link_block` = bcl.`id_link_block`)
-                LEFT JOIN `'.$this->db_prefix.'hook` h
+                LEFT JOIN `' . $this->db_prefix . 'hook` h
                     ON (bc.`id_hook` = h.`id_hook`)
-            WHERE bcl.`id_lang` = '.$id_lang.'
+            WHERE bcl.`id_lang` = ' . $id_lang . '
             ORDER BY bc.`position`';
 
         $blocks = $this->db->executeS($sql);
@@ -164,6 +163,7 @@ class LegacyLinkBlockRepository
                 unset($hooks[$key]);
             }
         }
+
         return $hooks;
     }
 
@@ -180,7 +180,7 @@ class LegacyLinkBlockRepository
 
         $cmsBlock = array();
         foreach ($ids as $id) {
-            $cmsBlock[] = new LinkBlock((int)$id['id_link_block']);
+            $cmsBlock[] = new LinkBlock((int) $id['id_link_block']);
         }
 
         return $cmsBlock;
@@ -242,7 +242,7 @@ class LegacyLinkBlockRepository
         );
 
         foreach ($productPages as $productPage) {
-            $meta = Meta::getMetaByPage($productPage, ($id_lang) ? (int)$id_lang : (int)Context::getContext()->language->id);
+            $meta = Meta::getMetaByPage($productPage, ($id_lang) ? (int) $id_lang : (int) Context::getContext()->language->id);
             $products[] = array(
                 'id_cms' => $productPage,
                 'title' => $meta['title'],
@@ -266,7 +266,7 @@ class LegacyLinkBlockRepository
         );
 
         foreach ($staticPages as $staticPage) {
-            $meta = Meta::getMetaByPage($staticPage, ($id_lang) ? (int)$id_lang : (int)Context::getContext()->language->id);
+            $meta = Meta::getMetaByPage($staticPage, ($id_lang) ? (int) $id_lang : (int) Context::getContext()->language->id);
             $statics[] = [
                 'id_cms' => $staticPage,
                 'title' => $meta['title'],
@@ -300,18 +300,18 @@ class LegacyLinkBlockRepository
     public function installFixtures()
     {
         $success = true;
-        $id_hook = (int)Hook::getIdByName('displayFooter');
+        $id_hook = (int) Hook::getIdByName('displayFooter');
 
         $queries = [
-            'INSERT INTO `'.$this->db_prefix.'link_block` (`id_link_block`, `id_hook`, `position`, `content`) VALUES
-                (1, '.$id_hook.', 1, \'{"cms":[false],"product":["prices-drop","new-products","best-sales"],"static":[false]}\'),
-                (2, '.$id_hook.', 2, \'{"cms":["1","2","3","4","5"],"product":[false],"static":["contact","sitemap","stores"]}\');'
+            'INSERT INTO `' . $this->db_prefix . 'link_block` (`id_link_block`, `id_hook`, `position`, `content`) VALUES
+                (1, ' . $id_hook . ', 1, \'{"cms":[false],"product":["prices-drop","new-products","best-sales"],"static":[false]}\'),
+                (2, ' . $id_hook . ', 2, \'{"cms":["1","2","3","4","5"],"product":[false],"static":["contact","sitemap","stores"]}\');',
         ];
 
         foreach (Language::getLanguages(true, Context::getContext()->shop->id) as $lang) {
-            $queries[] = 'INSERT INTO `'.$this->db_prefix.'link_block_lang` (`id_link_block`, `id_lang`, `name`) VALUES
-                (1, '.(int)$lang['id_lang'].', "'.pSQL($this->translator->trans('Products', array(), 'Modules.Linklist.Shop', $lang['locale'])).'"),
-                (2, '.(int)$lang['id_lang'].', "'.pSQL($this->translator->trans('Our company', array(), 'Modules.Linklist.Shop', $lang['locale'])).'")'
+            $queries[] = 'INSERT INTO `' . $this->db_prefix . 'link_block_lang` (`id_link_block`, `id_lang`, `name`) VALUES
+                (1, ' . (int) $lang['id_lang'] . ', "' . pSQL($this->translator->trans('Products', array(), 'Modules.Linklist.Shop', $lang['locale'])) . '"),
+                (2, ' . (int) $lang['id_lang'] . ', "' . pSQL($this->translator->trans('Our company', array(), 'Modules.Linklist.Shop', $lang['locale'])) . '")'
             ;
         }
 
@@ -327,8 +327,8 @@ class LegacyLinkBlockRepository
         $success = true;
 
         if (empty($id_link_block)) {
-            $query = 'INSERT INTO `'._DB_PREFIX_.'link_block` (`id_hook`, `position`, `content`)
-                SELECT ' . $id_hook . ', MAX(`position`) + 1, \''.$content. '\' FROM '._DB_PREFIX_.'link_block WHERE id_hook = ' . $id_hook;
+            $query = 'INSERT INTO `' . _DB_PREFIX_ . 'link_block` (`id_hook`, `position`, `content`)
+                SELECT ' . $id_hook . ', MAX(`position`) + 1, \'' . $content . '\' FROM ' . _DB_PREFIX_ . 'link_block WHERE id_hook = ' . $id_hook;
 
             $success &= Db::getInstance()->execute($query);
             $id_link_block = (int) Db::getInstance()->Insert_ID();
@@ -340,16 +340,16 @@ class LegacyLinkBlockRepository
                     $query = 'INSERT INTO `' . _DB_PREFIX_ . 'link_block_lang` (`id_link_block`, `id_lang`, `name`, `custom_content`) VALUES ';
 
                     foreach ($languages as $lang) {
-                        $query .= '(' . $id_link_block . ',' . (int)$lang['id_lang'] . ',\'' . bqSQL(Tools::getValue('name_'.(int)$lang['id_lang'])) . '\', \'' . bqSQL($custom_content[(int)$lang['id_lang']]) . '\'),';
+                        $query .= '(' . $id_link_block . ',' . (int) $lang['id_lang'] . ',\'' . bqSQL(Tools::getValue('name_' . (int) $lang['id_lang'])) . '\', \'' . bqSQL($custom_content[(int) $lang['id_lang']]) . '\'),';
                     }
 
                     $success &= Db::getInstance()->execute(rtrim($query, ','));
                 }
             }
         } else {
-            $query = 'UPDATE `'._DB_PREFIX_.'link_block` 
-                    SET `content` = \''.$content.'\', `id_hook` = '.$id_hook.' 
-                    WHERE `id_link_block` = '.$id_link_block;
+            $query = 'UPDATE `' . _DB_PREFIX_ . 'link_block` 
+                    SET `content` = \'' . $content . '\', `id_hook` = ' . $id_hook . ' 
+                    WHERE `id_link_block` = ' . $id_link_block;
             $success &= Db::getInstance()->execute($query);
 
             if (!empty($success) && !empty($id_link_block)) {
@@ -358,9 +358,9 @@ class LegacyLinkBlockRepository
                 if (!empty($languages)) {
                     foreach ($languages as $lang) {
                         $query = 'UPDATE `' . _DB_PREFIX_ . 'link_block_lang` 
-                                SET `name` = \''.bqSQL(Tools::getValue('name_'.(int)$lang['id_lang'])).'\',
-                                `custom_content` = \''.bqSQL($custom_content[$lang['id_lang']]).'\'
-                                WHERE `id_link_block` = '.$id_link_block.' AND `id_lang` = '.(int)$lang['id_lang'];
+                                SET `name` = \'' . bqSQL(Tools::getValue('name_' . (int) $lang['id_lang'])) . '\',
+                                `custom_content` = \'' . bqSQL($custom_content[$lang['id_lang']]) . '\'
+                                WHERE `id_link_block` = ' . $id_link_block . ' AND `id_lang` = ' . (int) $lang['id_lang'];
                         $success &= Db::getInstance()->execute($query);
                     }
                 }

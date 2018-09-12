@@ -23,7 +23,6 @@
  * @license   http://opensource.org/licenses/afl-3.0.php  Academic Free License (AFL 3.0)
  * International Registered Trademark & Property of PrestaShop SA
  */
-
 use PrestaShop\Module\LinkList\Model\LinkBlock;
 use PrestaShop\Module\LinkList\LegacyLinkBlockRepository;
 
@@ -50,7 +49,7 @@ class AdminLinkWidgetController extends ModuleAdminController
 
     public function init()
     {
-        if (Tools::isSubmit('edit'.$this->className)) {
+        if (Tools::isSubmit('edit' . $this->className)) {
             $this->display = 'edit';
         } elseif (Tools::isSubmit('addLinkBlock')) {
             $this->display = 'add';
@@ -67,7 +66,7 @@ class AdminLinkWidgetController extends ModuleAdminController
                     $this->updatePositions();
                     break;
             }
-        } elseif (Tools::isSubmit('submit'.$this->className)) {
+        } elseif (Tools::isSubmit('submit' . $this->className)) {
             if (!$this->manageLinkList()) {
                 return false;
             }
@@ -79,15 +78,15 @@ class AdminLinkWidgetController extends ModuleAdminController
 
             $this->module->_clearCache($this->module->templateFile);
 
-            Tools::redirectAdmin($this->context->link->getAdminLink('Admin'.$this->name));
-        } elseif (Tools::isSubmit('delete'.$this->className)) {
+            Tools::redirectAdmin($this->context->link->getAdminLink('Admin' . $this->name));
+        } elseif (Tools::isSubmit('delete' . $this->className)) {
             if (!$this->deleteLinkList()) {
                 return false;
             }
 
             $this->module->_clearCache($this->module->templateFile);
 
-            Tools::redirectAdmin($this->context->link->getAdminLink('Admin'.$this->name));
+            Tools::redirectAdmin($this->context->link->getAdminLink('Admin' . $this->name));
         }
 
         return parent::postProcess();
@@ -100,7 +99,7 @@ class AdminLinkWidgetController extends ModuleAdminController
         $this->fields_form[]['form'] = array(
             'legend' => array(
                 'title' => $title,
-                'icon' => 'icon-list-alt'
+                'icon' => 'icon-list-alt',
             ),
             'input' => array(
                 array(
@@ -113,15 +112,14 @@ class AdminLinkWidgetController extends ModuleAdminController
             'buttons' => array(
                 'newBlock' => array(
                     'title' => $this->trans('New block', array(), 'Modules.Linklist.Admin'),
-                    'href' => $this->context->link->getAdminLink('Admin'.$this->name).'&amp;addLinkBlock',
+                    'href' => $this->context->link->getAdminLink('Admin' . $this->name) . '&amp;addLinkBlock',
                     'class' => 'pull-right',
-                    'icon' => 'process-icon-new'
+                    'icon' => 'process-icon-new',
                 ),
             ),
         );
 
         $this->getLanguages();
-
 
         $helper = $this->buildHelper();
         $helper->submit_action = '';
@@ -134,13 +132,13 @@ class AdminLinkWidgetController extends ModuleAdminController
 
     public function renderForm()
     {
-        $block = new LinkBlock((int)Tools::getValue('id_link_block'));
+        $block = new LinkBlock((int) Tools::getValue('id_link_block'));
 
         $this->fields_form[0]['form'] = array(
             'tinymce' => true,
             'legend' => array(
                 'title' => isset($block) ? $this->trans('Edit the link block.', array(), 'Modules.Linklist.Admin') : $this->trans('New link block', array(), 'Modules.Linklist.Admin'),
-                'icon' => isset($block) ? 'icon-edit' : 'icon-plus-square'
+                'icon' => isset($block) ? 'icon-edit' : 'icon-plus-square',
             ),
             'input' => array(
                 array(
@@ -162,54 +160,54 @@ class AdminLinkWidgetController extends ModuleAdminController
                     'options' => array(
                         'query' => $this->getLinkBlockRepository()->getDisplayHooksForHelper(),
                         'id' => 'id',
-                        'name' => 'name'
-                    )
+                        'name' => 'name',
+                    ),
                 ),
                 array(
                     'type' => 'cms_pages',
                     'label' => $this->trans('Content pages', array(), 'Modules.Linklist.Admin'),
                     'name' => 'cms[]',
                     'values' => $this->getLinkBlockRepository()->getCmsPages(),
-                    'desc' => $this->trans('Please mark every page that you want to display in this block.', array(), 'Modules.Linklist.Admin')
+                    'desc' => $this->trans('Please mark every page that you want to display in this block.', array(), 'Modules.Linklist.Admin'),
                 ),
                 array(
                     'type' => 'product_pages',
                     'label' => $this->trans('Product pages', array(), 'Modules.Linklist.Admin'),
                     'name' => 'product[]',
                     'values' => $this->getLinkBlockRepository()->getProductPages(),
-                    'desc' => $this->trans('Please mark every page that you want to display in this block.', array(), 'Modules.Linklist.Admin')
+                    'desc' => $this->trans('Please mark every page that you want to display in this block.', array(), 'Modules.Linklist.Admin'),
                 ),
                 array(
                     'type' => 'static_pages',
                     'label' => $this->trans('Static content', array(), 'Modules.Linklist.Admin'),
                     'name' => 'static[]',
                     'values' => $this->getLinkBlockRepository()->getStaticPages(),
-                    'desc' => $this->trans('Please mark every page that you want to display in this block.', array(), 'Modules.Linklist.Admin')
+                    'desc' => $this->trans('Please mark every page that you want to display in this block.', array(), 'Modules.Linklist.Admin'),
                 ),
                 array(
                     'type' => 'custom_pages',
                     'label' => $this->trans('Custom content', array(), 'Modules.Linklist.Admin'),
                     'name' => 'custom[]',
                     'values' => $this->getLinkBlockRepository()->getCustomPages($block),
-                    'desc' => $this->trans('Please add every page that you want to display in this block.', array(), 'Modules.Linklist.Admin')
+                    'desc' => $this->trans('Please add every page that you want to display in this block.', array(), 'Modules.Linklist.Admin'),
                 ),
             ),
             'buttons' => array(
                 'cancelBlock' => array(
                     'title' => $this->trans('Cancel', array(), 'Admin.Actions'),
                     'href' => (Tools::safeOutput(Tools::getValue('back', false)))
-                                ?: $this->context->link->getAdminLink('Admin'.$this->name),
-                    'icon' => 'process-icon-cancel'
-                )
+                                ?: $this->context->link->getAdminLink('Admin' . $this->name),
+                    'icon' => 'process-icon-cancel',
+                ),
             ),
             'submit' => array(
-                'name' => 'submit'.$this->className,
+                'name' => 'submit' . $this->className,
                 'title' => $this->trans('Save', array(), 'Admin.Actions'),
-            )
+            ),
         );
 
         if ($id_hook = Tools::getValue('id_hook')) {
-            $block->id_hook = (int)$id_hook;
+            $block->id_hook = (int) $id_hook;
         }
 
         if (Tools::getValue('name')) {
@@ -218,13 +216,13 @@ class AdminLinkWidgetController extends ModuleAdminController
 
         $helper = $this->buildHelper();
         if (isset($id_link_block)) {
-            $helper->currentIndex = AdminController::$currentIndex.'&id_link_block='.$id_link_block;
-            $helper->submit_action = 'edit'.$this->className;
+            $helper->currentIndex = AdminController::$currentIndex . '&id_link_block=' . $id_link_block;
+            $helper->submit_action = 'edit' . $this->className;
         } else {
             $helper->submit_action = 'addLinkBlock';
         }
 
-        $helper->fields_value = (array)$block;
+        $helper->fields_value = (array) $block;
 
         return $helper->generateForm($this->fields_form);
     }
@@ -236,9 +234,9 @@ class AdminLinkWidgetController extends ModuleAdminController
         $helper->module = $this->module;
         $helper->override_folder = 'linkwidget/';
         $helper->identifier = $this->className;
-        $helper->token = Tools::getAdminTokenLite('Admin'.$this->name);
+        $helper->token = Tools::getAdminTokenLite('Admin' . $this->name);
         $helper->languages = $this->_languages;
-        $helper->currentIndex = $this->context->link->getAdminLink('Admin'.$this->name);
+        $helper->currentIndex = $this->context->link->getAdminLink('Admin' . $this->name);
         $helper->default_form_language = $this->default_form_language;
         $helper->allow_employee_form_lang = $this->allow_employee_form_lang;
         $helper->toolbar_scroll = true;
@@ -258,7 +256,7 @@ class AdminLinkWidgetController extends ModuleAdminController
         parent::setMedia($isNewTheme);
 
         $this->addJqueryPlugin('tablednd');
-        $this->addJS(_PS_JS_DIR_.'admin/dnd.js');
+        $this->addJS(_PS_JS_DIR_ . 'admin/dnd.js');
     }
 
     private function updatePositions()
@@ -278,6 +276,7 @@ class AdminLinkWidgetController extends ModuleAdminController
         }
 
         $query .= 'ELSE `position` END';
+
         return DB::getInstance()->execute($query);
     }
 
@@ -292,13 +291,13 @@ class AdminLinkWidgetController extends ModuleAdminController
             $content = '';
 
             $cms = Tools::getValue('cms');
-            $content .= '{"cms":[' . (empty($cms) ? 'false': '"' . implode('","', array_map('intval', $cms)) . '"') . '],';
+            $content .= '{"cms":[' . (empty($cms) ? 'false' : '"' . implode('","', array_map('intval', $cms)) . '"') . '],';
 
             $product = Tools::getValue('product');
-            $content .= '"product":[' . (empty($product) ? 'false': '"' . implode('","', array_map('bqSQL', $product)) . '"') . '],';
+            $content .= '"product":[' . (empty($product) ? 'false' : '"' . implode('","', array_map('bqSQL', $product)) . '"') . '],';
 
             $static = Tools::getValue('static');
-            $content .= '"static":[' . (empty($static) ? 'false': '"' . implode('","', array_map('bqSQL', $static)) . '"') . ']}';
+            $content .= '"static":[' . (empty($static) ? 'false' : '"' . implode('","', array_map('bqSQL', $static)) . '"') . ']}';
 
             $customs = Tools::getValue('custom');
             foreach ($customs as &$custom) {
@@ -306,6 +305,7 @@ class AdminLinkWidgetController extends ModuleAdminController
                     if (empty($el['title']) || empty($el['url'])) {
                         return false;
                     }
+
                     return true;
                 }));
             }
@@ -328,10 +328,10 @@ class AdminLinkWidgetController extends ModuleAdminController
         $id_link_block = (int) Tools::getValue('id_link_block');
 
         if (!empty($id_link_block)) {
-            $success &= Db::getInstance()->execute('DELETE FROM `'._DB_PREFIX_.'link_block` WHERE `id_link_block` = '.$id_link_block);
+            $success &= Db::getInstance()->execute('DELETE FROM `' . _DB_PREFIX_ . 'link_block` WHERE `id_link_block` = ' . $id_link_block);
 
             if ($success) {
-                $success &= Db::getInstance()->execute('DELETE FROM `'._DB_PREFIX_.'link_block_lang` WHERE `id_link_block` = '.$id_link_block);
+                $success &= Db::getInstance()->execute('DELETE FROM `' . _DB_PREFIX_ . 'link_block_lang` WHERE `id_link_block` = ' . $id_link_block);
             }
         }
 

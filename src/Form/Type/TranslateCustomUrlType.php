@@ -1,6 +1,6 @@
 <?php
 /**
- * 2007-2018 PrestaShop
+ * 2007-2018 PrestaShop.
  *
  * NOTICE OF LICENSE
  *
@@ -30,8 +30,7 @@ use PrestaShopBundle\Form\Admin\Type\TranslateTextType;
 use Symfony\Component\Form\FormBuilderInterface;
 
 /**
- * Class TranslatableUrlType
- * @package PrestaShop\Module\LinkList\Form\Type
+ * Class TranslatableUrlType.
  */
 class TranslateCustomUrlType extends TranslateTextType
 {

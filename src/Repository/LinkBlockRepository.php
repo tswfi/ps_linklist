@@ -32,8 +32,7 @@ use Doctrine\DBAL\Query\QueryBuilder;
 use PrestaShop\PrestaShop\Adapter\Entity\PrestaShopDatabaseException;
 
 /**
- * Class LinkBlockRepository
- * @package PrestaShop\Module\LinkList\Repository
+ * Class LinkBlockRepository.
  */
 class LinkBlockRepository
 {
@@ -54,9 +53,10 @@ class LinkBlockRepository
 
     /**
      * LinkBlockRepository constructor.
+     *
      * @param Connection $connection
-     * @param string     $dbPrefix
-     * @param array      $languages
+     * @param string $dbPrefix
+     * @param array $languages
      */
     public function __construct(Connection $connection, $dbPrefix, array $languages)
     {
@@ -66,7 +66,8 @@ class LinkBlockRepository
     }
 
     /**
-     * Returns the list of hook with associated Link blocks
+     * Returns the list of hook with associated Link blocks.
+     *
      * @return array
      */
     public function getHooksWithLinks()
@@ -85,12 +86,14 @@ class LinkBlockRepository
 
     /**
      * @param array $blockName
-     * @param int   $idHook
+     * @param int $idHook
      * @param array $cms
      * @param array $static
      * @param array $product
      * @param array $custom
+     *
      * @return string
+     *
      * @throws PrestaShopDatabaseException
      */
     public function create(array $blockName, $idHook, array $cms, array $static, array $product, array $custom)
@@ -99,7 +102,7 @@ class LinkBlockRepository
 
         $qb = $this->connection->createQueryBuilder();
         $qb
-            ->insert($this->dbPrefix.'link_block')
+            ->insert($this->dbPrefix . 'link_block')
             ->values([
                 'id_hook' => ':idHook',
                 'position' => ':position',
@@ -114,7 +117,7 @@ class LinkBlockRepository
                     'product' => empty($product) ? [false] : $product,
                 ]),
             ]);
-        ;
+
         $this->executeQueryBuilder($qb, 'Link block error');
         $linkBlockId = $this->connection->lastInsertId();
 
@@ -124,21 +127,23 @@ class LinkBlockRepository
     }
 
     /**
-     * @param int   $linkBlockId
+     * @param int $linkBlockId
      * @param array $blockName
-     * @param int   $idHook
+     * @param int $idHook
      * @param array $cms
      * @param array $static
      * @param array $product
      * @param array $custom
+     *
      * @return string
+     *
      * @throws PrestaShopDatabaseException
      */
     public function update($linkBlockId, array $blockName, $idHook, array $cms, array $static, array $product, array $custom)
     {
         $qb = $this->connection->createQueryBuilder();
         $qb
-            ->update($this->dbPrefix.'link_block', 'lb')
+            ->update($this->dbPrefix . 'link_block', 'lb')
             ->andWhere('lb.id_link_block = :linkBlockId')
             ->set('id_hook', ':idHook')
             ->set('content', ':content')
@@ -161,6 +166,7 @@ class LinkBlockRepository
 
     /**
      * @param int $idLinkBlock
+     *
      * @throws PrestaShopDatabaseException
      */
     public function delete($idLinkBlock)
@@ -174,7 +180,7 @@ class LinkBlockRepository
         foreach ($tableNames as $tableName) {
             $qb = $this->connection->createQueryBuilder();
             $qb
-                ->delete($this->dbPrefix.$tableName)
+                ->delete($this->dbPrefix . $tableName)
                 ->andWhere('id_link_block = :idLinkBlock')
                 ->setParameter('idLinkBlock', $idLinkBlock)
             ;
@@ -183,9 +189,10 @@ class LinkBlockRepository
     }
 
     /**
-     * @param int   $linkBlockId
+     * @param int $linkBlockId
      * @param array $blockName
      * @param array $custom
+     *
      * @throws PrestaShopDatabaseException
      */
     private function updateLanguages($linkBlockId, array $blockName, array $custom)
@@ -194,7 +201,7 @@ class LinkBlockRepository
             $qb = $this->connection->createQueryBuilder();
             $qb
                 ->select('lbl.id_link_block')
-                ->from($this->dbPrefix.'link_block_lang', 'lbl')
+                ->from($this->dbPrefix . 'link_block_lang', 'lbl')
                 ->andWhere('lbl.id_link_block = :linkBlockId')
                 ->andWhere('lbl.id_lang = :langId')
                 ->setParameter('linkBlockId', $linkBlockId)
@@ -205,7 +212,7 @@ class LinkBlockRepository
             $qb = $this->connection->createQueryBuilder();
             if (!$foundRows) {
                 $qb
-                    ->insert($this->dbPrefix.'link_block_lang')
+                    ->insert($this->dbPrefix . 'link_block_lang')
                     ->values([
                         'id_link_block' => ':linkBlockId',
                         'id_lang' => ':langId',
@@ -215,7 +222,7 @@ class LinkBlockRepository
                 ;
             } else {
                 $qb
-                    ->update($this->dbPrefix.'link_block_lang', 'lbl')
+                    ->update($this->dbPrefix . 'link_block_lang', 'lbl')
                     ->set('name', ':name')
                     ->set('custom_content', ':customContent')
                     ->andWhere('lbl.id_link_block = :linkBlockId')
@@ -230,15 +237,17 @@ class LinkBlockRepository
                     'name' => $blockName[$language['id_lang']],
                     'customContent' => empty($custom) ? null : json_encode($custom[$language['id_lang']]),
                 ]);
-            ;
+
             $this->executeQueryBuilder($qb, 'Link block language error');
         }
     }
 
     /**
      * @param QueryBuilder $qb
-     * @param string       $errorPrefix
+     * @param string $errorPrefix
+     *
      * @return Statement|int
+     *
      * @throws PrestaShopDatabaseException
      */
     private function executeQueryBuilder(QueryBuilder $qb, $errorPrefix = 'SQL error')
@@ -253,13 +262,14 @@ class LinkBlockRepository
 
     /**
      * @param int $idHook
+     *
      * @return bool|string
      */
     private function getHookMaxPosition($idHook)
     {
         $qb = $this->connection->createQueryBuilder();
         $qb->select('MAX(lb.position)')
-            ->from($this->dbPrefix.'link_block', 'lb')
+            ->from($this->dbPrefix . 'link_block', 'lb')
             ->andWhere('lb.id_hook = :idHook')
             ->setParameter('idHook', $idHook)
         ;

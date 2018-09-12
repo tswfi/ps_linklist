@@ -26,12 +26,8 @@
 
 namespace PrestaShop\Module\LinkList\Form\ChoiceProvider;
 
-use Doctrine\DBAL\Connection;
-use PrestaShop\PrestaShop\Core\Form\FormChoiceProviderInterface;
-
 /**
- * Class HookChoiceProvider
- * @package PrestaShop\Module\LinkList\Form\ChoiceProvider
+ * Class HookChoiceProvider.
  */
 final class HookChoiceProvider extends AbstractDatabaseChoiceProvider
 {
@@ -43,7 +39,7 @@ final class HookChoiceProvider extends AbstractDatabaseChoiceProvider
         $qb = $this->connection->createQueryBuilder();
         $qb
             ->select('h.id_hook, h.name')
-            ->from($this->dbPrefix.'hook', 'h')
+            ->from($this->dbPrefix . 'hook', 'h')
             ->andWhere('h.name LIKE :displayHook')
             ->setParameter('displayHook', 'display%')
             ->orderBy('h.name')

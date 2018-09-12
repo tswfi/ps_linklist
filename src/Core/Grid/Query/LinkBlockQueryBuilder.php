@@ -28,17 +28,16 @@ namespace PrestaShop\Module\LinkList\Core\Grid\Query;
 
 use Doctrine\DBAL\Query\QueryBuilder;
 use PrestaShop\PrestaShop\Core\Grid\Query\AbstractDoctrineQueryBuilder;
-use PrestaShop\PrestaShop\Core\Grid\Query\DoctrineQueryBuilderInterface;
 use PrestaShop\PrestaShop\Core\Grid\Search\SearchCriteriaInterface;
 
 /**
- * Class LinkBlockQueryBuilder
- * @package PrestaShop\Module\LinkList\Core\Grid\Query
+ * Class LinkBlockQueryBuilder.
  */
 final class LinkBlockQueryBuilder extends AbstractDoctrineQueryBuilder
 {
     /**
      * @param null|SearchCriteriaInterface $searchCriteria
+     *
      * @return QueryBuilder
      */
     public function getSearchQueryBuilder(SearchCriteriaInterface $searchCriteria = null)
@@ -71,6 +70,7 @@ final class LinkBlockQueryBuilder extends AbstractDoctrineQueryBuilder
 
     /**
      * @param null|SearchCriteriaInterface $searchCriteria
+     *
      * @return QueryBuilder
      */
     public function getCountQueryBuilder(SearchCriteriaInterface $searchCriteria = null)

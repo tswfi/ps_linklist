@@ -27,12 +27,10 @@
 namespace PrestaShop\Module\LinkList\Form\ChoiceProvider;
 
 use Doctrine\DBAL\Connection;
-use PrestaShop\PrestaShop\Core\Form\FormChoiceProviderInterface;
 use PrestaShop\PrestaShop\Core\Foundation\Database\EntityNotFoundException;
 
 /**
- * Class PageChoiceProvider
- * @package PrestaShop\Module\LinkList\Form\ChoiceProvider
+ * Class PageChoiceProvider.
  */
 final class PageChoiceProvider extends AbstractDatabaseChoiceProvider
 {
@@ -43,6 +41,7 @@ final class PageChoiceProvider extends AbstractDatabaseChoiceProvider
 
     /**
      * PageChoiceProvider constructor.
+     *
      * @param Connection $connection
      * @param $dbPrefix
      * @param $idLang
@@ -62,6 +61,7 @@ final class PageChoiceProvider extends AbstractDatabaseChoiceProvider
 
     /**
      * @return array
+     *
      * @throws EntityNotFoundException
      */
     public function getChoices()
@@ -71,8 +71,8 @@ final class PageChoiceProvider extends AbstractDatabaseChoiceProvider
             $qb = $this->connection->createQueryBuilder();
             $qb
                 ->select('m.id_meta, ml.title')
-                ->from($this->dbPrefix.'meta', 'm')
-                ->leftJoin('m', $this->dbPrefix.'meta_lang', 'ml', 'm.id_meta = ml.id_meta')
+                ->from($this->dbPrefix . 'meta', 'm')
+                ->leftJoin('m', $this->dbPrefix . 'meta_lang', 'ml', 'm.id_meta = ml.id_meta')
                 ->andWhere($qb->expr()->orX(
                     'm.page = :page',
                         'm.page = :pageSlug'

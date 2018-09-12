@@ -29,8 +29,7 @@ namespace PrestaShop\Module\LinkList\Core\Search\Filters;
 use PrestaShop\PrestaShop\Core\Search\Filters;
 
 /**
- * Class LinkBlockFilters
- * @package PrestaShop\Module\LinkList\Core\Search\Filters
+ * Class LinkBlockFilters.
  */
 final class LinkBlockFilters extends Filters
 {
