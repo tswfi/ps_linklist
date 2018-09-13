@@ -29,6 +29,10 @@ const $ = window.$;
 
 $(() => {
     new TranslatableInput({localeInputSelector: '.js-locale-input'});
+    $('.custom_collection .col-sm-12').each((index, customBlock) => {
+        appendDeleteButton($(customBlock));
+    });
+
     $('body').on('click', '.add-collection-btn', appendPrototype);
 
     function appendPrototype(event) {
@@ -39,6 +43,19 @@ $(() => {
         const collection = document.getElementById(collectionId);
         const collectionPrototype = collection.dataset.prototype;
         const newChild = collectionPrototype.replace(/__name__/g, (collection.children.length + 1));
-        $('#'+collectionId).append($(newChild));
+        const $newChild = $(newChild);
+        $('#'+collectionId).append($newChild);
+        appendDeleteButton($newChild);
+    }
+
+    function appendDeleteButton(customBlock) {
+        const collection = customBlock.closest('.custom_collection');
+        const $button = $('<a class="remove_custom_url btn btn-primary mt-1">'+collection.data('deleteButtonLabel')+'</a>');
+        $button.on('click', (event) => {
+            const $button = $(event.target);
+            const $row = $button.closest('.row');
+            $row.remove();
+        });
+        customBlock.find('.locale-input-group').first().closest('.col-sm-12').append($button);
     }
 });
