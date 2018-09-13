@@ -233,7 +233,7 @@ class LinkBlockController extends FrameworkBundleAdminController
         );
 
         /** @var GridPositionUpdaterInterface $updater */
-        $updater = $this->get('prestashop.core.grid.position.updater');
+        $updater = $this->get('prestashop.core.grid.position.doctrine_grid_position_updater');
         $errors = $updater->update($positionUpdate);
         if (0 === count($errors)) {
             $this->clearModuleCache();
