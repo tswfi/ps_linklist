@@ -26,9 +26,13 @@
 {% trans_default_domain "Admin.Design.Feature" %}
 
 {% block content %}
-    {% for grid in grids %}
-        {{ include('@PrestaShop/Admin/Common/Grid/grid_panel.html.twig', {'grid': grid }) }}
-    {% endfor %}
+    <div class="row">
+        {% for grid in grids %}
+            <div class="col-sm-6">
+                {{ include('@PrestaShop/Admin/Common/Grid/grid_panel.html.twig', {'grid': grid }) }}
+            </div>
+        {% endfor %}
+    </div>
 {% endblock %}
 
 {% block javascripts %}

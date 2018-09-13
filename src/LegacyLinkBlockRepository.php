@@ -46,6 +46,11 @@ class LegacyLinkBlockRepository
     private $db_prefix;
     private $translator;
 
+    /**
+     * @param DB $db
+     * @param Shop $shop
+     * @param Translator $translator
+     */
     public function __construct(Db $db, Shop $shop, Translator $translator)
     {
         $this->db = $db;
@@ -54,51 +59,12 @@ class LegacyLinkBlockRepository
         $this->translator = $translator;
     }
 
-    public function createTables()
-    {
-        $engine = _MYSQL_ENGINE_;
-        $success = true;
-        $this->dropTables();
-
-        $queries = [
-            "CREATE TABLE IF NOT EXISTS `{$this->db_prefix}link_block`(
-    			`id_link_block` int(10) unsigned NOT NULL auto_increment,
-    			`id_hook` int(1) unsigned DEFAULT NULL,
-    			`position` int(10) unsigned NOT NULL default '0',
-    			`content` text default NULL,
-    			PRIMARY KEY (`id_link_block`)
-            ) ENGINE=$engine DEFAULT CHARSET=utf8",
-            "CREATE TABLE IF NOT EXISTS `{$this->db_prefix}link_block_lang`(
-    			`id_link_block` int(10) unsigned NOT NULL,
-    			`id_lang` int(10) unsigned NOT NULL,
-    			`name` varchar(40) NOT NULL default '',
-    			`custom_content` text default NULL,
-    			PRIMARY KEY (`id_link_block`, `id_lang`)
-            ) ENGINE=$engine DEFAULT CHARSET=utf8",
-            "CREATE TABLE IF NOT EXISTS `{$this->db_prefix}link_block_shop` (
-    			`id_link_block` int(10) unsigned NOT NULL auto_increment,
-    			`id_shop` int(10) unsigned NOT NULL,
-    			PRIMARY KEY (`id_link_block`, `id_shop`)
-            ) ENGINE=$engine DEFAULT CHARSET=utf8",
-        ];
-
-        foreach ($queries as $query) {
-            $success &= $this->db->execute($query);
-        }
-
-        return $success;
-    }
-
-    public function dropTables()
-    {
-        $sql = "DROP TABLE IF EXISTS
-			`{$this->db_prefix}link_block`,
-			`{$this->db_prefix}link_block_lang`,
-			`{$this->db_prefix}link_block_shop`";
-
-        return $this->db->execute($sql);
-    }
-
+    /**
+     * @param int $id_hook
+     * @return array
+     * @throws \PrestaShopDatabaseException
+     * @throws \PrestaShopException
+     */
     public function getByIdHook($id_hook)
     {
         $id_hook = (int) $id_hook;
@@ -116,30 +82,5 @@ class LegacyLinkBlockRepository
         }
 
         return $cmsBlock;
-    }
-
-    public function installFixtures()
-    {
-        $success = true;
-        $id_hook = (int) Hook::getIdByName('displayFooter');
-
-        $queries = [
-            'INSERT INTO `' . $this->db_prefix . 'link_block` (`id_link_block`, `id_hook`, `position`, `content`) VALUES
-                (1, ' . $id_hook . ', 1, \'{"cms":[false],"product":["prices-drop","new-products","best-sales"],"static":[false]}\'),
-                (2, ' . $id_hook . ', 2, \'{"cms":["1","2","3","4","5"],"product":[false],"static":["contact","sitemap","stores"]}\');',
-        ];
-
-        foreach (Language::getLanguages(true, Context::getContext()->shop->id) as $lang) {
-            $queries[] = 'INSERT INTO `' . $this->db_prefix . 'link_block_lang` (`id_link_block`, `id_lang`, `name`) VALUES
-                (1, ' . (int) $lang['id_lang'] . ', "' . pSQL($this->translator->trans('Products', array(), 'Modules.Linklist.Shop', $lang['locale'])) . '"),
-                (2, ' . (int) $lang['id_lang'] . ', "' . pSQL($this->translator->trans('Our company', array(), 'Modules.Linklist.Shop', $lang['locale'])) . '")'
-            ;
-        }
-
-        foreach ($queries as $query) {
-            $success &= $this->db->execute($query);
-        }
-
-        return $success;
     }
 }

@@ -33,6 +33,10 @@ use PrestaShop\PrestaShop\Core\Module\WidgetInterface;
 use PrestaShop\Module\LinkList\LegacyLinkBlockRepository;
 use PrestaShop\Module\LinkList\Presenter\LinkBlockPresenter;
 use PrestaShop\Module\LinkList\Model\LinkBlockLang;
+use PrestaShop\Module\LinkList\Repository\LinkBlockRepository;
+use PrestaShop\PrestaShop\Adapter\SymfonyContainer;
+use PrestaShop\PrestaShop\Adapter\LegacyContext;
+use PrestaShop\PrestaShop\Adapter\Shop\Context;
 
 /**
  * Class Ps_Linklist.
@@ -48,7 +52,11 @@ class Ps_Linklist extends Module implements WidgetInterface
     /**
      * @var LegacyLinkBlockRepository
      */
-    private $linkBlockRepository;
+    private $legacyBlockRepository;
+    /**
+     * @var LinkBlockRepository
+     */
+    private $repository;
 
     public $templateFile;
 
@@ -70,24 +78,54 @@ class Ps_Linklist extends Module implements WidgetInterface
         $this->templateFile = 'module:ps_linklist/views/templates/hook/linkblock.tpl';
 
         $this->linkBlockPresenter = new LinkBlockPresenter(new Link(), $this->context->language);
-        $this->linkBlockRepository = new LegacyLinkBlockRepository(Db::getInstance(), $this->context->shop, $this->context->getTranslator());
+        $this->legacyBlockRepository = new LegacyLinkBlockRepository(Db::getInstance(), $this->context->shop, $this->context->getTranslator());
     }
 
     public function install()
     {
-        return parent::install()
-            && $this->installTab()
-            && $this->linkBlockRepository->createTables()
-            && $this->linkBlockRepository->installFixtures()
+        if (!parent::install()) {
+            return false;
+        }
+        $installed = true;
+
+        $errors = $this->getRepository()->createTables();
+        if (!empty($errors)) {
+            $this->addModuleErrors($errors);
+            $installed = false;
+        }
+
+        $errors = $this->getRepository()->installFixtures();
+        if (!empty($errors)) {
+            $this->addModuleErrors($errors);
+            $installed = false;
+        }
+
+        if ($installed
             && $this->registerHook('displayFooter')
-            && $this->registerHook('actionUpdateLangAfter');
+            && $this->registerHook('actionUpdateLangAfter')
+            && $this->installTab()) {
+            return true;
+        }
+
+        parent::uninstall();
+
+        return false;
     }
 
     public function uninstall()
     {
-        return parent::uninstall()
-            && $this->uninstallTab()
-            && $this->linkBlockRepository->dropTables();
+        $uninstalled = true;
+        if (!$this->uninstallTab()) {
+            $this->_errors[] = $this->trans('Could not remove Tab.', array(), 'Admin.Modules.Notification');
+            $uninstalled = false;
+        }
+        $errors = $this->getRepository()->dropTables();
+        if (!empty($errors)) {
+            $this->addModuleErrors($errors);
+            $uninstalled = false;
+        }
+
+        return $uninstalled && parent::uninstall();
     }
 
     public function installTab()
@@ -147,7 +185,7 @@ class Ps_Linklist extends Module implements WidgetInterface
     {
         $id_hook = Hook::getIdByName($hookName);
 
-        $linkBlocks = $this->linkBlockRepository->getByIdHook($id_hook);
+        $linkBlocks = $this->legacyBlockRepository->getByIdHook($id_hook);
 
         $blocks = array();
         foreach ($linkBlocks as $block) {
@@ -157,5 +195,41 @@ class Ps_Linklist extends Module implements WidgetInterface
         return array(
             'linkBlocks' => $blocks,
         );
+    }
+
+    /**
+     * @param array $errors
+     */
+    private function addModuleErrors(array $errors)
+    {
+        foreach ($errors as $error) {
+            $this->_errors[] = $this->trans($error['key'], $error['parameters'], $error['domain']);
+        }
+    }
+
+    /**
+     * @return LinkBlockRepository|null
+     */
+    private function getRepository()
+    {
+        if (null === $this->repository) {
+            try {
+                $this->repository = $this->get('prestashop.module.link_block.repository');
+            } catch (\Exception $e) {
+                //Module is not installed so its services are not loaded
+                /** @var LegacyContext $context */
+                $legacyContext = $this->get('prestashop.adapter.legacy.context');
+                /** @var Context $shopContext */
+                $shopContext = $this->get('prestashop.adapter.shop.context');
+                $this->repository = new LinkBlockRepository(
+                    $this->get('doctrine.dbal.default_connection'),
+                    SymfonyContainer::getInstance()->getParameter('database_prefix'),
+                    $legacyContext->getLanguages(true, $shopContext->getContextShopID()),
+                    $this->get('translator')
+                );
+            }
+        }
+
+        return $this->repository;
     }
 }

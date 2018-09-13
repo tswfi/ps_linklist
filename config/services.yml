@@ -10,6 +10,7 @@ services:
       $connection: '@doctrine.dbal.default_connection'
       $dbPrefix: '%database_prefix%'
       $languages: '@=service("prestashop.adapter.legacy.context").getLanguages(true, service("prestashop.adapter.shop.context").getContextShopID())'
+      $translator: '@translator'
 
   # Grid data query builder
   prestashop.module.link_block.grid.query_builder:
