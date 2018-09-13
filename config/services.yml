@@ -36,6 +36,15 @@ services:
       $dataFactory: '@prestashop.module.link_block.grid.data_factory'
       $filterFormFactory: '@prestashop.core.grid.filter.form_factory'
 
+  # Grid position definition
+  prestashop.module.link_block.grid.position_definition:
+    class: 'PrestaShop\PrestaShop\Core\Grid\Position\PositionDefinition'
+    arguments:
+      $table: 'link_block'
+      $idField: 'id_link_block'
+      $positionField: 'position'
+      $parentIdField: 'id_hook'
+
   # Link block form data provider
   prestashop.module.link_block.form_provider:
     class: PrestaShop\Module\LinkList\Form\LinkBlockFormDataProvider
@@ -46,6 +55,7 @@ services:
       $languages: '@=service("prestashop.adapter.legacy.context").getLanguages(true, service("prestashop.adapter.shop.context").getContextShopID())'
       $shopId: '@=service("prestashop.adapter.shop.context").getContextShopID()'
 
+  # Form choices providers
   prestashop.module.link_block.choice_provider.hook:
     class: PrestaShop\Module\LinkList\Form\ChoiceProvider\HookChoiceProvider
     arguments:
@@ -95,6 +105,7 @@ services:
         - 'authentication'
         - 'my-account'
 
+  # Form types
   prestashop.module.link_block.form_type:
     class: PrestaShop\Module\LinkList\Form\Type\LinkBlockType
     parent: 'form.type.translatable.aware'

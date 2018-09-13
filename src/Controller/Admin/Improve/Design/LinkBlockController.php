@@ -194,13 +194,14 @@ class LinkBlockController extends FrameworkBundleAdminController
     {
         $errors = [];
         $positions = $request->request->get('positions', null);
+        $parentId = $request->request->get('parentId', null);
+
         if (empty($positions)) {
             $errors[] = [
                 'key' => 'Missing positions in your request.',
                 'domain' => 'Admin.Notifications.Failure',
             ];
         }
-        $parentId = $request->request->get('parentId', null);
         if (null === $parentId) {
             $errors[] = [
                 'key' => 'Missing parentId in your request.',
@@ -223,19 +224,12 @@ class LinkBlockController extends FrameworkBundleAdminController
             ));
         }
 
-        $positionDefinition = new PositionDefinition(
-            'link_block',
-            'hook',
-            'id_link_block',
-            'id_hook',
-            'id_hook',
-            'position'
-        );
-
+        /** @var PositionDefinition $positionDefinition */
+        $positionDefinition = $this->get('prestashop.module.link_block.grid.position_definition');
         $positionUpdate = new PositionUpdate(
-            $request->request->get('parentId'),
             $updates,
-            $positionDefinition
+            $positionDefinition,
+            $request->request->get('parentId')
         );
 
         /** @var GridPositionUpdaterInterface $updater */
@@ -243,7 +237,7 @@ class LinkBlockController extends FrameworkBundleAdminController
         $errors = $updater->update($positionUpdate);
         if (0 === count($errors)) {
             $this->clearModuleCache();
-            $this->addFlash('success', $this->trans('Successful deletion.', 'Admin.Notifications.Success'));
+            $this->addFlash('success', $this->trans('Successful update.', 'Admin.Notifications.Success'));
         } else {
             $this->flashErrors($errors);
         }
