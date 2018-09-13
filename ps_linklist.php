@@ -33,7 +33,6 @@ use PrestaShop\PrestaShop\Core\Module\WidgetInterface;
 use PrestaShop\Module\LinkList\LegacyLinkBlockRepository;
 use PrestaShop\Module\LinkList\Presenter\LinkBlockPresenter;
 use PrestaShop\Module\LinkList\Model\LinkBlockLang;
-use Tab;
 
 /**
  * Class Ps_Linklist.
@@ -57,7 +56,7 @@ class Ps_Linklist extends Module implements WidgetInterface
     {
         $this->name = 'ps_linklist';
         $this->author = 'PrestaShop';
-        $this->version = '2.1.5';
+        $this->version = '2.2.0';
         $this->need_instance = 0;
 
         $this->bootstrap = true;
