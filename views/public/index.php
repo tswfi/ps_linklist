@@ -23,26 +23,12 @@
  * @license   http://opensource.org/licenses/afl-3.0.php  Academic Free License (AFL 3.0)
  * International Registered Trademark & Property of PrestaShop SA
  */
+header('Expires: Mon, 26 Jul 1997 05:00:00 GMT');
+header('Last-Modified: ' . gmdate('D, d M Y H:i:s') . ' GMT');
 
-/**
- * Class LinkBlockLang.
- */
-class LinkBlockLang extends DataLangCore
-{
-    // Don't replace domain in init() with $this->domain for translation parsing
-    protected $domain = 'Modules.Linklist.Shop';
+header('Cache-Control: no-store, no-cache, must-revalidate');
+header('Cache-Control: post-check=0, pre-check=0', false);
+header('Pragma: no-cache');
 
-    protected $keys = array('id_link_block');
-
-    protected $fieldsToUpdate = array('name');
-
-    protected function init()
-    {
-        $this->fieldNames = array(
-            'name' => array(
-                md5('Products') => $this->translator->trans('Products', array(), 'Modules.Linklist.Shop', $this->locale),
-                md5('Our company') => $this->translator->trans('Our company', array(), 'Modules.Linklist.Shop', $this->locale),
-            ),
-        );
-    }
-}
+header('Location: ../');
+exit;

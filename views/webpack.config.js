@@ -154,7 +154,7 @@ const config = {
 };
 
 if (process.env.NODE_ENV === 'production') {
-    /*config.plugins.push(
+    config.plugins.push(
         new webpack.optimize.UglifyJsPlugin({
             sourceMap: false,
             compress: {
@@ -169,9 +169,9 @@ if (process.env.NODE_ENV === 'production') {
                 comments: keepLicense
             }
         })
-    );*/
+    );
 } else {
-    //config.plugins.push(new webpack.HotModuleReplacementPlugin());
+    config.plugins.push(new webpack.HotModuleReplacementPlugin());
 }
 
 module.exports = config;

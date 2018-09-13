@@ -32,6 +32,8 @@ require_once __DIR__.'/vendor/autoload.php';
 use PrestaShop\PrestaShop\Core\Module\WidgetInterface;
 use PrestaShop\Module\LinkList\LegacyLinkBlockRepository;
 use PrestaShop\Module\LinkList\Presenter\LinkBlockPresenter;
+use PrestaShop\Module\LinkList\Model\LinkBlockLang;
+use Tab;
 
 /**
  * Class Ps_Linklist.
@@ -115,9 +117,7 @@ class Ps_Linklist extends Module implements WidgetInterface
     public function hookActionUpdateLangAfter($params)
     {
         if (!empty($params['lang']) && $params['lang'] instanceof Language) {
-            include_once _PS_MODULE_DIR_ . $this->name . '/lang/LinkBlockLang.php';
-
-            Language::updateMultilangFromClass(_DB_PREFIX_ . 'link_block_lang', 'LinkBlockLang', $params['lang']);
+            Language::updateMultilangFromClass(_DB_PREFIX_ . 'link_block_lang', LinkBlockLang::class, $params['lang']);
         }
     }
 
