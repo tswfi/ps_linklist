@@ -82,7 +82,7 @@ final class LinkBlockDefinitionFactory extends AbstractGridDefinitionFactory
             ->add((new DataColumn('id_link_block'))
                 ->setName($this->trans('ID', [], 'Modules.Linklist.Admin'))
                 ->setOptions([
-                    'field' => 'id_hook',
+                    'field' => 'id_link_block',
                 ])
             )
             ->add((new DataColumn('block_name'))
@@ -97,7 +97,8 @@ final class LinkBlockDefinitionFactory extends AbstractGridDefinitionFactory
                     'field' => 'position',
                     'id_field' => 'id_link_block',
                     'id_parent_field' => 'id_hook',
-                    'position_update_route' => 'admin_link_block_update_positions',
+                    'update_route' => 'admin_link_block_update_positions',
+                    'update_method' => 'POST',
                 ])
             )
             ->add((new ActionColumn('actions'))

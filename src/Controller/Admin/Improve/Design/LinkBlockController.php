@@ -32,6 +32,11 @@ use PrestaShop\Module\LinkList\Form\LinkBlockFormDataProvider;
 use PrestaShop\Module\LinkList\Repository\LinkBlockRepository;
 use PrestaShop\PrestaShop\Adapter\Entity\PrestaShopDatabaseException;
 use PrestaShop\PrestaShop\Core\Form\FormHandlerInterface;
+use PrestaShop\PrestaShop\Core\Grid\Position\GridPositionUpdaterInterface;
+use PrestaShop\PrestaShop\Core\Grid\Position\PositionDefinition;
+use PrestaShop\PrestaShop\Core\Grid\Position\PositionUpdate;
+use PrestaShop\PrestaShop\Core\Grid\Position\RowUpdate;
+use PrestaShop\PrestaShop\Core\Grid\Position\RowUpdateCollection;
 use PrestaShop\PrestaShop\Core\Grid\Presenter\GridPresenter;
 use PrestaShopBundle\Controller\Admin\FrameworkBundleAdminController;
 use PrestaShopBundle\Security\Annotation\AdminSecurity;
@@ -41,11 +46,11 @@ use Symfony\Component\HttpFoundation\RedirectResponse;
 use Symfony\Component\HttpFoundation\Request;
 
 /**
- * Class LinkWidgetController.
+ * Class LinkBlockController.
  *
  * @ModuleActivated(moduleName="ps_linklist", redirectRoute="admin_module_manage")
  */
-class LinkWidgetController extends FrameworkBundleAdminController
+class LinkBlockController extends FrameworkBundleAdminController
 {
     /**
      * @AdminSecurity("is_granted('read', request.get('_legacy_controller'))", message="Access denied.")
@@ -177,7 +182,73 @@ class LinkWidgetController extends FrameworkBundleAdminController
             $this->flashErrors($errors);
         }
 
-        return $this->redirectToRoute('admin_link_widget_list');
+        return $this->redirectToRoute('admin_link_block_list');
+    }
+
+    /**
+     * @param Request $request
+     * @throws \Exception
+     * @return RedirectResponse
+     */
+    public function updatePositionsAction(Request $request)
+    {
+        $errors = [];
+        $positions = $request->request->get('positions', null);
+        if (empty($positions)) {
+            $errors[] = [
+                'key' => 'Missing positions in your request.',
+                'domain' => 'Admin.Notifications.Failure',
+            ];
+        }
+        $parentId = $request->request->get('parentId', null);
+        if (null === $parentId) {
+            $errors[] = [
+                'key' => 'Missing parentId in your request.',
+                'domain' => 'Admin.Notifications.Failure',
+            ];
+        }
+
+        if (count($errors)) {
+            $this->flashErrors($errors);
+
+            return $this->redirectToRoute('admin_link_block_list');
+        }
+
+        $updates = new RowUpdateCollection();
+        foreach ($positions as $position) {
+            $updates->add(new RowUpdate(
+                $position['rowId'],
+                $position['oldPosition'],
+                $position['newPosition']
+            ));
+        }
+
+        $positionDefinition = new PositionDefinition(
+            'link_block',
+            'hook',
+            'id_link_block',
+            'id_hook',
+            'id_hook',
+            'position'
+        );
+
+        $positionUpdate = new PositionUpdate(
+            $request->request->get('parentId'),
+            $updates,
+            $positionDefinition
+        );
+
+        /** @var GridPositionUpdaterInterface $updater */
+        $updater = $this->get('prestashop.core.grid.position.updater');
+        $errors = $updater->update($positionUpdate);
+        if (0 === count($errors)) {
+            $this->clearModuleCache();
+            $this->addFlash('success', $this->trans('Successful deletion.', 'Admin.Notifications.Success'));
+        } else {
+            $this->flashErrors($errors);
+        }
+
+        return $this->redirectToRoute('admin_link_block_list');
     }
 
     /**

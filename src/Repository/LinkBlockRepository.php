@@ -110,7 +110,7 @@ class LinkBlockRepository
             ])
             ->setParameters([
                 'idHook' => $idHook,
-                'position' => $maxPosition + 1,
+                'position' => null !== $maxPosition ? $maxPosition + 1 : 0,
                 'content' => json_encode([
                     'cms' => empty($cms) ? [false] : $cms,
                     'static' => empty($static) ? [false] : $static,
