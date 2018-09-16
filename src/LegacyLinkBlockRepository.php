@@ -28,11 +28,7 @@ namespace PrestaShop\Module\LinkList;
 
 use PrestaShop\Module\LinkList\Model\LinkBlock;
 use Symfony\Component\Translation\TranslatorInterface as Translator;
-use Language;
-use Context;
-use Tools;
 use Shop;
-use Meta;
 use Hook;
 use DB;
 
@@ -61,7 +57,9 @@ class LegacyLinkBlockRepository
 
     /**
      * @param int $id_hook
+     *
      * @return array
+     *
      * @throws \PrestaShopDatabaseException
      * @throws \PrestaShopException
      */

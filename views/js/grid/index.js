@@ -27,7 +27,7 @@ import Grid from '../../../../../admin-dev/themes/new-theme/js/components/grid/g
 import LinkRowActionExtension from '../../../../../admin-dev/themes/new-theme/js/components/grid/extension/link-row-action-extension';
 import SubmitRowActionExtension from '../../../../../admin-dev/themes/new-theme/js/components/grid/extension/action/row/submit-row-action-extension';
 import SortingExtension from "../../../../../admin-dev/themes/new-theme/js/components/grid/extension/sorting-extension";
-import PositionExtension from "../../../../../admin-dev/themes/new-theme/js/components/grid/extension/catalog/position-extension";
+import PositionExtension from "../../../../../admin-dev/themes/new-theme/js/components/grid/extension/position-extension";
 
 const $ = window.$;
 

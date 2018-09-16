@@ -27,7 +27,6 @@
 namespace PrestaShop\Module\LinkList\Form\Type;
 
 use PrestaShopBundle\Form\Admin\Type\TranslateTextType;
-use Symfony\Component\Form\Extension\Core\Type\ButtonType;
 use Symfony\Component\Form\FormBuilderInterface;
 
 /**

@@ -32,11 +32,12 @@ use PrestaShop\Module\LinkList\Form\LinkBlockFormDataProvider;
 use PrestaShop\Module\LinkList\Repository\LinkBlockRepository;
 use PrestaShop\PrestaShop\Adapter\Entity\PrestaShopDatabaseException;
 use PrestaShop\PrestaShop\Core\Form\FormHandlerInterface;
+use PrestaShop\PrestaShop\Core\Grid\Position\Exception\PositionDataException;
+use PrestaShop\PrestaShop\Core\Grid\Position\Exception\PositionUpdateException;
 use PrestaShop\PrestaShop\Core\Grid\Position\GridPositionUpdaterInterface;
+use PrestaShop\PrestaShop\Core\Grid\Position\PositionDataHandler;
 use PrestaShop\PrestaShop\Core\Grid\Position\PositionDefinition;
 use PrestaShop\PrestaShop\Core\Grid\Position\PositionUpdate;
-use PrestaShop\PrestaShop\Core\Grid\Position\RowUpdate;
-use PrestaShop\PrestaShop\Core\Grid\Position\RowUpdateCollection;
 use PrestaShop\PrestaShop\Core\Grid\Presenter\GridPresenter;
 use PrestaShopBundle\Controller\Admin\FrameworkBundleAdminController;
 use PrestaShopBundle\Security\Annotation\AdminSecurity;
@@ -187,60 +188,42 @@ class LinkBlockController extends FrameworkBundleAdminController
 
     /**
      * @param Request $request
+     *
      * @throws \Exception
+     *
      * @return RedirectResponse
      */
     public function updatePositionsAction(Request $request)
     {
-        $errors = [];
-        $positions = $request->request->get('positions', null);
-        $parentId = $request->request->get('parentId', null);
+        $positionsData = [
+            'positions' => $request->request->get('positions', null),
+            'parentId' => $request->request->get('parentId', null),
+        ];
 
-        if (empty($positions)) {
-            $errors[] = [
-                'key' => 'Missing positions in your request.',
-                'domain' => 'Admin.Notifications.Failure',
-            ];
-        }
-        if (null === $parentId) {
-            $errors[] = [
-                'key' => 'Missing parentId in your request.',
-                'domain' => 'Admin.Notifications.Failure',
-            ];
-        }
-
-        if (count($errors)) {
+        /** @var PositionDefinition $positionDefinition */
+        $positionDefinition = $this->get('prestashop.module.link_block.grid.position_definition');
+        /** @var PositionDataHandler $positionDataHandler */
+        $positionDataHandler = $this->get('prestashop.core.grid.position.update_handler.position_data_handler');
+        try {
+            /** @var PositionUpdate $positionUpdate */
+            $positionUpdate = $positionDataHandler->handleData($positionsData, $positionDefinition);
+        } catch (PositionDataException $e) {
+            $errors = [$e->toArray()];
             $this->flashErrors($errors);
 
             return $this->redirectToRoute('admin_link_block_list');
         }
 
-        $updates = new RowUpdateCollection();
-        foreach ($positions as $position) {
-            $updates->add(new RowUpdate(
-                $position['rowId'],
-                $position['oldPosition'],
-                $position['newPosition']
-            ));
-        }
-
-        /** @var PositionDefinition $positionDefinition */
-        $positionDefinition = $this->get('prestashop.module.link_block.grid.position_definition');
-        $positionUpdate = new PositionUpdate(
-            $updates,
-            $positionDefinition,
-            $request->request->get('parentId')
-        );
-
         /** @var GridPositionUpdaterInterface $updater */
         $updater = $this->get('prestashop.core.grid.position.doctrine_grid_position_updater');
-        $errors = $updater->update($positionUpdate);
-        if (0 === count($errors)) {
-            $this->clearModuleCache();
-            $this->addFlash('success', $this->trans('Successful update.', 'Admin.Notifications.Success'));
-        } else {
+        try {
+            $updater->update($positionUpdate);
+        } catch (PositionUpdateException $e) {
+            $errors = [$e->toArray()];
             $this->flashErrors($errors);
         }
+        $this->clearModuleCache();
+        $this->addFlash('success', $this->trans('Successful update.', 'Admin.Notifications.Success'));
 
         return $this->redirectToRoute('admin_link_block_list');
     }

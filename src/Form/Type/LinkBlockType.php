@@ -124,7 +124,7 @@ class LinkBlockType extends TranslatorAwareType
                 ],
                 'attr' => [
                     'class' => 'custom_collection',
-                    'data-delete-button-label' => $this->trans('Delete', 'Admin.Global')
+                    'data-delete-button-label' => $this->trans('Delete', 'Admin.Global'),
                 ],
                 'allow_add' => true,
                 'allow_delete' => true,

@@ -203,6 +203,7 @@ class LinkBlockRepository
 
     /**
      * @return array
+     *
      * @throws \Doctrine\DBAL\DBALException
      */
     public function createTables()
@@ -250,6 +251,7 @@ class LinkBlockRepository
 
     /**
      * @return array
+     *
      * @throws \Doctrine\DBAL\DBALException
      */
     public function installFixtures()
@@ -286,6 +288,7 @@ class LinkBlockRepository
 
     /**
      * @return array
+     *
      * @throws \Doctrine\DBAL\DBALException
      */
     public function dropTables()
