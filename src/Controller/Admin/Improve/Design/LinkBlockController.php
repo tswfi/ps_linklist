@@ -55,8 +55,9 @@ class LinkBlockController extends FrameworkBundleAdminController
 {
     /**
      * @AdminSecurity("is_granted('read', request.get('_legacy_controller'))", message="Access denied.")
-     *
      * @Template("@Modules/ps_linklist/views/templates/admin/link_block/list.html.twig")
+     *
+     * @param Request $request
      *
      * @return array
      */
@@ -92,17 +93,22 @@ class LinkBlockController extends FrameworkBundleAdminController
      * @AdminSecurity("is_granted('create', request.get('_legacy_controller'))", message="Access denied.")
      * @Template("@Modules/ps_linklist/views/templates/admin/link_block/form.html.twig")
      *
+     * @param Request $request
+     *
      * @return array
      *
      * @throws \Exception
      */
-    public function createAction()
+    public function createAction(Request $request)
     {
         $this->get('prestashop.module.link_block.form_provider')->setIdLinkBlock(null);
         $form = $this->get('prestashop.module.link_block.form_handler')->getForm();
 
         return [
             'linkBlockForm' => $form->createView(),
+            'enableSidebar' => true,
+            'layoutHeaderToolbarBtn' => $this->getToolbarButtons(),
+            'help_link' => $this->generateSidebarLink($request->attributes->get('_legacy_controller')),
         ];
     }
 
@@ -110,19 +116,23 @@ class LinkBlockController extends FrameworkBundleAdminController
      * @AdminSecurity("is_granted('update', request.get('_legacy_controller'))", message="Access denied.")
      * @Template("@Modules/ps_linklist/views/templates/admin/link_block/form.html.twig")
      *
+     * @param Request $request
      * @param int $linkBlockId
      *
      * @return array
      *
      * @throws \Exception
      */
-    public function editAction($linkBlockId)
+    public function editAction(Request $request, $linkBlockId)
     {
         $this->get('prestashop.module.link_block.form_provider')->setIdLinkBlock($linkBlockId);
         $form = $this->get('prestashop.module.link_block.form_handler')->getForm();
 
         return [
             'linkBlockForm' => $form->createView(),
+            'enableSidebar' => true,
+            'layoutHeaderToolbarBtn' => $this->getToolbarButtons(),
+            'help_link' => $this->generateSidebarLink($request->attributes->get('_legacy_controller')),
         ];
     }
 
@@ -146,7 +156,7 @@ class LinkBlockController extends FrameworkBundleAdminController
      * @Template("@Modules/ps_linklist/views/templates/admin/link_block/form.html.twig")
      *
      * @param Request $request
-     * @param $linkBlockId
+     * @param int $linkBlockId
      *
      * @return RedirectResponse|array
      *
@@ -263,6 +273,9 @@ class LinkBlockController extends FrameworkBundleAdminController
 
         return [
             'linkBlockForm' => $form->createView(),
+            'enableSidebar' => true,
+            'layoutHeaderToolbarBtn' => $this->getToolbarButtons(),
+            'help_link' => $this->generateSidebarLink($request->attributes->get('_legacy_controller')),
         ];
     }
 

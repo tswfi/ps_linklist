@@ -194,6 +194,7 @@ class Ps_Linklist extends Module implements WidgetInterface
 
         return array(
             'linkBlocks' => $blocks,
+            'hookName' => $hookName,
         );
     }
 
