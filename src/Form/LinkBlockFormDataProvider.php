@@ -32,6 +32,7 @@ use PrestaShop\Module\LinkList\Repository\LinkBlockRepository;
 use PrestaShop\PrestaShop\Core\Addon\Module\ModuleRepository;
 use PrestaShop\PrestaShop\Core\Form\FormDataProviderInterface;
 use Hook;
+use Ps_Linklist;
 
 /**
  * Class LinkBlockFormDataProvider.
@@ -105,13 +106,13 @@ class LinkBlockFormDataProvider implements FormDataProviderInterface
 
         $linkBlock = new LinkBlock($this->idLinkBlock);
 
-        $arrayLinkBlock = (array) $linkBlock;
+        $arrayLinkBlock = $linkBlock->toArray();
 
         //The form and the database model don't have the same data hierarchy
         //Transform array $custom[en][1][name] to $custom[1][en][name]
         $arrayCustom = [];
         foreach ($arrayLinkBlock['custom_content'] as $idLang => $customs) {
-            if (empty($customs)) {
+            if (!is_array($customs)) {
                 continue;
             }
 
@@ -153,29 +154,15 @@ class LinkBlockFormDataProvider implements FormDataProviderInterface
                 }
             }
         }
+        $linkBlock['custom_content'] = $customContent;
 
         if (empty($linkBlock['id_link_block'])) {
-            $linkBlockId = $this->repository->create(
-                $linkBlock['block_name'],
-                $linkBlock['id_hook'],
-                $linkBlock['cms'],
-                $linkBlock['static'],
-                $linkBlock['product'],
-                $customContent
-            );
+            $linkBlockId = $this->repository->create($linkBlock);
+            $this->setIdLinkBlock($linkBlockId);
         } else {
             $linkBlockId = $linkBlock['id_link_block'];
-            $this->repository->update(
-                $linkBlockId,
-                $linkBlock['block_name'],
-                $linkBlock['id_hook'],
-                $linkBlock['cms'],
-                $linkBlock['static'],
-                $linkBlock['product'],
-                $customContent
-            );
+            $this->repository->update($linkBlockId, $linkBlock);
         }
-        $this->setIdLinkBlock($linkBlockId);
         $this->updateHook($linkBlock['id_hook']);
         $this->cache->clearModuleCache();
 
@@ -236,26 +223,28 @@ class LinkBlockFormDataProvider implements FormDataProviderInterface
             }
         }
 
-        if (isset($data['custom'])) {
-            foreach ($data['custom'] as $customIndex => $custom) {
-                foreach ($this->languages as $language) {
-                    if (!isset($custom[$language['id_lang']])) {
-                        $errors[] = [
-                            'key' => 'Missing block_name value for language %s',
-                            'domain' => 'Admin.Catalog.Notification',
-                            'parameters' => [$language['iso_code']],
-                        ];
-                    } else {
-                        $langCustom = $custom[$language['id_lang']];
-                        $fields = ['title', 'url'];
-                        foreach ($fields as $field) {
-                            if (empty($langCustom[$field])) {
-                                $errors[] = [
-                                    'key' => 'Missing %s value in custom[%s] for language %s',
-                                    'domain' => 'Admin.Catalog.Notification',
-                                    'parameters' => [$field, $customIndex, $language['iso_code']],
-                                ];
-                            }
+        if (!isset($data['custom'])) {
+            return $errors;
+        }
+
+        foreach ($data['custom'] as $customIndex => $custom) {
+            foreach ($this->languages as $language) {
+                if (!isset($custom[$language['id_lang']])) {
+                    $errors[] = [
+                        'key' => 'Missing block_name value for language %s',
+                        'domain' => 'Admin.Catalog.Notification',
+                        'parameters' => [$language['iso_code']],
+                    ];
+                } else {
+                    $langCustom = $custom[$language['id_lang']];
+                    $fields = ['title', 'url'];
+                    foreach ($fields as $field) {
+                        if (empty($langCustom[$field])) {
+                            $errors[] = [
+                                'key' => 'Missing %s value in custom[%s] for language %s',
+                                'domain' => 'Admin.Catalog.Notification',
+                                'parameters' => [$field, $customIndex, $language['iso_code']],
+                            ];
                         }
                     }
                 }
@@ -275,7 +264,7 @@ class LinkBlockFormDataProvider implements FormDataProviderInterface
     private function updateHook($hookId)
     {
         $hookName = Hook::getNameById($hookId);
-        $module = $this->moduleRepository->getInstanceByName('ps_linklist');
+        $module = $this->moduleRepository->getInstanceByName(Ps_Linklist::MODULE_NAME);
         if (Hook::isModuleRegisteredOnHook($module, $hookName, $this->shopId)) {
             Hook::registerHook($module, $hookName);
         }

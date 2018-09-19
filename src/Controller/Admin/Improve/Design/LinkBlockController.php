@@ -228,12 +228,12 @@ class LinkBlockController extends FrameworkBundleAdminController
         $updater = $this->get('prestashop.core.grid.position.doctrine_grid_position_updater');
         try {
             $updater->update($positionUpdate);
+            $this->clearModuleCache();
+            $this->addFlash('success', $this->trans('Successful update.', 'Admin.Notifications.Success'));
         } catch (PositionUpdateException $e) {
             $errors = [$e->toArray()];
             $this->flashErrors($errors);
         }
-        $this->clearModuleCache();
-        $this->addFlash('success', $this->trans('Successful update.', 'Admin.Notifications.Success'));
 
         return $this->redirectToRoute('admin_link_block_list');
     }
@@ -299,14 +299,13 @@ class LinkBlockController extends FrameworkBundleAdminController
      */
     private function getToolbarButtons()
     {
-        $toolbarButtons = [];
-        $toolbarButtons['add'] = [
-            'href' => $this->generateUrl('admin_link_block_create'),
-            'desc' => $this->trans('New block', 'Modules.Linklist.Admin'),
-            'icon' => 'add_circle_outline',
+        return [
+            'add' => [
+                'href' => $this->generateUrl('admin_link_block_create'),
+                'desc' => $this->trans('New block', 'Modules.Linklist.Admin'),
+                'icon' => 'add_circle_outline',
+            ],
         ];
-
-        return $toolbarButtons;
     }
 
     /**

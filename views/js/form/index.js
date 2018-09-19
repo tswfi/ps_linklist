@@ -36,7 +36,7 @@ $(() => {
     $('body').on('click', '.add-collection-btn', appendPrototype);
 
     function appendPrototype(event) {
-        event.stopImmediatePropagation();
+        event.preventDefault();
 
         const button = event.target;
         const collectionId = button.dataset.collectionId;
@@ -50,11 +50,14 @@ $(() => {
 
     function appendDeleteButton(customBlock) {
         const collection = customBlock.closest('.custom_collection');
-        const $button = $('<a class="remove_custom_url btn btn-primary mt-1">'+collection.data('deleteButtonLabel')+'</a>');
+        const $button = $('<button class="remove_custom_url btn btn-primary mt-1">'+collection.data('deleteButtonLabel')+'</button>');
         $button.on('click', (event) => {
+            event.preventDefault();
             const $button = $(event.target);
             const $row = $button.closest('.row');
             $row.remove();
+
+            return false;
         });
         customBlock.find('.locale-input-group').first().closest('.col-sm-12').append($button);
     }

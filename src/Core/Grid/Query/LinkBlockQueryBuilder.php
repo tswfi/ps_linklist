@@ -114,6 +114,11 @@ final class LinkBlockQueryBuilder extends AbstractDoctrineQueryBuilder
 
                 continue;
             }
+
+            $qb
+                ->andWhere(sprintf('lbl.%s LIKE :%s', $name, $name))
+                ->setParameter($name, '%' . $value . '%')
+            ;
         }
 
         return $qb;

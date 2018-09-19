@@ -55,7 +55,7 @@
                             <div class="form-group">
                                 {{ form_row(linkBlockForm.link_block.custom) }}
                                 <div class="d-flex justify-content-end">
-                                    <a data-collection-id="{{ linkBlockForm.link_block.custom.vars.id }}" class="btn btn-primary add-collection-btn">{{ 'Add'|trans({}, 'Admin.Actions') }}</a>
+                                    <button data-collection-id="{{ linkBlockForm.link_block.custom.vars.id }}" class="btn btn-primary add-collection-btn">{{ 'Add'|trans({}, 'Admin.Actions') }}</button>
                                 </div>
                             </div>
                             {{ form_rest(linkBlockForm) }}

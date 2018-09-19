@@ -43,6 +43,8 @@ use PrestaShop\PrestaShop\Adapter\Shop\Context;
  */
 class Ps_Linklist extends Module implements WidgetInterface
 {
+    const MODULE_NAME = 'ps_linklist';
+
     protected $_html;
     protected $_display;
     /**
@@ -62,7 +64,7 @@ class Ps_Linklist extends Module implements WidgetInterface
 
     public function __construct()
     {
-        $this->name = 'ps_linklist';
+        $this->name = self::MODULE_NAME;
         $this->author = 'PrestaShop';
         $this->version = '2.2.0';
         $this->need_instance = 0;

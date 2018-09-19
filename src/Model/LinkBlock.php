@@ -129,4 +129,17 @@ class LinkBlock extends \ObjectModel
 
         return $return;
     }
+
+    public function toArray()
+    {
+        return [
+            'id' => $this->id,
+            'id_link_block' => $this->id_link_block,
+            'name' => $this->name,
+            'id_hook' => $this->id_hook,
+            'position' => $this->position,
+            'content' => $this->content,
+            'custom_content' => $this->custom_content,
+        ];
+    }
 }

@@ -98,19 +98,13 @@ class LinkBlockRepository
     }
 
     /**
-     * @param array $blockName
-     * @param int $idHook
-     * @param array $cms
-     * @param array $static
-     * @param array $product
-     * @param array $custom
-     *
+     * @param array $data
      * @return string
-     *
      * @throws PrestaShopDatabaseException
      */
-    public function create(array $blockName, $idHook, array $cms, array $static, array $product, array $custom)
+    public function create(array $data)
     {
+        $idHook = $data['id_hook'];
         $maxPosition = $this->getHookMaxPosition($idHook);
 
         $qb = $this->connection->createQueryBuilder();
@@ -125,34 +119,26 @@ class LinkBlockRepository
                 'idHook' => $idHook,
                 'position' => null !== $maxPosition ? $maxPosition + 1 : 0,
                 'content' => json_encode([
-                    'cms' => empty($cms) ? [false] : $cms,
-                    'static' => empty($static) ? [false] : $static,
-                    'product' => empty($product) ? [false] : $product,
+                    'cms' => empty($data['cms']) ? [false] : $data['cms'],
+                    'static' => empty($data['static']) ? [false] : $data['static'],
+                    'product' => empty($data['product']) ? [false] : $data['product'],
                 ]),
             ]);
 
         $this->executeQueryBuilder($qb, 'Link block error');
         $linkBlockId = $this->connection->lastInsertId();
 
-        $this->updateLanguages($linkBlockId, $blockName, $custom);
+        $this->updateLanguages($linkBlockId, $data['block_name'], $data['custom_content']);
 
         return $linkBlockId;
     }
 
     /**
      * @param int $linkBlockId
-     * @param array $blockName
-     * @param int $idHook
-     * @param array $cms
-     * @param array $static
-     * @param array $product
-     * @param array $custom
-     *
-     * @return string
-     *
+     * @param array $data
      * @throws PrestaShopDatabaseException
      */
-    public function update($linkBlockId, array $blockName, $idHook, array $cms, array $static, array $product, array $custom)
+    public function update($linkBlockId, array $data)
     {
         $qb = $this->connection->createQueryBuilder();
         $qb
@@ -162,19 +148,17 @@ class LinkBlockRepository
             ->set('content', ':content')
             ->setParameters([
                 'linkBlockId' => $linkBlockId,
-                'idHook' => $idHook,
+                'idHook' => $data['id_hook'],
                 'content' => json_encode([
-                    'cms' => empty($cms) ? [false] : $cms,
-                    'static' => empty($static) ? [false] : $static,
-                    'product' => empty($product) ? [false] : $product,
+                    'cms' => empty($data['cms']) ? [false] : $data['cms'],
+                    'static' => empty($data['static']) ? [false] : $data['static'],
+                    'product' => empty($data['product']) ? [false] : $data['product'],
                 ]),
             ])
         ;
         $this->executeQueryBuilder($qb, 'Link block error');
 
-        $this->updateLanguages($linkBlockId, $blockName, $custom);
-
-        return $linkBlockId;
+        $this->updateLanguages($linkBlockId, $data['block_name'], $data['custom_content']);
     }
 
     /**

@@ -55,7 +55,7 @@ final class LegacyLinkBlockCache implements LinkBlockCacheInterface
     public function clearModuleCache()
     {
         /** @var Ps_Linklist $module */
-        $module = $this->moduleRepository->getInstanceByName('ps_linklist');
+        $module = $this->moduleRepository->getInstanceByName(Ps_Linklist::MODULE_NAME);
         $module->_clearCache($module->templateFile);
     }
 }
