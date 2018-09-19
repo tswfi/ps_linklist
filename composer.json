@@ -16,6 +16,7 @@
     "psr-4": {
       "PrestaShop\\Module\\LinkList\\": "src/"
     },
+    "classmap": ["ps_linklist.php"],
     "exclude-from-classmap": []
   },
   "config": {

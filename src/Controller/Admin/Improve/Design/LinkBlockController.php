@@ -35,7 +35,7 @@ use PrestaShop\PrestaShop\Core\Form\FormHandlerInterface;
 use PrestaShop\PrestaShop\Core\Grid\Position\Exception\PositionDataException;
 use PrestaShop\PrestaShop\Core\Grid\Position\Exception\PositionUpdateException;
 use PrestaShop\PrestaShop\Core\Grid\Position\GridPositionUpdaterInterface;
-use PrestaShop\PrestaShop\Core\Grid\Position\PositionDataHandler;
+use PrestaShop\PrestaShop\Core\Grid\Position\PositionUpdateFactory;
 use PrestaShop\PrestaShop\Core\Grid\Position\PositionDefinition;
 use PrestaShop\PrestaShop\Core\Grid\Position\PositionUpdate;
 use PrestaShop\PrestaShop\Core\Grid\Presenter\GridPresenter;
@@ -212,11 +212,11 @@ class LinkBlockController extends FrameworkBundleAdminController
 
         /** @var PositionDefinition $positionDefinition */
         $positionDefinition = $this->get('prestashop.module.link_block.grid.position_definition');
-        /** @var PositionDataHandler $positionDataHandler */
-        $positionDataHandler = $this->get('prestashop.core.grid.position.update_handler.position_data_handler');
+        /** @var PositionUpdateFactory $positionUpdateFactory */
+        $positionUpdateFactory = $this->get('prestashop.core.grid.position.position_update_factory');
         try {
             /** @var PositionUpdate $positionUpdate */
-            $positionUpdate = $positionDataHandler->handleData($positionsData, $positionDefinition);
+            $positionUpdate = $positionUpdateFactory->buildPositionUpdate($positionsData, $positionDefinition);
         } catch (PositionDataException $e) {
             $errors = [$e->toArray()];
             $this->flashErrors($errors);
