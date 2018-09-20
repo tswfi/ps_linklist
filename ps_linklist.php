@@ -64,7 +64,7 @@ class Ps_Linklist extends Module implements WidgetInterface
 
     public function __construct()
     {
-        $this->name = self::MODULE_NAME;
+        $this->name = 'ps_linklist';
         $this->author = 'PrestaShop';
         $this->version = '2.2.0';
         $this->need_instance = 0;
