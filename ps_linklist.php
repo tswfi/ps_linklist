@@ -91,7 +91,32 @@ class Ps_Linklist extends Module implements WidgetInterface
             return false;
         }
         $installed = true;
+        if (null !== $this->getRepository()) {
+            $installed = $this->installFixtures();
+        } else {
+            $installed = $this->installLegacyFixtures();
+        }
 
+
+        if ($installed
+            && $this->registerHook('displayFooter')
+            && $this->registerHook('actionUpdateLangAfter')
+            && $this->installTab()) {
+            return true;
+        }
+
+        parent::uninstall();
+
+        return false;
+    }
+
+    /**
+     * @return bool
+     * @throws \Doctrine\DBAL\DBALException
+     */
+    private function installFixtures()
+    {
+        $installed = true;
         $errors = $this->getRepository()->createTables();
         if (!empty($errors)) {
             $this->addModuleErrors($errors);
@@ -104,16 +129,15 @@ class Ps_Linklist extends Module implements WidgetInterface
             $installed = false;
         }
 
-        if ($installed
-            && $this->registerHook('displayFooter')
-            && $this->registerHook('actionUpdateLangAfter')
-            && $this->installTab()) {
-            return true;
-        }
+        return $installed;
+    }
 
-        parent::uninstall();
-
-        return false;
+    /**
+     * @return bool
+     */
+    private function installLegacyFixtures()
+    {
+        return $this->legacyBlockRepository->createTables() && $this->legacyBlockRepository->installFixtures();
     }
 
     public function uninstall()
@@ -217,7 +241,7 @@ class Ps_Linklist extends Module implements WidgetInterface
      */
     private function getRepository()
     {
-        if (null === $this->repository) {
+        if (null === $this->repository && $this->isSymfonyContext()) {
             try {
                 $this->repository = $this->get('prestashop.module.link_block.repository');
             } catch (\Exception $e) {
