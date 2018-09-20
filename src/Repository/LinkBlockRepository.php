@@ -197,7 +197,6 @@ class LinkBlockRepository
     {
         $errors = [];
         $engine = _MYSQL_ENGINE_;
-        $success = true;
         $this->dropTables();
 
         $queries = [
@@ -224,7 +223,7 @@ class LinkBlockRepository
 
         foreach ($queries as $query) {
             $statement = $this->connection->executeQuery($query);
-            if (0 != intval($statement->errorCode())) {
+            if (0 != (int) $statement->errorCode()) {
                 $errors[] = [
                     'key' => json_encode($statement->errorInfo()),
                     'parameters' => [],
@@ -261,7 +260,7 @@ class LinkBlockRepository
 
         foreach ($queries as $query) {
             $statement = $this->connection->executeQuery($query);
-            if (0 != intval($statement->errorCode())) {
+            if (0 != (int) $statement->errorCode()) {
                 $errors[] = [
                     'key' => json_encode($statement->errorInfo()),
                     'parameters' => [],
@@ -289,7 +288,7 @@ class LinkBlockRepository
         foreach ($tableNames as $tableName) {
             $sql = 'DROP TABLE IF EXISTS ' . $this->dbPrefix . $tableName;
             $statement = $this->connection->executeQuery($sql);
-            if ($statement instanceof Statement && 0 != intval($statement->errorCode())) {
+            if ($statement instanceof Statement && 0 != (int) $statement->errorCode()) {
                 $errors[] = [
                     'key' => json_encode($statement->errorInfo()),
                     'parameters' => [],

@@ -74,10 +74,7 @@ final class PageChoiceProvider extends AbstractDatabaseChoiceProvider
                 ->select('m.id_meta, ml.title')
                 ->from($this->dbPrefix . 'meta', 'm')
                 ->leftJoin('m', $this->dbPrefix . 'meta_lang', 'ml', 'm.id_meta = ml.id_meta')
-                ->andWhere($qb->expr()->orX(
-                    'm.page = :page',
-                        'm.page = :pageSlug'
-                ))
+                ->andWhere($qb->expr()->orX('m.page = :page', 'm.page = :pageSlug'))
                 ->andWhere('ml.id_lang = :idLang')
                 ->andWhere('ml.id_shop = :idShop')
                 ->setParameter('idLang', $this->idLang)

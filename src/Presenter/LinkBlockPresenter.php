@@ -69,6 +69,25 @@ class LinkBlockPresenter
     }
 
     /**
+     * Check the url if is an external link.
+     *
+     * @param $url
+     *
+     * @return bool
+     */
+    public function isExternalLink($url)
+    {
+        $baseLink = preg_replace('#^(http)s?://#', '', $this->link->getBaseLink());
+        $url = Tools::strtolower($url);
+
+        if (preg_match('#^(http)s?://#', $url) && !preg_match('#^(http)s?://' . preg_quote(rtrim($baseLink, '/'), '/') . '#', $url)) {
+            return true;
+        }
+
+        return false;
+    }
+
+    /**
      * @param array $content
      * @param array $custom_content
      *
@@ -187,38 +206,19 @@ class LinkBlockPresenter
         if (isset($customContent[$this->language->id])) {
             $customLinks = $customContent[$this->language->id];
 
-            $customLinks = array_map(function ($el) {
+            $self = $this;
+            $customLinks = array_map(function ($el) use($self) {
                 return array(
                     'id' => 'link-custom-page-' . $el['title'],
                     'class' => 'custom-page-link',
                     'title' => $el['title'],
                     'description' => '',
                     'url' => $el['url'],
-                    'target' => $this->isExternalLink($el['url']) ? '_blank' : '',
+                    'target' => $self->isExternalLink($el['url']) ? '_blank' : '',
                 );
-            },
-            array_filter($customLinks));
+            }, array_filter($customLinks));
         }
 
         return $customLinks;
-    }
-
-    /**
-     * Check the url if is an external link.
-     *
-     * @param $url
-     *
-     * @return bool
-     */
-    private function isExternalLink($url)
-    {
-        $baseLink = preg_replace('#^(http)s?://#', '', $this->link->getBaseLink());
-        $url = Tools::strtolower($url);
-
-        if (preg_match('#^(http)s?://#', $url) && !preg_match('#^(http)s?://' . preg_quote(rtrim($baseLink, '/'), '/') . '#', $url)) {
-            return true;
-        }
-
-        return false;
     }
 }
