@@ -68,6 +68,7 @@ class Ps_Linklist extends Module implements WidgetInterface
         $this->author = 'PrestaShop';
         $this->version = '2.2.0';
         $this->need_instance = 0;
+        $this->tab = 'front_office_features';
 
         $this->bootstrap = true;
         parent::__construct();

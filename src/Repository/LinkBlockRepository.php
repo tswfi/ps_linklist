@@ -99,7 +99,9 @@ class LinkBlockRepository
 
     /**
      * @param array $data
+     *
      * @return string
+     *
      * @throws PrestaShopDatabaseException
      */
     public function create(array $data)
@@ -136,6 +138,7 @@ class LinkBlockRepository
     /**
      * @param int $linkBlockId
      * @param array $data
+     *
      * @throws PrestaShopDatabaseException
      */
     public function update($linkBlockId, array $data)

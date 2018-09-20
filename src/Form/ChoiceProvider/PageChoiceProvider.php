@@ -28,6 +28,7 @@ namespace PrestaShop\Module\LinkList\Form\ChoiceProvider;
 
 use Doctrine\DBAL\Connection;
 use PrestaShop\PrestaShop\Core\Foundation\Database\EntityNotFoundException;
+use Tools;
 
 /**
  * Class PageChoiceProvider.
@@ -82,7 +83,7 @@ final class PageChoiceProvider extends AbstractDatabaseChoiceProvider
                 ->setParameter('idLang', $this->idLang)
                 ->setParameter('idShop', $this->idShop)
                 ->setParameter('page', $pageName)
-                ->setParameter('pageSlug', str_replace('-', '', strtolower($pageName)))
+                ->setParameter('pageSlug', str_replace('-', '', Tools::strtolower($pageName)))
             ;
             $meta = $qb->execute()->fetchAll();
             if (!empty($meta)) {

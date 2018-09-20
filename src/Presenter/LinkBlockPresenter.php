@@ -27,6 +27,7 @@
 namespace PrestaShop\Module\LinkList\Presenter;
 
 use PrestaShop\Module\LinkList\Model\LinkBlock;
+use Tools;
 
 /**
  * Class LinkBlockPresenter.
@@ -212,7 +213,7 @@ class LinkBlockPresenter
     private function isExternalLink($url)
     {
         $baseLink = preg_replace('#^(http)s?://#', '', $this->link->getBaseLink());
-        $url = strtolower($url);
+        $url = Tools::strtolower($url);
 
         if (preg_match('#^(http)s?://#', $url) && !preg_match('#^(http)s?://' . preg_quote(rtrim($baseLink, '/'), '/') . '#', $url)) {
             return true;
