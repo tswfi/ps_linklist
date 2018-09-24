@@ -265,7 +265,7 @@ class LinkBlockFormDataProvider implements FormDataProviderInterface
     {
         $hookName = Hook::getNameById($hookId);
         $module = $this->moduleRepository->getInstanceByName(Ps_Linklist::MODULE_NAME);
-        if (Hook::isModuleRegisteredOnHook($module, $hookName, $this->shopId)) {
+        if (!Hook::isModuleRegisteredOnHook($module, $hookName, $this->shopId)) {
             Hook::registerHook($module, $hookName);
         }
     }
