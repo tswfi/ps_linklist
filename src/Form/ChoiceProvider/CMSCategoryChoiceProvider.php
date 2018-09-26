@@ -44,9 +44,9 @@ final class CMSCategoryChoiceProvider extends AbstractDatabaseChoiceProvider
             ->innerJoin('cc', $this->dbPrefix . 'cms_category_shop', 'ccs', 'cc.id_cms_category = ccs.id_cms_category')
             ->andWhere('cc.active = 1')
             ->andWhere('ccl.id_lang = :idLang')
-            ->andWhere('ccs.id_shop = :idShop')
+            ->andWhere('ccs.id_shop IN (:shopIds)')
             ->setParameter('idLang', $this->idLang)
-            ->setParameter('idShop', $this->idShop)
+            ->setParameter('shopIds', implode(',', $this->shopIds))
             ->orderBy('ccl.name')
         ;
 

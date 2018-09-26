@@ -69,7 +69,7 @@ services:
       $connection: '@doctrine.dbal.default_connection'
       $dbPrefix: '%database_prefix%'
       $idLang: '@=service("prestashop.adapter.legacy.context").getLanguage().id'
-      $idShop: '@=service("prestashop.adapter.shop.context").getContextShopID()'
+      $shopIds: '@=service("prestashop.adapter.shop.context").getContextListShopID()'
 
   prestashop.module.link_block.choice_provider.cms_page:
     class: PrestaShop\Module\LinkList\Form\ChoiceProvider\CMSPageChoiceProvider
@@ -78,7 +78,7 @@ services:
       $dbPrefix: '%database_prefix%'
       $categories: '@=service("prestashop.module.link_block.choice_provider.cms_category").getChoices()'
       $idLang: '@=service("prestashop.adapter.legacy.context").getLanguage().id'
-      $idShop: '@=service("prestashop.adapter.shop.context").getContextShopID()'
+      $shopIds: '@=service("prestashop.adapter.shop.context").getContextListShopID()'
 
   prestashop.module.link_block.choice_provider.product_page:
     class: PrestaShop\Module\LinkList\Form\ChoiceProvider\PageChoiceProvider
@@ -86,7 +86,7 @@ services:
       $connection: '@doctrine.dbal.default_connection'
       $dbPrefix: '%database_prefix%'
       $idLang: '@=service("prestashop.adapter.legacy.context").getLanguage().id'
-      $idShop: '@=service("prestashop.adapter.shop.context").getContextShopID()'
+      $shopIds: '@=service("prestashop.adapter.shop.context").getContextListShopID()'
       $pageNames:
         - 'prices-drop'
         - 'new-products'
@@ -98,7 +98,7 @@ services:
       $connection: '@doctrine.dbal.default_connection'
       $dbPrefix: '%database_prefix%'
       $idLang: '@=service("prestashop.adapter.legacy.context").getLanguage().id'
-      $idShop: '@=service("prestashop.adapter.shop.context").getContextShopID()'
+      $shopIds: '@=service("prestashop.adapter.shop.context").getContextListShopID()'
       $pageNames:
         - 'contact'
         - 'sitemap'

@@ -45,16 +45,16 @@ final class CMSPageChoiceProvider extends AbstractDatabaseChoiceProvider
      * @param string $dbPrefix
      * @param array $categories
      * @param int $idLang
-     * @param int $idShop
+     * @param array $shopIds
      */
     public function __construct(
         Connection $connection,
         $dbPrefix,
         array $categories,
         $idLang,
-        $idShop
+        $shopIds
     ) {
-        parent::__construct($connection, $dbPrefix, $idLang, $idShop);
+        parent::__construct($connection, $dbPrefix, $idLang, $shopIds);
         $this->categories = $categories;
     }
 
@@ -74,11 +74,11 @@ final class CMSPageChoiceProvider extends AbstractDatabaseChoiceProvider
                 ->innerJoin('c', $this->dbPrefix . 'cms_shop', 'cs', 'c.id_cms = cs.id_cms')
                 ->andWhere('c.active = 1')
                 ->andWhere('cl.id_lang = :idLang')
-                ->andWhere('cs.id_shop = :idShop')
+                ->andWhere('cs.id_shop IN (:shopIds)')
                 ->andWhere('c.id_cms_category = :idCmsCategory')
                 ->setParameter('idCmsCategory', $categoryId)
                 ->setParameter('idLang', $this->idLang)
-                ->setParameter('idShop', $this->idShop)
+                ->setParameter('shopIds', implode(',', $this->shopIds))
                 ->orderBy('c.position')
             ;
             $pages = $qb->execute()->fetchAll();

@@ -44,19 +44,19 @@ final class PageChoiceProvider extends AbstractDatabaseChoiceProvider
      * PageChoiceProvider constructor.
      *
      * @param Connection $connection
-     * @param $dbPrefix
-     * @param $idLang
-     * @param $idShop
+     * @param string $dbPrefix
+     * @param int $idLang
+     * @param array $shopIds
      * @param array $pageNames
      */
     public function __construct(
         Connection $connection,
         $dbPrefix,
         $idLang,
-        $idShop,
+        array $shopIds,
         array $pageNames
     ) {
-        parent::__construct($connection, $dbPrefix, $idLang, $idShop);
+        parent::__construct($connection, $dbPrefix, $idLang, $shopIds);
         $this->pageNames = $pageNames;
     }
 
@@ -76,9 +76,9 @@ final class PageChoiceProvider extends AbstractDatabaseChoiceProvider
                 ->leftJoin('m', $this->dbPrefix . 'meta_lang', 'ml', 'm.id_meta = ml.id_meta')
                 ->andWhere($qb->expr()->orX('m.page = :page', 'm.page = :pageSlug'))
                 ->andWhere('ml.id_lang = :idLang')
-                ->andWhere('ml.id_shop = :idShop')
+                ->andWhere('ml.id_shop IN (:shopIds)')
                 ->setParameter('idLang', $this->idLang)
-                ->setParameter('idShop', $this->idShop)
+                ->setParameter('shopIds', implode(',', $this->shopIds))
                 ->setParameter('page', $pageName)
                 ->setParameter('pageSlug', str_replace('-', '', Tools::strtolower($pageName)))
             ;
