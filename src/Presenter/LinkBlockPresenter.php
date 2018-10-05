@@ -207,7 +207,7 @@ class LinkBlockPresenter
             $customLinks = $customContent[$this->language->id];
 
             $self = $this;
-            $customLinks = array_map(function ($el) use($self) {
+            $customLinks = array_map(function ($el) use ($self) {
                 return array(
                     'id' => 'link-custom-page-' . $el['title'],
                     'class' => 'custom-page-link',

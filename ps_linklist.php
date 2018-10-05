@@ -23,7 +23,6 @@
  * @license   https://opensource.org/licenses/AFL-3.0 Academic Free License 3.0 (AFL-3.0)
  * International Registered Trademark & Property of PrestaShop SA
  */
-
 if (!defined('_CAN_LOAD_FILES_')) {
     exit;
 }
@@ -97,7 +96,6 @@ class Ps_Linklist extends Module implements WidgetInterface
             $installed = $this->installLegacyFixtures();
         }
 
-
         if ($installed
             && $this->registerHook('displayFooter')
             && $this->registerHook('actionUpdateLangAfter')
@@ -112,6 +110,7 @@ class Ps_Linklist extends Module implements WidgetInterface
 
     /**
      * @return bool
+     *
      * @throws \Doctrine\DBAL\DBALException
      */
     private function installFixtures()

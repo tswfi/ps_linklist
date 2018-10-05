@@ -265,7 +265,7 @@ class LinkBlockController extends FrameworkBundleAdminController
             if (0 === count($saveErrors)) {
                 $this->addFlash('success', $this->trans($successMessage, 'Admin.Notifications.Success'));
 
-                return $this->redirectToRoute('admin_link_block_edit', ['linkBlockId' => $formProvider->getIdLinkBlock()]);
+                return $this->redirectToRoute('admin_link_block_list');
             }
 
             $this->flashErrors($saveErrors);

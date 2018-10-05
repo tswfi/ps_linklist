@@ -111,11 +111,12 @@ class LegacyLinkBlockRepository
     			`id_link_block` int(10) unsigned NOT NULL auto_increment,
     			`id_shop` int(10) unsigned NOT NULL,
     			PRIMARY KEY (`id_link_block`, `id_shop`)
-            ) ENGINE=$engine DEFAULT CHARSET=utf8"
+            ) ENGINE=$engine DEFAULT CHARSET=utf8",
         ];
         foreach ($queries as $query) {
             $success &= $this->db->execute($query);
         }
+
         return $success;
     }
 
@@ -125,6 +126,7 @@ class LegacyLinkBlockRepository
 			`{$this->db_prefix}link_block`,
 			`{$this->db_prefix}link_block_lang`,
 			`{$this->db_prefix}link_block_shop`";
+
         return $this->db->execute($sql);
     }
 
@@ -134,21 +136,22 @@ class LegacyLinkBlockRepository
     public function installFixtures()
     {
         $success = true;
-        $id_hook = (int)Hook::getIdByName('displayFooter');
+        $id_hook = (int) Hook::getIdByName('displayFooter');
         $queries = [
-            'INSERT INTO `'.$this->db_prefix.'link_block` (`id_link_block`, `id_hook`, `position`, `content`) VALUES
-                (1, '.$id_hook.', 0, \'{"cms":[false],"product":["prices-drop","new-products","best-sales"],"static":[false]}\'),
-                (2, '.$id_hook.', 1, \'{"cms":["1","2","3","4","5"],"product":[false],"static":["contact","sitemap","stores"]}\');'
+            'INSERT INTO `' . $this->db_prefix . 'link_block` (`id_link_block`, `id_hook`, `position`, `content`) VALUES
+                (1, ' . $id_hook . ', 0, \'{"cms":[false],"product":["prices-drop","new-products","best-sales"],"static":[false]}\'),
+                (2, ' . $id_hook . ', 1, \'{"cms":["1","2","3","4","5"],"product":[false],"static":["contact","sitemap","stores"]}\');',
         ];
         foreach (Language::getLanguages(true, Context::getContext()->shop->id) as $lang) {
-            $queries[] = 'INSERT INTO `'.$this->db_prefix.'link_block_lang` (`id_link_block`, `id_lang`, `name`) VALUES
-                (1, '.(int)$lang['id_lang'].', "'.pSQL($this->translator->trans('Products', array(), 'Modules.Linklist.Shop', $lang['locale'])).'"),
-                (2, '.(int)$lang['id_lang'].', "'.pSQL($this->translator->trans('Our company', array(), 'Modules.Linklist.Shop', $lang['locale'])).'")'
+            $queries[] = 'INSERT INTO `' . $this->db_prefix . 'link_block_lang` (`id_link_block`, `id_lang`, `name`) VALUES
+                (1, ' . (int) $lang['id_lang'] . ', "' . pSQL($this->translator->trans('Products', array(), 'Modules.Linklist.Shop', $lang['locale'])) . '"),
+                (2, ' . (int) $lang['id_lang'] . ', "' . pSQL($this->translator->trans('Our company', array(), 'Modules.Linklist.Shop', $lang['locale'])) . '")'
             ;
         }
         foreach ($queries as $query) {
             $success &= $this->db->execute($query);
         }
+
         return $success;
     }
 }
