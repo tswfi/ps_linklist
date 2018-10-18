@@ -198,7 +198,7 @@ class LinkBlockController extends FrameworkBundleAdminController
 
     /**
      * @param Request $request
-     * @param string $hookId
+     * @param int $hookId
      *
      * @throws \Exception
      *
