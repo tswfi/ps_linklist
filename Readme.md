@@ -38,7 +38,10 @@ That's it: you have contributed to this open-source project! Congratulations!
 ## Building assets
 
 If you need to change the javascript code you have to compile the assets, this operation is done
-via command line. You can get base information and requirements in the dev doc (https://devdocs.prestashop.com/1.7/development/compile-assets/)
+via command line. You can get base information and requirements in the dev doc (be careful with the
+node version):
+
+(https://devdocs.prestashop.com/1.7/development/compile-assets/)
 
 Then the operations to compile assets are:
 

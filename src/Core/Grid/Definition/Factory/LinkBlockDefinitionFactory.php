@@ -94,11 +94,13 @@ final class LinkBlockDefinitionFactory extends AbstractGridDefinitionFactory
             ->add((new PositionColumn('position'))
                 ->setName($this->trans('Position', [], 'Admin.Global'))
                 ->setOptions([
-                    'field' => 'position',
                     'id_field' => 'id_link_block',
-                    'id_parent_field' => 'id_hook',
+                    'position_field' => 'position',
                     'update_route' => 'admin_link_block_update_positions',
                     'update_method' => 'POST',
+                    'route_params' => [
+                        'id_hook' => 'hookId',
+                    ]
                 ])
             )
             ->add((new ActionColumn('actions'))
