@@ -40,6 +40,8 @@ admin_link_block_delete:
   defaults:
     _controller: 'PrestaShop\Module\LinkList\Controller\Admin\Improve\Design\LinkBlockController::deleteAction'
     _legacy_controller: AdminLinkWidget
+  requirements:
+    $linkBlockId: \d+
 
 admin_link_block_update_positions:
   path: /link-widget/update-positions/{hookId}
@@ -47,3 +49,5 @@ admin_link_block_update_positions:
   defaults:
     _controller: 'PrestaShop\Module\LinkList\Controller\Admin\Improve\Design\LinkBlockController::updatePositionsAction'
     _legacy_controller: AdminLinkWidget
+  requirements:
+    $hookId: \d+
