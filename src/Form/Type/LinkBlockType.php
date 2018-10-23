@@ -96,6 +96,10 @@ class LinkBlockType extends TranslatorAwareType
             ])
             ->add('id_hook', ChoiceType::class, [
                 'choices' => $this->hookChoices,
+                'attr' => [
+                    'data-toggle' => 'select2',
+                    'data-minimumResultsForSearch' => '7',
+                ],
                 'label' => $this->trans('Hook', 'Admin.Global'),
             ])
             ->add('cms', ChoiceType::class, [

@@ -29,9 +29,9 @@ namespace PrestaShop\Module\LinkList\Repository;
 use Doctrine\DBAL\Connection;
 use Doctrine\DBAL\Driver\Statement;
 use Doctrine\DBAL\Query\QueryBuilder;
-use PrestaShop\PrestaShop\Adapter\Entity\PrestaShopDatabaseException;
-use Hook;
+use PrestaShop\PrestaShop\Core\Exception\DatabaseException;
 use Symfony\Component\Translation\TranslatorInterface;
+use Hook;
 
 /**
  * Class LinkBlockRepository.
@@ -102,7 +102,7 @@ class LinkBlockRepository
      *
      * @return string
      *
-     * @throws PrestaShopDatabaseException
+     * @throws DatabaseException
      */
     public function create(array $data)
     {
@@ -139,7 +139,7 @@ class LinkBlockRepository
      * @param int $linkBlockId
      * @param array $data
      *
-     * @throws PrestaShopDatabaseException
+     * @throws DatabaseException
      */
     public function update($linkBlockId, array $data)
     {
@@ -167,7 +167,7 @@ class LinkBlockRepository
     /**
      * @param int $idLinkBlock
      *
-     * @throws PrestaShopDatabaseException
+     * @throws DatabaseException
      */
     public function delete($idLinkBlock)
     {
@@ -305,7 +305,7 @@ class LinkBlockRepository
      * @param array $blockName
      * @param array $custom
      *
-     * @throws PrestaShopDatabaseException
+     * @throws DatabaseException
      */
     private function updateLanguages($linkBlockId, array $blockName, array $custom)
     {
@@ -360,13 +360,13 @@ class LinkBlockRepository
      *
      * @return Statement|int
      *
-     * @throws PrestaShopDatabaseException
+     * @throws DatabaseException
      */
     private function executeQueryBuilder(QueryBuilder $qb, $errorPrefix = 'SQL error')
     {
         $statement = $qb->execute();
         if ($statement instanceof Statement && !empty($statement->errorInfo())) {
-            throw new PrestaShopDatabaseException($errorPrefix . ': ' . var_export($statement->errorInfo(), true));
+            throw new DatabaseException($errorPrefix . ': ' . var_export($statement->errorInfo(), true));
         }
 
         return $statement;

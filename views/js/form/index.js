@@ -28,37 +28,45 @@ import TranslatableInput from '../../../../../admin-dev/themes/new-theme/js/comp
 const $ = window.$;
 
 $(() => {
-    new TranslatableInput({localeInputSelector: '.js-locale-input'});
+  new TranslatableInput({localeInputSelector: '.js-locale-input'});
+
+  const addCustomButton = $('.add-collection-btn');
+  addCustomButton.on('click', appendPrototype);
+
+  const collectionId = addCustomButton.data().collectionId;
+  const collection = document.getElementById(collectionId);
+  const collectionPrototype = collection.dataset.prototype;
+
+  if (collection.children.length) {
     $('.custom_collection .col-sm-12').each((index, customBlock) => {
-        appendDeleteButton($(customBlock));
+      appendDeleteButton($(customBlock));
     });
+  } else {
+    appendPrototype();
+  }
 
-    $('body').on('click', '.add-collection-btn', appendPrototype);
-
-    function appendPrototype(event) {
-        event.preventDefault();
-
-        const button = event.target;
-        const collectionId = button.dataset.collectionId;
-        const collection = document.getElementById(collectionId);
-        const collectionPrototype = collection.dataset.prototype;
-        const newChild = collectionPrototype.replace(/__name__/g, (collection.children.length + 1));
-        const $newChild = $(newChild);
-        $('#'+collectionId).append($newChild);
-        appendDeleteButton($newChild);
+  function appendPrototype(event) {
+    if (event) {
+      event.preventDefault();
     }
 
-    function appendDeleteButton(customBlock) {
-        const collection = customBlock.closest('.custom_collection');
-        const $button = $('<button class="remove_custom_url btn btn-primary mt-1">'+collection.data('deleteButtonLabel')+'</button>');
-        $button.on('click', (event) => {
-            event.preventDefault();
-            const $button = $(event.target);
-            const $row = $button.closest('.row');
-            $row.remove();
+    const newChild = collectionPrototype.replace(/__name__/g, (collection.children.length + 1));
+    const $newChild = $(newChild);
+    $('#'+collectionId).append($newChild);
+    appendDeleteButton($newChild);
+  }
 
-            return false;
-        });
-        customBlock.find('.locale-input-group').first().closest('.col-sm-12').append($button);
-    }
+  function appendDeleteButton(customBlock) {
+    const collection = customBlock.closest('.custom_collection');
+    const $button = $('<button class="remove_custom_url btn btn-primary mt-1">'+collection.data('deleteButtonLabel')+'</button>');
+    $button.on('click', (event) => {
+      event.preventDefault();
+      const $button = $(event.target);
+      const $row = $button.closest('.row');
+      $row.remove();
+
+      return false;
+    });
+    customBlock.find('.locale-input-group').first().closest('.col-sm-12').append($button);
+  }
 });

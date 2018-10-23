@@ -30,7 +30,7 @@ use PrestaShop\Module\LinkList\Core\Grid\LinkBlockGridFactory;
 use PrestaShop\Module\LinkList\Core\Search\Filters\LinkBlockFilters;
 use PrestaShop\Module\LinkList\Form\LinkBlockFormDataProvider;
 use PrestaShop\Module\LinkList\Repository\LinkBlockRepository;
-use PrestaShop\PrestaShop\Adapter\Entity\PrestaShopDatabaseException;
+use PrestaShop\PrestaShop\Core\Exception\DatabaseException;
 use PrestaShop\PrestaShop\Core\Form\FormHandlerInterface;
 use PrestaShop\PrestaShop\Core\Grid\Position\Exception\PositionDataException;
 use PrestaShop\PrestaShop\Core\Grid\Position\Exception\PositionUpdateException;
@@ -38,13 +38,12 @@ use PrestaShop\PrestaShop\Core\Grid\Position\GridPositionUpdaterInterface;
 use PrestaShop\PrestaShop\Core\Grid\Position\PositionUpdateFactory;
 use PrestaShop\PrestaShop\Core\Grid\Position\PositionDefinition;
 use PrestaShop\PrestaShop\Core\Grid\Position\PositionUpdate;
-use PrestaShop\PrestaShop\Core\Grid\Presenter\GridPresenter;
 use PrestaShopBundle\Controller\Admin\FrameworkBundleAdminController;
 use PrestaShopBundle\Security\Annotation\AdminSecurity;
 use PrestaShopBundle\Security\Annotation\ModuleActivated;
-use Sensio\Bundle\FrameworkExtraBundle\Configuration\Template;
 use Symfony\Component\HttpFoundation\RedirectResponse;
 use Symfony\Component\HttpFoundation\Request;
+use Symfony\Component\HttpFoundation\Response;
 
 /**
  * Class LinkBlockController.
@@ -55,11 +54,10 @@ class LinkBlockController extends FrameworkBundleAdminController
 {
     /**
      * @AdminSecurity("is_granted('read', request.get('_legacy_controller'))", message="Access denied.")
-     * @Template("@Modules/ps_linklist/views/templates/admin/link_block/list.html.twig")
      *
      * @param Request $request
      *
-     * @return array
+     * @return Response
      */
     public function listAction(Request $request)
     {
@@ -74,28 +72,25 @@ class LinkBlockController extends FrameworkBundleAdminController
         $linkBlockGridFactory = $this->get('prestashop.module.link_block.grid.factory');
         $grids = $linkBlockGridFactory->getGrids($hooks, $filtersParams);
 
-        /** @var GridPresenter $gridPresenter */
-        $gridPresenter = $this->get('prestashop.core.grid.presenter.grid_presenter');
         $presentedGrids = [];
         foreach ($grids as $grid) {
-            $presentedGrids[] = $gridPresenter->present($grid);
+            $presentedGrids[] = $this->presentGrid($grid);
         }
 
-        return [
+        return $this->render('@Modules/ps_linklist/views/templates/admin/link_block/list.html.twig', [
             'grids' => $presentedGrids,
             'enableSidebar' => true,
             'layoutHeaderToolbarBtn' => $this->getToolbarButtons(),
             'help_link' => $this->generateSidebarLink($request->attributes->get('_legacy_controller')),
-        ];
+        ]);
     }
 
     /**
      * @AdminSecurity("is_granted('create', request.get('_legacy_controller'))", message="Access denied.")
-     * @Template("@Modules/ps_linklist/views/templates/admin/link_block/form.html.twig")
      *
      * @param Request $request
      *
-     * @return array
+     * @return Response
      *
      * @throws \Exception
      */
@@ -104,22 +99,21 @@ class LinkBlockController extends FrameworkBundleAdminController
         $this->get('prestashop.module.link_block.form_provider')->setIdLinkBlock(null);
         $form = $this->get('prestashop.module.link_block.form_handler')->getForm();
 
-        return [
+        return $this->render('@Modules/ps_linklist/views/templates/admin/link_block/form.html.twig', [
             'linkBlockForm' => $form->createView(),
             'enableSidebar' => true,
             'layoutHeaderToolbarBtn' => $this->getToolbarButtons(),
             'help_link' => $this->generateSidebarLink($request->attributes->get('_legacy_controller')),
-        ];
+        ]);
     }
 
     /**
      * @AdminSecurity("is_granted('update', request.get('_legacy_controller'))", message="Access denied.")
-     * @Template("@Modules/ps_linklist/views/templates/admin/link_block/form.html.twig")
      *
      * @param Request $request
      * @param int $linkBlockId
      *
-     * @return array
+     * @return Response
      *
      * @throws \Exception
      */
@@ -128,21 +122,20 @@ class LinkBlockController extends FrameworkBundleAdminController
         $this->get('prestashop.module.link_block.form_provider')->setIdLinkBlock($linkBlockId);
         $form = $this->get('prestashop.module.link_block.form_handler')->getForm();
 
-        return [
+        return $this->render('@Modules/ps_linklist/views/templates/admin/link_block/form.html.twig', [
             'linkBlockForm' => $form->createView(),
             'enableSidebar' => true,
             'layoutHeaderToolbarBtn' => $this->getToolbarButtons(),
             'help_link' => $this->generateSidebarLink($request->attributes->get('_legacy_controller')),
-        ];
+        ]);
     }
 
     /**
      * @AdminSecurity("is_granted('update', request.get('_legacy_controller'))", message="Access denied.")
-     * @Template("@Modules/ps_linklist/views/templates/admin/link_block/form.html.twig")
      *
      * @param Request $request
      *
-     * @return RedirectResponse|array
+     * @return RedirectResponse|Response
      *
      * @throws \Exception
      */
@@ -153,12 +146,11 @@ class LinkBlockController extends FrameworkBundleAdminController
 
     /**
      * @AdminSecurity("is_granted('update', request.get('_legacy_controller'))", message="Access denied.")
-     * @Template("@Modules/ps_linklist/views/templates/admin/link_block/form.html.twig")
      *
      * @param Request $request
      * @param int $linkBlockId
      *
-     * @return RedirectResponse|array
+     * @return RedirectResponse|Response
      *
      * @throws \Exception
      */
@@ -178,7 +170,7 @@ class LinkBlockController extends FrameworkBundleAdminController
         $errors = [];
         try {
             $repository->delete($linkBlockId);
-        } catch (PrestaShopDatabaseException $e) {
+        } catch (DatabaseException $e) {
             $errors[] = [
                 'key' => 'Could not delete #%i',
                 'domain' => 'Admin.Catalog.Notification',
@@ -244,7 +236,7 @@ class LinkBlockController extends FrameworkBundleAdminController
      * @param string $successMessage
      * @param int|null $linkBlockId
      *
-     * @return array|RedirectResponse
+     * @return Response|RedirectResponse
      *
      * @throws \Exception
      */
@@ -272,12 +264,12 @@ class LinkBlockController extends FrameworkBundleAdminController
             $this->flashErrors($saveErrors);
         }
 
-        return [
+        return $this->render('@Modules/ps_linklist/views/templates/admin/link_block/form.html.twig', [
             'linkBlockForm' => $form->createView(),
             'enableSidebar' => true,
             'layoutHeaderToolbarBtn' => $this->getToolbarButtons(),
             'help_link' => $this->generateSidebarLink($request->attributes->get('_legacy_controller')),
-        ];
+        ]);
     }
 
     /**

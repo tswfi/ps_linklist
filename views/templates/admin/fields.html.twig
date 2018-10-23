@@ -50,6 +50,26 @@
     </div>
 {%- endblock choice_widget_expanded -%}
 
+{% block checkbox_widget -%}
+    {% set parent_label_class = parent_label_class|default('') -%}
+    {% set switch = switch|default('') -%}
+    {% set checkbox_input %}
+        <input type="checkbox" class="js-bulk-action-checkbox"
+               {% if switch %}data-toggle="switch"{% endif %} {% if switch %}class="{{ switch }}"{% endif %} {{ block('widget_attributes') }}{% if value is defined %} value="{{ value }}"{% endif %}{% if checked %} checked="checked"{% endif %} />
+        <i class="md-checkbox-control"></i>
+    {% endset %}
+
+    {% if 'checkbox-inline' in parent_label_class %}
+        <div class="md-checkbox md-checkbox-inline">
+            {{- form_label(form, null, { widget: checkbox_input }) -}}
+        </div>
+    {% else -%}
+        <div class="md-checkbox my-1">
+            {{- form_label(form, null, { widget: checkbox_input }) -}}
+        </div>
+    {%- endif %}
+{%- endblock checkbox_widget %}
+
 {% block form_row -%}
     {% spaceless %}
         <div class="{{ block('form_row_class') }} {% if (not compound or force_error|default(false)) and not valid %} has-error{% endif %}">

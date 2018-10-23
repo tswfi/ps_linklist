@@ -146,11 +146,16 @@ class LinkBlockFormDataProvider implements FormDataProviderInterface
         if (!empty($errors)) {
             return $errors;
         }
+
         $customContent = [];
         if (!empty($linkBlock['custom'])) {
-            foreach ($linkBlock['custom'] as $customIndex => $customLanguages) {
+            foreach ($linkBlock['custom'] as $customLanguages) {
+                if ($this->isEmptyCustom($customLanguages)) {
+                    continue;
+                }
+
                 foreach ($customLanguages as $idLang => $custom) {
-                    $customContent[$idLang][$customIndex] = $custom;
+                    $customContent[$idLang][] = $custom;
                 }
             }
         }
@@ -228,6 +233,9 @@ class LinkBlockFormDataProvider implements FormDataProviderInterface
         }
 
         foreach ($data['custom'] as $customIndex => $custom) {
+            if ($this->isEmptyCustom($custom)) {
+                continue;
+            }
             foreach ($this->languages as $language) {
                 if (!isset($custom[$language['id_lang']])) {
                     $errors[] = [
@@ -252,6 +260,24 @@ class LinkBlockFormDataProvider implements FormDataProviderInterface
         }
 
         return $errors;
+    }
+
+    /**
+     * @param array $custom
+     * @return bool
+     */
+    private function isEmptyCustom(array $custom)
+    {
+        foreach ($custom as $langCustom) {
+            $fields = ['title', 'url'];
+            foreach ($fields as $field) {
+                if (!empty($langCustom[$field])) {
+                    return false;
+                }
+            }
+        }
+
+        return true;
     }
 
     /**

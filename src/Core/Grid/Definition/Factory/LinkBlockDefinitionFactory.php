@@ -107,7 +107,6 @@ final class LinkBlockDefinitionFactory extends AbstractGridDefinitionFactory
                 ->setOptions([
                     'actions' => (new RowActionCollection())
                         ->add((new LinkRowAction('edit'))
-                            ->setName($this->trans('Edit', [], 'Admin.Global'))
                             ->setIcon('edit')
                             ->setOptions([
                                 'route' => 'admin_link_block_edit',
