@@ -98,7 +98,7 @@ final class LinkBlockDefinitionFactory extends AbstractGridDefinitionFactory
                     'position_field' => 'position',
                     'update_route' => 'admin_link_block_update_positions',
                     'update_method' => 'POST',
-                    'route_params' => [
+                    'record_route_params' => [
                         'id_hook' => 'hookId',
                     ]
                 ])
