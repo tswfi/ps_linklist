@@ -268,8 +268,8 @@ class LinkBlockFormDataProvider implements FormDataProviderInterface
      */
     private function isEmptyCustom(array $custom)
     {
+        $fields = ['title', 'url'];
         foreach ($custom as $langCustom) {
-            $fields = ['title', 'url'];
             foreach ($fields as $field) {
                 if (!empty($langCustom[$field])) {
                     return false;
