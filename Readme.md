@@ -34,3 +34,27 @@ That's it: you have contributed to this open-source project! Congratulations!
 [1]: http://doc.prestashop.com/display/PS16/Coding+Standards
 [2]: http://doc.prestashop.com/display/PS16/How+to+write+a+commit+message
 [3]: https://help.github.com/articles/using-pull-requests
+
+## Building assets
+
+If you need to change the javascript code you have to compile the assets, this operation is done
+via command line. You can get base information and requirements in the dev doc (be careful with the
+node version):
+
+(https://devdocs.prestashop.com/1.7/development/compile-assets/)
+
+Then the operations to compile assets are:
+
+```$xslt
+cd ps_linklist/views
+npm install
+npm run build
+```
+
+This will update the files in the `ps_linklist/view/public` folder.
+
+During development you can build automatically the assets (in dev mode) when you modify them by using this command:
+
+```
+npm run watch
+```
