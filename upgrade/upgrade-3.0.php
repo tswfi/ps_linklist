@@ -27,6 +27,9 @@ if (!defined('_PS_VERSION_')) {
     exit;
 }
 
+use PrestaShop\PrestaShop\Adapter\SymfonyContainer;
+use PrestaShop\PrestaShop\Adapter\Cache\CacheClearer;
+
 function upgrade_module_3_0($object)
 {
     Configuration::deleteByName('FOOTER_CMS');
@@ -38,9 +41,17 @@ function upgrade_module_3_0($object)
     Configuration::deleteByName('FOOTER_CONTACT');
     Configuration::deleteByName('FOOTER_SITEMAP');
 
-    Db::getInstance()->execute('DROP TABLE `_DB_PREFIX_`cms_block_page');
+    Db::getInstance()->execute('DROP TABLE `' . _DB_PREFIX_ . 'cms_block_page`');
 
     $object->reset();
+
+    //Clear Symfony cache to update routing rules
+    $container = SymfonyContainer::getInstance();
+    if (null !== $container) {
+        /** @var CacheClearer $cacheClearer */
+        $cacheClearer = $container->get('prestashop.adapter.cache_clearer');
+        $cacheClearer->clearAllCaches();
+    }
 
     return true;
 }
