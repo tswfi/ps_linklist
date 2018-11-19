@@ -46,12 +46,7 @@ function upgrade_module_3_0($object)
     $object->reset();
 
     //Clear Symfony cache to update routing rules
-    $container = SymfonyContainer::getInstance();
-    if (null !== $container) {
-        /** @var CacheClearer $cacheClearer */
-        $cacheClearer = $container->get('prestashop.adapter.cache_clearer');
-        $cacheClearer->clearAllCaches();
-    }
+    Tools::clearSf2Cache();
 
     return true;
 }
