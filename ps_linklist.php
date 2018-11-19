@@ -35,6 +35,7 @@ use PrestaShop\Module\LinkList\Presenter\LinkBlockPresenter;
 use PrestaShop\Module\LinkList\Model\LinkBlockLang;
 use PrestaShop\Module\LinkList\Repository\LinkBlockRepository;
 use PrestaShop\PrestaShop\Adapter\SymfonyContainer;
+use PrestaShop\PrestaShop\Adapter\Cache\CacheClearer;
 use PrestaShop\PrestaShop\Adapter\LegacyContext;
 use PrestaShop\PrestaShop\Adapter\Shop\Context;
 
@@ -66,7 +67,7 @@ class Ps_Linklist extends Module implements WidgetInterface
     {
         $this->name = 'ps_linklist';
         $this->author = 'PrestaShop';
-        $this->version = '3.0.0';
+        $this->version = '3.0.1';
         $this->need_instance = 0;
         $this->tab = 'front_office_features';
 
@@ -100,6 +101,14 @@ class Ps_Linklist extends Module implements WidgetInterface
             && $this->registerHook('displayFooter')
             && $this->registerHook('actionUpdateLangAfter')
             && $this->installTab()) {
+            //Clear Symfony cache to update routing rules
+            $container = SymfonyContainer::getInstance();
+            if (null !== $container) {
+                /** @var CacheClearer $cacheClearer */
+                $cacheClearer = $container->get('prestashop.adapter.cache_clearer');
+                $cacheClearer->clearAllCaches();
+            }
+
             return true;
         }
 
