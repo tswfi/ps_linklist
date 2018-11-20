@@ -41,7 +41,11 @@ function upgrade_module_3_0($object)
     Configuration::deleteByName('FOOTER_CONTACT');
     Configuration::deleteByName('FOOTER_SITEMAP');
 
-    Db::getInstance()->execute('DROP TABLE `' . _DB_PREFIX_ . 'cms_block_page`');
+    try {
+        Db::getInstance()->execute('DROP TABLE `' . _DB_PREFIX_ . 'cms_block_page`');
+    } catch (PrestaShopDatabaseException $e) {
+        //Do nothing, table does not exist
+    }
 
     $object->reset();
 
