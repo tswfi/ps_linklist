@@ -27,9 +27,6 @@ if (!defined('_PS_VERSION_')) {
     exit;
 }
 
-use PrestaShop\PrestaShop\Adapter\SymfonyContainer;
-use PrestaShop\PrestaShop\Adapter\Cache\CacheClearer;
-
 function upgrade_module_3_0($object)
 {
     Configuration::deleteByName('FOOTER_CMS');
@@ -46,11 +43,6 @@ function upgrade_module_3_0($object)
     } catch (PrestaShopDatabaseException $e) {
         //Do nothing, table does not exist
     }
-
-    $object->reset();
-
-    //Clear Symfony cache to update routing rules
-    Tools::clearSf2Cache();
 
     return true;
 }
