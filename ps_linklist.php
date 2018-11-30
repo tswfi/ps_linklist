@@ -70,6 +70,14 @@ class Ps_Linklist extends Module implements WidgetInterface
         $this->version = '3.0.1';
         $this->need_instance = 0;
         $this->tab = 'front_office_features';
+        $this->tabs = [
+            [
+                'class_name' => 'AdminLinkWidget',
+                'visible' => true,
+                'name' => 'Link Widget',
+                'parent_class_name' => 'AdminParentThemes',
+            ]
+        ];
 
         $this->bootstrap = true;
         parent::__construct();
@@ -90,7 +98,7 @@ class Ps_Linklist extends Module implements WidgetInterface
         if (!parent::install()) {
             return false;
         }
-        $installed = true;
+
         if (null !== $this->getRepository()) {
             $installed = $this->installFixtures();
         } else {
@@ -101,15 +109,21 @@ class Ps_Linklist extends Module implements WidgetInterface
             && $this->registerHook('displayFooter')
             && $this->registerHook('actionUpdateLangAfter')
             && $this->installTab()) {
-            //Clear Symfony cache to update routing rules
-            Tools::clearSf2Cache();
-
             return true;
         }
 
-        parent::uninstall();
+        $this->uninstall();
 
         return false;
+    }
+
+    public function enable($force_all = false)
+    {
+        if (!$this->installTab()) {
+            return false;
+        }
+
+        return parent::enable($force_all);
     }
 
     /**
@@ -146,10 +160,6 @@ class Ps_Linklist extends Module implements WidgetInterface
     public function uninstall()
     {
         $uninstalled = true;
-        if (!$this->uninstallTab()) {
-            $this->_errors[] = $this->trans('Could not remove Tab.', array(), 'Admin.Modules.Notification');
-            $uninstalled = false;
-        }
         $errors = $this->getRepository()->dropTables();
         if (!empty($errors)) {
             $this->addModuleErrors($errors);
@@ -172,14 +182,6 @@ class Ps_Linklist extends Module implements WidgetInterface
         $tab->module = $this->name;
 
         return $tab->add();
-    }
-
-    public function uninstallTab()
-    {
-        $id_tab = (int) Tab::getIdFromClassName('AdminLinkWidget');
-        $tab = new Tab($id_tab);
-
-        return $tab->delete();
     }
 
     public function hookActionUpdateLangAfter($params)

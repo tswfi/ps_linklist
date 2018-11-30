@@ -39,7 +39,6 @@ use PrestaShop\PrestaShop\Core\Grid\Position\PositionUpdateFactory;
 use PrestaShop\PrestaShop\Core\Grid\Position\PositionDefinition;
 use PrestaShop\PrestaShop\Core\Grid\Position\PositionUpdate;
 use PrestaShopBundle\Controller\Admin\FrameworkBundleAdminController;
-use PrestaShopBundle\Security\Annotation\AdminSecurity;
 use PrestaShopBundle\Security\Annotation\ModuleActivated;
 use Symfony\Component\HttpFoundation\RedirectResponse;
 use Symfony\Component\HttpFoundation\Request;
@@ -53,8 +52,6 @@ use Symfony\Component\HttpFoundation\Response;
 class LinkBlockController extends FrameworkBundleAdminController
 {
     /**
-     * @AdminSecurity("is_granted('read', request.get('_legacy_controller'))", message="Access denied.")
-     *
      * @param Request $request
      *
      * @return Response
@@ -86,8 +83,6 @@ class LinkBlockController extends FrameworkBundleAdminController
     }
 
     /**
-     * @AdminSecurity("is_granted('create', request.get('_legacy_controller'))", message="Access denied.")
-     *
      * @param Request $request
      *
      * @return Response
@@ -108,8 +103,6 @@ class LinkBlockController extends FrameworkBundleAdminController
     }
 
     /**
-     * @AdminSecurity("is_granted('update', request.get('_legacy_controller'))", message="Access denied.")
-     *
      * @param Request $request
      * @param int $linkBlockId
      *
@@ -131,8 +124,6 @@ class LinkBlockController extends FrameworkBundleAdminController
     }
 
     /**
-     * @AdminSecurity("is_granted('update', request.get('_legacy_controller'))", message="Access denied.")
-     *
      * @param Request $request
      *
      * @return RedirectResponse|Response
@@ -145,8 +136,6 @@ class LinkBlockController extends FrameworkBundleAdminController
     }
 
     /**
-     * @AdminSecurity("is_granted('update', request.get('_legacy_controller'))", message="Access denied.")
-     *
      * @param Request $request
      * @param int $linkBlockId
      *

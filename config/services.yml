@@ -1,4 +1,7 @@
 services:
+  _defaults:
+    public: true
+
   prestashop.module.link_block.cache:
     class: PrestaShop\Module\LinkList\Cache\LegacyLinkBlockCache
     arguments:
@@ -122,6 +125,7 @@ services:
   prestashop.module.link_block.custom_url_type:
     class: PrestaShop\Module\LinkList\Form\Type\CustomUrlType
     parent: 'form.type.translatable.aware'
+    public: true
     tags:
     - { name: form.type }
 
