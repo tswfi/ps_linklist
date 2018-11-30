@@ -169,8 +169,20 @@ class Ps_Linklist extends Module implements WidgetInterface
         return $uninstalled && parent::uninstall();
     }
 
+    /**
+     * The Core is supposed to register the tabs automatically thanks to the getTabs() return.
+     * However in 1.7.5 it only works when the module contains a AdminLinkWidgetController file,
+     * this works fine when module has been upgraded and the former file is still present however
+     * for a fresh install we need to install it manually until the core is able to manage new modules.
+     *
+     * @return bool
+     */
     public function installTab()
     {
+        if (Tab::getIdFromClassName('AdminLinkWidget')) {
+            return true;
+        }
+
         $tab = new Tab();
         $tab->active = 1;
         $tab->class_name = 'AdminLinkWidget';
