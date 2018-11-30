@@ -35,7 +35,6 @@ use PrestaShop\Module\LinkList\Presenter\LinkBlockPresenter;
 use PrestaShop\Module\LinkList\Model\LinkBlockLang;
 use PrestaShop\Module\LinkList\Repository\LinkBlockRepository;
 use PrestaShop\PrestaShop\Adapter\SymfonyContainer;
-use PrestaShop\PrestaShop\Adapter\Cache\CacheClearer;
 use PrestaShop\PrestaShop\Adapter\LegacyContext;
 use PrestaShop\PrestaShop\Adapter\Shop\Context;
 
@@ -76,7 +75,7 @@ class Ps_Linklist extends Module implements WidgetInterface
                 'visible' => true,
                 'name' => 'Link Widget',
                 'parent_class_name' => 'AdminParentThemes',
-            ]
+            ],
         ];
 
         $this->bootstrap = true;

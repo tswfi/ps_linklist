@@ -264,6 +264,7 @@ class LinkBlockFormDataProvider implements FormDataProviderInterface
 
     /**
      * @param array $custom
+     *
      * @return bool
      */
     private function isEmptyCustom(array $custom)
