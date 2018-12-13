@@ -100,7 +100,7 @@ final class LinkBlockDefinitionFactory extends AbstractGridDefinitionFactory
                     'update_method' => 'POST',
                     'record_route_params' => [
                         'id_hook' => 'hookId',
-                    ]
+                    ],
                 ])
             )
             ->add((new ActionColumn('actions'))
