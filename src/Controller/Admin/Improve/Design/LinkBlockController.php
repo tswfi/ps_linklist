@@ -131,7 +131,7 @@ class LinkBlockController extends FrameworkBundleAdminController
     }
 
     /**
-     * @AdminSecurity("is_granted('update', request.get('_legacy_controller'))", message="Access denied.")
+     * @AdminSecurity("is_granted('create', request.get('_legacy_controller'))", message="Access denied.")
      *
      * @param Request $request
      *
@@ -160,6 +160,8 @@ class LinkBlockController extends FrameworkBundleAdminController
     }
 
     /**
+     * @AdminSecurity("is_granted('delete', request.get('_legacy_controller'))", message="Access denied.")
+     *
      * @param int $linkBlockId
      *
      * @return RedirectResponse
@@ -189,6 +191,8 @@ class LinkBlockController extends FrameworkBundleAdminController
     }
 
     /**
+     * @AdminSecurity("is_granted('update', request.get('_legacy_controller'))", message="Access denied.")
+     *
      * @param Request $request
      * @param int $hookId
      *

@@ -209,7 +209,7 @@ class LinkBlockPresenter
             $self = $this;
             $customLinks = array_map(function ($el) use ($self) {
                 return array(
-                    'id' => 'link-custom-page-' . $el['title'],
+                    'id' => 'link-custom-page-' . Tools::link_rewrite($el['title']),
                     'class' => 'custom-page-link',
                     'title' => $el['title'],
                     'description' => '',

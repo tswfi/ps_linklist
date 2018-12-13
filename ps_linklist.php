@@ -35,7 +35,6 @@ use PrestaShop\Module\LinkList\Presenter\LinkBlockPresenter;
 use PrestaShop\Module\LinkList\Model\LinkBlockLang;
 use PrestaShop\Module\LinkList\Repository\LinkBlockRepository;
 use PrestaShop\PrestaShop\Adapter\SymfonyContainer;
-use PrestaShop\PrestaShop\Adapter\Cache\CacheClearer;
 use PrestaShop\PrestaShop\Adapter\LegacyContext;
 use PrestaShop\PrestaShop\Adapter\Shop\Context;
 
@@ -67,9 +66,17 @@ class Ps_Linklist extends Module implements WidgetInterface
     {
         $this->name = 'ps_linklist';
         $this->author = 'PrestaShop';
-        $this->version = '3.0.1';
+        $this->version = '3.0.2';
         $this->need_instance = 0;
         $this->tab = 'front_office_features';
+        $this->tabs = [
+            [
+                'class_name' => 'AdminLinkWidget',
+                'visible' => true,
+                'name' => 'Link Widget',
+                'parent_class_name' => 'AdminParentThemes',
+            ],
+        ];
 
         $this->bootstrap = true;
         parent::__construct();
@@ -90,7 +97,7 @@ class Ps_Linklist extends Module implements WidgetInterface
         if (!parent::install()) {
             return false;
         }
-        $installed = true;
+
         if (null !== $this->getRepository()) {
             $installed = $this->installFixtures();
         } else {
@@ -101,15 +108,21 @@ class Ps_Linklist extends Module implements WidgetInterface
             && $this->registerHook('displayFooter')
             && $this->registerHook('actionUpdateLangAfter')
             && $this->installTab()) {
-            //Clear Symfony cache to update routing rules
-            Tools::clearSf2Cache();
-
             return true;
         }
 
-        parent::uninstall();
+        $this->uninstall();
 
         return false;
+    }
+
+    public function enable($force_all = false)
+    {
+        if (!$this->installTab()) {
+            return false;
+        }
+
+        return parent::enable($force_all);
     }
 
     /**
@@ -146,10 +159,6 @@ class Ps_Linklist extends Module implements WidgetInterface
     public function uninstall()
     {
         $uninstalled = true;
-        if (!$this->uninstallTab()) {
-            $this->_errors[] = $this->trans('Could not remove Tab.', array(), 'Admin.Modules.Notification');
-            $uninstalled = false;
-        }
         $errors = $this->getRepository()->dropTables();
         if (!empty($errors)) {
             $this->addModuleErrors($errors);
@@ -159,8 +168,20 @@ class Ps_Linklist extends Module implements WidgetInterface
         return $uninstalled && parent::uninstall();
     }
 
+    /**
+     * The Core is supposed to register the tabs automatically thanks to the getTabs() return.
+     * However in 1.7.5 it only works when the module contains a AdminLinkWidgetController file,
+     * this works fine when module has been upgraded and the former file is still present however
+     * for a fresh install we need to install it manually until the core is able to manage new modules.
+     *
+     * @return bool
+     */
     public function installTab()
     {
+        if (Tab::getIdFromClassName('AdminLinkWidget')) {
+            return true;
+        }
+
         $tab = new Tab();
         $tab->active = 1;
         $tab->class_name = 'AdminLinkWidget';
@@ -172,14 +193,6 @@ class Ps_Linklist extends Module implements WidgetInterface
         $tab->module = $this->name;
 
         return $tab->add();
-    }
-
-    public function uninstallTab()
-    {
-        $id_tab = (int) Tab::getIdFromClassName('AdminLinkWidget');
-        $tab = new Tab($id_tab);
-
-        return $tab->delete();
     }
 
     public function hookActionUpdateLangAfter($params)
