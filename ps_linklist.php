@@ -48,7 +48,7 @@ class Ps_Linklist extends Module implements WidgetInterface
     {
         $this->name = 'ps_linklist';
         $this->author = 'PrestaShop';
-        $this->version = '2.1.5';
+        $this->version = '2.1.6';
         $this->need_instance = 0;
 
         $this->bootstrap = true;
