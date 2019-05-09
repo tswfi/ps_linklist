@@ -27,7 +27,9 @@ if (!defined('_CAN_LOAD_FILES_')) {
     exit;
 }
 
-require_once __DIR__ . '/vendor/autoload.php';
+if (file_exists(__DIR__ . '/vendor/autoload.php')) {
+    require_once __DIR__ . '/vendor/autoload.php';
+}
 
 use PrestaShop\PrestaShop\Core\Module\WidgetInterface;
 use PrestaShop\Module\LinkList\LegacyLinkBlockRepository;
