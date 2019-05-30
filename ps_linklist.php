@@ -39,6 +39,11 @@ use PrestaShop\PrestaShop\Adapter\Shop\Context;
  */
 class Ps_Linklist extends Module implements WidgetInterface
 {
+    /**
+     * @var string Name of the module running on PS 1.6.x. Used for data migration.
+     */
+    const PS_16_EQUIVALENT_MODULE = 'blockcms';
+
     const MODULE_NAME = 'ps_linklist';
 
     protected $_html;
@@ -106,7 +111,15 @@ class Ps_Linklist extends Module implements WidgetInterface
             return false;
         }
 
-        $installed = $this->installFixtures();
+        $installed = $this->createTables();
+
+        if ($installed) {
+            if ($this->uninstallPrestaShop16Module()) {
+                $this->migrateData();
+            } else {
+                $installed &= $this->installFixtures();
+            }
+        }
 
         if ($installed
             && $this->registerHook('displayFooter')
@@ -124,26 +137,37 @@ class Ps_Linklist extends Module implements WidgetInterface
      *
      * @throws \Doctrine\DBAL\DBALException
      */
-    private function installFixtures()
+    private function createTables()
     {
-        $installed = true;
         $result = $this->getRepository()->createTables();
         if (false === $result || (is_array($result) && !empty($result))) {
             if (is_array($result)) {
                 $this->addModuleErrors($result);
             }
-            $installed = false;
+
+            return false;
         }
 
+        return true;
+    }
+
+    /**
+     * @return bool
+     *
+     * @throws \Doctrine\DBAL\DBALException
+     */
+    private function installFixtures()
+    {
         $result = $this->getRepository()->installFixtures();
         if (false === $result || (is_array($result) && !empty($result))) {
             if (is_array($result)) {
                 $this->addModuleErrors($result);
             }
-            $installed = false;
+
+            return false;
         }
 
-        return $installed;
+        return true;
     }
 
     public function uninstall()
@@ -158,6 +182,71 @@ class Ps_Linklist extends Module implements WidgetInterface
         }
 
         return $uninstalled && parent::uninstall();
+    }
+
+    /**
+     * Migrate data from 1.6 equivalent module (if applicable), then uninstall
+     */
+    private function uninstallPrestaShop16Module()
+    {
+        if (!Module::isInstalled(self::PS_16_EQUIVALENT_MODULE)) {
+            return false;
+        }
+        $oldModule = Module::getInstanceByName(self::PS_16_EQUIVALENT_MODULE);
+        if ($oldModule) {
+            // This closure calls the parent class to prevent data to be erased
+            // It allows the new module to be configured without migration
+            $parentUninstallClosure = function() {
+                return parent::uninstall();
+            };
+            $parentUninstallClosure = $parentUninstallClosure->bindTo($oldModule, get_class($oldModule));
+            $parentUninstallClosure();
+        }
+        return true;
+    }
+
+    /**
+     * Retrieve content from 1.6 module, then cleanup
+     */
+    private function migrateData()
+    {
+        $db = Db::getInstance();
+        // Copy first table
+        $db->execute("INSERT INTO `" . _DB_PREFIX_ . "link_block`
+            (`id_link_block`, `id_hook`, `position`)
+            SELECT `id_cms_block`, `location`, `position`
+            FROM `" . _DB_PREFIX_ . "cms_block`"
+        );
+        // Update hook IDs (Got from BlockCMSModel in 1.6 module)
+        $relationBetweenOldLocationsAndHooks = [
+            0 => 'displayLeftColumn', // LEFT_COLUMN
+            1 => 'displayRightColumn', // RIGHT_COLUMN
+            2 => 'displayFooter', // FOOTER
+        ];
+        foreach ($relationBetweenOldLocationsAndHooks as $oldLocation => $newHookLocation) {
+            $db->execute("UPDATE `" . _DB_PREFIX_ . "link_block`
+                SET `id_hook` = " . (int) Hook::getIdByName($newHookLocation). " 
+                WHERE `id_hook` = " . $oldLocation
+            );
+        }
+        // Copy second table (lang)
+        $db->execute("INSERT INTO `" . _DB_PREFIX_ . "link_block_lang`
+            (`id_link_block`, `id_lang`, `name`)
+            SELECT `id_cms_block`, `id_lang`, `name`
+            FROM `" . _DB_PREFIX_ . "cms_block_lang`"
+        );
+        // Copy third table (shop)
+        $db->execute("INSERT INTO `" . _DB_PREFIX_ . "link_block_shop`
+            (`id_link_block`, `id_shop`)
+            SELECT `id_cms_block`, `id_shop`
+            FROM `" . _DB_PREFIX_ . "cms_block_shop`"
+        );
+        // Drop old tables
+        $db->execute('DROP TABLE `'._DB_PREFIX_.'cms_block`,
+            `'._DB_PREFIX_.'cms_block_lang`,
+            `'._DB_PREFIX_.'cms_block_page`,
+            `'._DB_PREFIX_.'cms_block_shop`'
+        );
     }
 
     public function hookActionUpdateLangAfter($params)
