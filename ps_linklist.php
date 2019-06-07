@@ -224,8 +224,14 @@ class Ps_Linklist extends Module implements WidgetInterface
             2 => 'displayFooter', // FOOTER
         ];
         foreach ($relationBetweenOldLocationsAndHooks as $oldLocation => $newHookLocation) {
+            // Retrieve the cms page IDs linked in the old module
+            $content = $this->generateJsonForBlockContent([
+                'cms' => $this->getCmsIdsFromBlock($oldLocation)
+            ]);
+
             $db->execute("UPDATE `" . _DB_PREFIX_ . "link_block`
-                SET `id_hook` = " . (int) Hook::getIdByName($newHookLocation). " 
+                SET `id_hook` = " . (int) Hook::getIdByName($newHookLocation) . ",
+                `content` = '" . pSql($content) . "'
                 WHERE `id_hook` = " . $oldLocation
             );
         }
@@ -247,6 +253,43 @@ class Ps_Linklist extends Module implements WidgetInterface
             `'._DB_PREFIX_.'cms_block_page`,
             `'._DB_PREFIX_.'cms_block_shop`'
         );
+    }
+
+    /**
+     * Generate a JSON for the column `content` of link_block
+     * 
+     * @param array $data
+     * 
+     * @return string 
+     */
+    private function generateJsonForBlockContent(array $data)
+    {
+        return json_encode([
+            'cms' => empty($data['cms']) ? [false] : $data['cms'],
+            'static' => empty($data['static']) ? [false] : $data['static'],
+            'product' => empty($data['product']) ? [false] : $data['product'],
+        ]);
+    }
+
+    /**
+     * Get list of cms IDs from database for a given old cms_block_page
+     * 
+     * @param int $oldLocation
+     * 
+     * @return array 
+     */
+    private function getCmsIdsFromBlock($oldLocation)
+    {
+        $request = $db->executeS("SELECT id_cms FROM  `" . _DB_PREFIX_ . "cms_block_page`
+            WHERE id_cms_block = " . (int) $oldLocation . "
+            AND is_category = 0"
+        );
+
+        $ids = [];
+        foreach ($request as $row) {
+            $ids[] = $row['id_cms'];
+        }
+        return $ids;
     }
 
     public function hookActionUpdateLangAfter($params)
