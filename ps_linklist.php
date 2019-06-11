@@ -231,7 +231,7 @@ class Ps_Linklist extends Module implements WidgetInterface
 
             $db->execute("UPDATE `" . _DB_PREFIX_ . "link_block`
                 SET `id_hook` = " . (int) Hook::getIdByName($newHookLocation) . ",
-                `content` = '" . pSql($content) . "'
+                `content` = '" . pSQL($content) . "'
                 WHERE `id_hook` = " . $oldLocation
             );
         }
@@ -247,12 +247,59 @@ class Ps_Linklist extends Module implements WidgetInterface
             SELECT `id_cms_block`, `id_shop`
             FROM `" . _DB_PREFIX_ . "cms_block_shop`"
         );
+
+        $this->migrateBlockFooter();
+
         // Drop old tables
         $db->execute('DROP TABLE `'._DB_PREFIX_.'cms_block`,
             `'._DB_PREFIX_.'cms_block_lang`,
             `'._DB_PREFIX_.'cms_block_page`,
             `'._DB_PREFIX_.'cms_block_shop`'
         );
+    }
+
+    private function migrateBlockFooter()
+    {
+        if (!Configuration::get('FOOTER_BLOCK_ACTIVATION')) {
+            return;
+        }
+        $db = Db::getInstance();
+
+        $linkBlock = new LinkBlock();
+        $data = [];
+        foreach (explode('|', Configuration::get('FOOTER_CMS')) as $val) {
+            list(, $cmsId) = $val;
+            $data['product'][] = $cmsId;
+        }
+        if (Configuration::get('FOOTER_PRICE-DROP')) {
+            $data['product'][] = 'prices-drop';
+        }
+        if (Configuration::get('FOOTER_NEW-PRODUCTS')) {
+            $data['product'][] = 'new-products';
+        }
+        if (Configuration::get('FOOTER_BEST-SALES')) {
+            $data['product'][] = 'best-sales';
+        }
+        if (Configuration::get('FOOTER_CONTACT')) {
+            $data['static'][] = 'contact';
+        }
+        if (Configuration::get('FOOTER_SITEMAP')) {
+            $data['static'][] = 'sitemap';
+        }
+        if (Configuration::get('PS_STORES_DISPLAY_FOOTER')) {
+            $data['static'][] = 'stores';
+        }
+        $linkBlock->content = $this->generateJsonForBlockContent($data);
+        $linkBlock->id_hook = (int) Hook::getIdByName('displayFooter');
+
+        $languages = Language::getLanguages(false);
+        foreach ($languages as $lang) {
+            $linkBlock->name[$lang['id_lang']] = 'Footer content (Migrated)';
+            $linkBlock->custom_content[$lang['id_lang']] = json_encode([
+                'title' => Configuration::get('FOOTER_CMS_TEXT_'.$lang['id_lang']),
+                'url' => '#',
+            ]);
+        }
     }
 
     /**
