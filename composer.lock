@@ -4,7 +4,11 @@
         "Read more about it at https://getcomposer.org/doc/01-basic-usage.md#installing-dependencies",
         "This file is @generated automatically"
     ],
+<<<<<<< HEAD
     "content-hash": "ec439f2908f2ad301c56bd2b07b27495",
+=======
+    "content-hash": "436f71e36fc045631f0e7396f9fd7e1e",
+>>>>>>> 6d1e6bd... init composer
     "packages": [],
     "packages-dev": [
         {
