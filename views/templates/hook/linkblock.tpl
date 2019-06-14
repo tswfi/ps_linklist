@@ -38,7 +38,6 @@
           {$link.title|escape:'html':'UTF-8'}
         </a>
       </li>
-        {print_r($link.description)}
     {/foreach}
   </ul>
 {/foreach}
