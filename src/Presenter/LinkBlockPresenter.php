@@ -107,7 +107,6 @@ class LinkBlockPresenter
             $categoryLinks = $this->makeCategoryLinks($content['category']);
         }
 
-
         $customLinks = $this->makeCustomLinks($custom_content);
 
         return array_merge(
