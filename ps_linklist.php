@@ -74,7 +74,6 @@ class Ps_Linklist extends Module implements WidgetInterface
         $this->tabs = [
             [
                 'class_name' => 'AdminLinkWidget',
-                'route_name' => 'admin_link_block_list',
                 'visible' => true,
                 'name' => 'Link Widget',
                 'parent_class_name' => 'AdminParentThemes',
@@ -88,7 +87,7 @@ class Ps_Linklist extends Module implements WidgetInterface
         $this->description = $this->trans('Adds a block with several links.', array(), 'Modules.Linklist.Admin');
         $this->secure_key = Tools::encrypt($this->name);
 
-        $this->ps_versions_compliancy = array('min' => '1.7.7.0', 'max' => _PS_VERSION_);
+        $this->ps_versions_compliancy = array('min' => '1.7.5.0', 'max' => _PS_VERSION_);
         $this->templateFile = 'module:ps_linklist/views/templates/hook/linkblock.tpl';
 
         $this->linkBlockPresenter = new LinkBlockPresenter(new Link(), $this->context->language);
@@ -109,13 +108,23 @@ class Ps_Linklist extends Module implements WidgetInterface
 
         if ($installed
             && $this->registerHook('displayFooter')
-            && $this->registerHook('actionUpdateLangAfter')) {
+            && $this->registerHook('actionUpdateLangAfter')
+            && $this->installTab()) {
             return true;
         }
 
         $this->uninstall();
 
         return false;
+    }
+
+    public function enable($force_all = false)
+    {
+        if (!$this->installTab()) {
+            return false;
+        }
+
+        return parent::enable($force_all);
     }
 
     /**
@@ -152,19 +161,40 @@ class Ps_Linklist extends Module implements WidgetInterface
     public function uninstall()
     {
         $uninstalled = true;
-        if (null !== $this->getRepository()) {
-            $errors = $this->getRepository()->dropTables();
-        } else {
-            $tablesDropped = $this->legacyBlockRepository->dropTables();
-            $errors = $tablesDropped ? [] : ['Can not drop ps_linklist tables'];
-        }
-
+        $errors = $this->getRepository()->dropTables();
         if (!empty($errors)) {
             $this->addModuleErrors($errors);
             $uninstalled = false;
         }
 
         return $uninstalled && parent::uninstall();
+    }
+
+    /**
+     * The Core is supposed to register the tabs automatically thanks to the getTabs() return.
+     * However in 1.7.5 it only works when the module contains a AdminLinkWidgetController file,
+     * this works fine when module has been upgraded and the former file is still present however
+     * for a fresh install we need to install it manually until the core is able to manage new modules.
+     *
+     * @return bool
+     */
+    public function installTab()
+    {
+        if (Tab::getIdFromClassName('AdminLinkWidget')) {
+            return true;
+        }
+
+        $tab = new Tab();
+        $tab->active = 1;
+        $tab->class_name = 'AdminLinkWidget';
+        $tab->name = array();
+        foreach (Language::getLanguages(true) as $lang) {
+            $tab->name[$lang['id_lang']] = 'Link Widget';
+        }
+        $tab->id_parent = (int) Tab::getIdFromClassName('AdminParentThemes');
+        $tab->module = $this->name;
+
+        return $tab->add();
     }
 
     public function hookActionUpdateLangAfter($params)
