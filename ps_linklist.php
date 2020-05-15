@@ -163,8 +163,11 @@ class Ps_Linklist extends Module implements WidgetInterface
 
     public function getContent()
     {
+        // We need to explicitely get Symfony container, because $this->>get will use the admin legacy container
+        $sfContainer = SymfonyContainer::getInstance();
+        $router = $sfContainer->get('router');
         Tools::redirectAdmin(
-            $this->context->link->getAdminLink('AdminLinkWidget')
+            $router->generate('admin_link_block_list')
         );
     }
 
