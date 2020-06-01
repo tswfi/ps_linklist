@@ -131,18 +131,18 @@ class Ps_Linklist extends Module implements WidgetInterface
     private function installFixtures()
     {
         $installed = true;
-        $errors = $this->getRepository()->createTables();
-        if (false === $errors || (is_array($errors) && !empty($errors))) {
-            if (is_array($errors)) {
-                $this->addModuleErrors($errors);
+        $result = $this->getRepository()->createTables();
+        if (false === $result || (is_array($result) && !empty($result))) {
+            if (is_array($result)) {
+                $this->addModuleErrors($result);
             }
             $installed = false;
         }
 
-        $errors = $this->getRepository()->installFixtures();
-        if (false === $errors || (is_array($errors) && !empty($errors))) {
-            if (is_array($errors)) {
-                $this->addModuleErrors($errors);
+        $result = $this->getRepository()->installFixtures();
+        if (false === $result || (is_array($result) && !empty($result))) {
+            if (is_array($result)) {
+                $this->addModuleErrors($result);
             }
             $installed = false;
         }
@@ -153,10 +153,10 @@ class Ps_Linklist extends Module implements WidgetInterface
     public function uninstall()
     {
         $uninstalled = true;
-        $errors = $this->getRepository()->dropTables();
-        if (false === $errors || (is_array($errors) && !empty($errors))) {
-            if (is_array($errors)) {
-                $this->addModuleErrors($errors);
+        $result = $this->getRepository()->dropTables();
+        if (false === $result || (is_array($result) && !empty($result))) {
+            if (is_array($result)) {
+                $this->addModuleErrors($result);
             }
             $uninstalled = false;
         }
@@ -256,20 +256,23 @@ class Ps_Linklist extends Module implements WidgetInterface
         if (null === $this->repository) {
             try {
                 $this->repository = $this->get('prestashop.module.link_block.repository');
-            } catch (\Exception $e) {
+            } catch (Throwable $e) {
                 try {
-                    //Module is not installed so its services are not loaded
-                    /** @var LegacyContext $context */
-                    $legacyContext = $this->get('prestashop.adapter.legacy.context');
-                    /** @var Context $shopContext */
-                    $shopContext = $this->get('prestashop.adapter.shop.context');
-                    $this->repository = new LinkBlockRepository(
-                        $this->get('doctrine.dbal.default_connection'),
-                        SymfonyContainer::getInstance()->getParameter('database_prefix'),
-                        $legacyContext->getLanguages(true, $shopContext->getContextShopID()),
-                        $this->get('translator')
-                    );
-                } catch (\Exception $e) {
+                    $container = SymfonyContainer::getInstance();
+                    if (null !== $container) {
+                        //Module is not installed so its services are not loaded
+                        /** @var LegacyContext $context */
+                        $legacyContext = $container->get('prestashop.adapter.legacy.context');
+                        /** @var Context $shopContext */
+                        $shopContext = $container->get('prestashop.adapter.shop.context');
+                        $this->repository = new LinkBlockRepository(
+                            $container->get('doctrine.dbal.default_connection'),
+                            $container->getParameter('database_prefix'),
+                            $legacyContext->getLanguages(true, $shopContext->getContextShopID()),
+                            $container->get('translator')
+                        );
+                    }
+                } catch (Throwable $e) {
                 }
             }
         }
