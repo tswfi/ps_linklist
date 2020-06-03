@@ -23,7 +23,7 @@
  * International Registered Trademark & Property of PrestaShop SA
  */
 
-import TranslatableInput from '../../../../../admin-dev/themes/new-theme/js/components/translatable-input';
+import TranslatableInput from '@components/translatable-input';
 
 const $ = window.$;
 

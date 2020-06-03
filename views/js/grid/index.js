@@ -23,11 +23,11 @@
  * International Registered Trademark & Property of PrestaShop SA
  */
 
-import Grid from '../../../../../admin-dev/themes/new-theme/js/components/grid/grid';
-import LinkRowActionExtension from '../../../../../admin-dev/themes/new-theme/js/components/grid/extension/link-row-action-extension';
-import SubmitRowActionExtension from '../../../../../admin-dev/themes/new-theme/js/components/grid/extension/action/row/submit-row-action-extension';
-import SortingExtension from "../../../../../admin-dev/themes/new-theme/js/components/grid/extension/sorting-extension";
-import PositionExtension from "../../../../../admin-dev/themes/new-theme/js/components/grid/extension/position-extension";
+import Grid from '@components/grid/grid';
+import LinkRowActionExtension from '@components/grid/extension/link-row-action-extension';
+import SubmitRowActionExtension from '@components/grid/extension/action/row/submit-row-action-extension';
+import SortingExtension from "@components/grid/extension/sorting-extension";
+import PositionExtension from "@components/grid/extension/position-extension";
 
 const $ = window.$;
 

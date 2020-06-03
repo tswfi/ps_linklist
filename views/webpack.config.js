@@ -27,6 +27,11 @@ const path = require('path');
 const webpack = require('webpack');
 const keepLicense = require('uglify-save-license');
 
+const psRootDir = path.resolve(process.env.PWD, '../../../');
+const psJsDir = path.resolve(psRootDir, 'admin-dev/themes/new-theme/js');
+const psAppDir = path.resolve(psJsDir, 'app');
+const psComponentsDir = path.resolve(psJsDir, 'components');
+
 const config = {
     entry: {
         grid: [
@@ -42,7 +47,11 @@ const config = {
     },
     //devtool: 'source-map', // uncomment me to build source maps (really slow)
     resolve: {
-        extensions: ['.js']
+        extensions: ['.js'],
+        alias: {
+            '@app': psAppDir,
+            '@components': psComponentsDir,
+        },
     },
     module: {
         rules: [
