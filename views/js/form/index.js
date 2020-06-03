@@ -30,6 +30,24 @@ const $ = window.$;
 $(() => {
   new TranslatableInput({localeInputSelector: '.js-locale-input'});
 
+  const idHookSelect = $('#form_link_block_id_hook');
+  if (idHookSelect.hasClass('select2-hidden-accessible')) {
+    const targetNode = document.getElementsByTagName('body')[0];
+    const observer = new MutationObserver(function(mutationsList, observer) {
+      for(let mutation of mutationsList) {
+        if (mutation.type === 'childList' && mutation.addedNodes.length == 1) {
+          let node = mutation.addedNodes[0];
+          if ($(node).hasClass('select2-container--open')) {
+            $('#select2-form_link_block_id_hook-results li').each(function () {
+              $(this).attr('data-hook-name', $(this).html());
+            });
+          }
+        }
+      }
+    });
+    observer.observe(targetNode,  { childList: true });
+  }
+
   const addCustomButton = $('.add-collection-btn');
   addCustomButton.on('click', appendPrototype);
 
