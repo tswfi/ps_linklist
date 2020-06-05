@@ -2,31 +2,34 @@ GitHub contributors:
 --------------------------------
  - Abdelaziz JRIBI
  - Alex Even
- - AlexEven
+ - Alex Sampaio
+ - Dídac Rios
  - Francois Gaillard
+ - GoT
  - Gregory Roussac
+ - GuillaumeKadolis
  - Jerome Nadaud
+ - Jonathan Lelievre
  - Julien Bourdeau
  - Jérôme Nadaud
- - Jérôme Nadaud
+ - Krystian Podemski
+ - Mathieu Ferment
  - Maxime Biloé
- - PierreRambaud
+ - Michel ANTOINE
+ - Mickaël Andrieu
+ - Pablo Borowicz
+ - Pierre RAMBAUD
  - PrestaEdit
  - Progi1984
  - Quetzacoalt91
- - aleeks
- - antoin-m
+ - Sacha Froment
+ - Thierry Marianne
+ - Thomas N
+ - Thomas Nabord
+ - Xavier
  - emilien-puget
- - eternoendless
  - fojtcz
  - gRoussac
  - jolelievre
- - julienbourdeau
- - kpodemski
  - marionf
  - matks
- - maximebiloe
- - mickaelandrieu
- - sfroment
- - thierrymarianne
- - xBorderie
