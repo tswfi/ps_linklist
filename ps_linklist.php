@@ -65,12 +65,17 @@ class Ps_Linklist extends Module implements WidgetInterface
         $this->version = '4.0.0';
         $this->need_instance = 0;
         $this->tab = 'front_office_features';
+
+        $tabNames = [];
+        foreach (Language::getLanguages(true) as $lang) {
+            $tabNames[$lang['id_lang']] = $this->trans('Link List', array(), 'Modules.Linklist.Admin', $lang['locale']);
+        }
         $this->tabs = [
             [
                 'route_name' => 'admin_link_block_list',
                 'class_name' => 'AdminLinkWidget',
                 'visible' => true,
-                'name' => 'Link Widget',
+                'name' => $tabNames,
                 'parent_class_name' => 'AdminParentThemes',
             ],
         ];
