@@ -68,7 +68,7 @@ class Ps_Linklist extends Module implements WidgetInterface
 
         $tabNames = [];
         foreach (Language::getLanguages(true) as $lang) {
-            $tabNames[$lang['id_lang']] = $this->trans('Link List', array(), 'Modules.Linklist.Admin', $lang['locale']);
+            $tabNames[$lang['locale']] = $this->trans('Link List', array(), 'Modules.Linklist.Admin', $lang['locale']);
         }
         $this->tabs = [
             [
@@ -168,7 +168,7 @@ class Ps_Linklist extends Module implements WidgetInterface
 
     public function getContent()
     {
-        // We need to explicitely get Symfony container, because $this->>get will use the admin legacy container
+        // We need to explicitely get Symfony container, because $this->get will use the admin legacy container
         $sfContainer = SymfonyContainer::getInstance();
         $router = $sfContainer->get('router');
         Tools::redirectAdmin(
