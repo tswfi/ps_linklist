@@ -12,6 +12,9 @@
   "require": {
     "php": ">=5.6.0"
   },
+    "require-dev": {
+    "prestashop/php-dev-tools": "^3.4"
+  },
   "autoload": {
     "psr-4": {
       "PrestaShop\\Module\\LinkList\\": "src/"
@@ -20,7 +23,8 @@
     "exclude-from-classmap": []
   },
   "config": {
-    "preferred-install": "dist"
+    "preferred-install": "dist",
+    "prepend-autoloader": false
   },
   "type": "prestashop-module"
 }
