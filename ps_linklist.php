@@ -62,14 +62,20 @@ class Ps_Linklist extends Module implements WidgetInterface
     {
         $this->name = 'ps_linklist';
         $this->author = 'PrestaShop';
-        $this->version = '3.2.0';
+        $this->version = '4.0.0';
         $this->need_instance = 0;
         $this->tab = 'front_office_features';
+
+        $tabNames = [];
+        foreach (Language::getLanguages(true) as $lang) {
+            $tabNames[$lang['locale']] = $this->trans('Link List', array(), 'Modules.Linklist.Admin', $lang['locale']);
+        }
         $this->tabs = [
             [
+                'route_name' => 'admin_link_block_list',
                 'class_name' => 'AdminLinkWidget',
                 'visible' => true,
-                'name' => 'Link Widget',
+                'name' => $tabNames,
                 'parent_class_name' => 'AdminParentThemes',
             ],
         ];
@@ -81,7 +87,7 @@ class Ps_Linklist extends Module implements WidgetInterface
         $this->description = $this->trans('Adds a block with several links.', array(), 'Modules.Linklist.Admin');
         $this->secure_key = Tools::encrypt($this->name);
 
-        $this->ps_versions_compliancy = array('min' => '1.7.5.0', 'max' => _PS_VERSION_);
+        $this->ps_versions_compliancy = array('min' => '1.7.7.0', 'max' => _PS_VERSION_);
         $this->templateFile = 'module:ps_linklist/views/templates/hook/linkblock.tpl';
 
         $this->linkBlockPresenter = new LinkBlockPresenter(new Link(), $this->context->language);
@@ -98,23 +104,13 @@ class Ps_Linklist extends Module implements WidgetInterface
 
         if ($installed
             && $this->registerHook('displayFooter')
-            && $this->registerHook('actionUpdateLangAfter')
-            && $this->installTab()) {
+            && $this->registerHook('actionUpdateLangAfter')) {
             return true;
         }
 
         $this->uninstall();
 
         return false;
-    }
-
-    public function enable($force_all = false)
-    {
-        if (!$this->installTab()) {
-            return false;
-        }
-
-        return parent::enable($force_all);
     }
 
     /**
@@ -158,33 +154,6 @@ class Ps_Linklist extends Module implements WidgetInterface
         return $uninstalled && parent::uninstall();
     }
 
-    /**
-     * The Core is supposed to register the tabs automatically thanks to the getTabs() return.
-     * However in 1.7.5 it only works when the module contains a AdminLinkWidgetController file,
-     * this works fine when module has been upgraded and the former file is still present however
-     * for a fresh install we need to install it manually until the core is able to manage new modules.
-     *
-     * @return bool
-     */
-    public function installTab()
-    {
-        if (Tab::getIdFromClassName('AdminLinkWidget')) {
-            return true;
-        }
-
-        $tab = new Tab();
-        $tab->active = 1;
-        $tab->class_name = 'AdminLinkWidget';
-        $tab->name = array();
-        foreach (Language::getLanguages(true) as $lang) {
-            $tab->name[$lang['id_lang']] = 'Link Widget';
-        }
-        $tab->id_parent = (int) Tab::getIdFromClassName('AdminParentThemes');
-        $tab->module = $this->name;
-
-        return $tab->add();
-    }
-
     public function hookActionUpdateLangAfter($params)
     {
         if (!empty($params['lang']) && $params['lang'] instanceof Language) {
@@ -199,8 +168,11 @@ class Ps_Linklist extends Module implements WidgetInterface
 
     public function getContent()
     {
+        // We need to explicitely get Symfony container, because $this->get will use the admin legacy container
+        $sfContainer = SymfonyContainer::getInstance();
+        $router = $sfContainer->get('router');
         Tools::redirectAdmin(
-            $this->context->link->getAdminLink('AdminLinkWidget')
+            $router->generate('admin_link_block_list')
         );
     }
 
