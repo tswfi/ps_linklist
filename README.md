@@ -2,7 +2,7 @@
 
 ## About
 
-Adds a block with several links.
+Give more visibility to your content/static pages (CMS, external pages, or else), where you want and when you want, to make your visitors feel like shopping on your store.
 
 ## Multistore compatibility
 
