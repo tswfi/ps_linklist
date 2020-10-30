@@ -84,7 +84,7 @@ class Ps_Linklist extends Module implements WidgetInterface
         parent::__construct();
 
         $this->displayName = $this->trans('Link List', array(), 'Modules.Linklist.Admin');
-        $this->description = $this->trans('Adds a block with several links.', array(), 'Modules.Linklist.Admin');
+        $this->description = $this->trans('Give more visibility to your content/static pages (CMS, external pages, or else), where you want and when you want, to make your visitors feel like shopping on your store.', array(), 'Modules.Linklist.Admin');
         $this->secure_key = Tools::encrypt($this->name);
 
         $this->ps_versions_compliancy = array('min' => '1.7.7.0', 'max' => _PS_VERSION_);
