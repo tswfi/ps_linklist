@@ -58,6 +58,8 @@ class Ps_Linklist extends Module implements WidgetInterface
 
     public $templateFile;
 
+    public $templateFileColumn;
+
     public function __construct()
     {
         $this->name = 'ps_linklist';
@@ -89,6 +91,7 @@ class Ps_Linklist extends Module implements WidgetInterface
 
         $this->ps_versions_compliancy = array('min' => '1.7.7.0', 'max' => _PS_VERSION_);
         $this->templateFile = 'module:ps_linklist/views/templates/hook/linkblock.tpl';
+        $this->templateFileColumn = 'module:ps_linklist/views/templates/hook/linkblock-block.tpl';
 
         $this->linkBlockPresenter = new LinkBlockPresenter(new Link(), $this->context->language);
         $this->legacyBlockRepository = new LegacyLinkBlockRepository(Db::getInstance(), $this->context->shop, $this->context->getTranslator());
@@ -164,6 +167,7 @@ class Ps_Linklist extends Module implements WidgetInterface
     public function _clearCache($template, $cache_id = null, $compile_id = null)
     {
         parent::_clearCache($this->templateFile);
+        parent::_clearCache($this->templateFileColumn);
     }
 
     public function getContent()
@@ -180,11 +184,17 @@ class Ps_Linklist extends Module implements WidgetInterface
     {
         $key = 'ps_linklist|' . $hookName;
 
-        if (!$this->isCached($this->templateFile, $this->getCacheId($key))) {
+        if ($hookName === 'displayLeftColumn' || $hookName === 'displayRightColumn') {
+            $template = $this->templateFileColumn;
+        } else {
+            $template = $this->templateFile;
+        }
+
+        if (!$this->isCached($template, $this->getCacheId($key))) {
             $this->smarty->assign($this->getWidgetVariables($hookName, $configuration));
         }
 
-        return $this->fetch($this->templateFile, $this->getCacheId($key));
+        return $this->fetch($template, $this->getCacheId($key));
     }
 
     public function getWidgetVariables($hookName, array $configuration)
