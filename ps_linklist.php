@@ -58,6 +58,9 @@ class Ps_Linklist extends Module implements WidgetInterface
 
     public $templateFile;
 
+    /**
+     * @var string
+     */
     public $templateFileColumn;
 
     public function __construct()
