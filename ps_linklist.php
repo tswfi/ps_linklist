@@ -91,7 +91,7 @@ class Ps_Linklist extends Module implements WidgetInterface
 
         $this->ps_versions_compliancy = array('min' => '1.7.7.0', 'max' => _PS_VERSION_);
         $this->templateFile = 'module:ps_linklist/views/templates/hook/linkblock.tpl';
-        $this->templateFileColumn = 'module:ps_linklist/views/templates/hook/linkblock-block.tpl';
+        $this->templateFileColumn = 'module:ps_linklist/views/templates/hook/linkblock-column.tpl';
 
         $this->linkBlockPresenter = new LinkBlockPresenter(new Link(), $this->context->language);
         $this->legacyBlockRepository = new LegacyLinkBlockRepository(Db::getInstance(), $this->context->shop, $this->context->getTranslator());
