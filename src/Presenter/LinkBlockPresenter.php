@@ -236,7 +236,7 @@ class LinkBlockPresenter
                     'id' => 'link-category-' . $categoryId,
                     'class' => 'category-link',
                     'title' => $meta['name'],
-                    'description' => $meta['description'],
+                    'description' => strip_tags($meta['description']),
                     'url' => $this->link->getCategoryLink($categoryId, true),
                 );
             }
