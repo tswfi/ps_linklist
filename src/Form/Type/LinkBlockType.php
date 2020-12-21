@@ -52,6 +52,11 @@ class LinkBlockType extends TranslatorAwareType
     private $staticPageChoices;
 
     /**
+     * @var array
+     */
+    private $categoryChoices;
+
+    /**
      * LinkBlockType constructor.
      *
      * @param TranslatorInterface $translator
@@ -60,6 +65,7 @@ class LinkBlockType extends TranslatorAwareType
      * @param array $cmsPageChoices
      * @param array $productPageChoices
      * @param array $staticPageChoices
+     * @param array $categoryChoices
      */
     public function __construct(
         TranslatorInterface $translator,
@@ -67,13 +73,15 @@ class LinkBlockType extends TranslatorAwareType
         array $hookChoices,
         array $cmsPageChoices,
         array $productPageChoices,
-        array $staticPageChoices
+        array $staticPageChoices,
+        array $categoryChoices
     ) {
         parent::__construct($translator, $locales);
         $this->hookChoices = $hookChoices;
         $this->cmsPageChoices = $cmsPageChoices;
         $this->productPageChoices = $productPageChoices;
         $this->staticPageChoices = $staticPageChoices;
+        $this->categoryChoices = $categoryChoices;
     }
 
     /**
@@ -105,6 +113,12 @@ class LinkBlockType extends TranslatorAwareType
             ->add('product', ChoiceType::class, [
                 'choices' => $this->productPageChoices,
                 'label' => $this->trans('Product pages', 'Modules.Linklist.Admin'),
+                'multiple' => true,
+                'expanded' => true,
+            ])
+            ->add('category', ChoiceType::class, [
+                'choices' => $this->categoryChoices,
+                'label' => $this->trans('Categories', 'Modules.Linklist.Admin'),
                 'multiple' => true,
                 'expanded' => true,
             ])

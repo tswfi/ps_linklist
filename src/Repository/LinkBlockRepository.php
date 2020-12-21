@@ -118,6 +118,7 @@ class LinkBlockRepository
                     'cms' => empty($data['cms']) ? [false] : $data['cms'],
                     'static' => empty($data['static']) ? [false] : $data['static'],
                     'product' => empty($data['product']) ? [false] : $data['product'],
+                    'category' => empty($data['category']) ? [false] : $data['category'],
                 ]),
             ]);
 
@@ -150,6 +151,7 @@ class LinkBlockRepository
                     'cms' => empty($data['cms']) ? [false] : $data['cms'],
                     'static' => empty($data['static']) ? [false] : $data['static'],
                     'product' => empty($data['product']) ? [false] : $data['product'],
+                    'category' => empty($data['category']) ? [false] : $data['category'],
                 ]),
             ])
         ;
@@ -241,8 +243,8 @@ class LinkBlockRepository
 
         $queries = [
             'INSERT INTO `' . $this->dbPrefix . 'link_block` (`id_link_block`, `id_hook`, `position`, `content`) VALUES
-                (1, ' . $id_hook . ', 0, \'{"cms":[false],"product":["prices-drop","new-products","best-sales"],"static":[false]}\'),
-                (2, ' . $id_hook . ', 1, \'{"cms":["1","2","3","4","5"],"product":[false],"static":["contact","sitemap","stores"]}\');',
+                (1, ' . $id_hook . ', 0, \'{"cms":[false],"product":["prices-drop","new-products","best-sales"],"static":[false],"category":[false]}\'),
+                (2, ' . $id_hook . ', 1, \'{"cms":["1","2","3","4","5"],"product":[false],"static":["contact","sitemap","stores"],"category":[false]}\');',
         ];
 
         foreach ($this->languages as $lang) {

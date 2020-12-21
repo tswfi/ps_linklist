@@ -119,9 +119,10 @@ class LinkBlockFormDataProvider implements FormDataProviderInterface
             'id_link_block' => $arrayLinkBlock['id_link_block'],
             'block_name' => $arrayLinkBlock['name'],
             'id_hook' => $arrayLinkBlock['id_hook'],
-            'cms' => $arrayLinkBlock['content']['cms'],
-            'product' => $arrayLinkBlock['content']['product'],
-            'static' => $arrayLinkBlock['content']['static'],
+            'cms' => isset($arrayLinkBlock['content']['cms']) ? $arrayLinkBlock['content']['cms'] : [],
+            'product' => isset($arrayLinkBlock['content']['product']) ? $arrayLinkBlock['content']['product'] : [],
+            'static' => isset($arrayLinkBlock['content']['static']) ? $arrayLinkBlock['content']['static'] : [],
+            'category' => isset($arrayLinkBlock['content']['category']) ? $arrayLinkBlock['content']['category'] : [],
             'custom' => $arrayCustom,
         ]];
     }
