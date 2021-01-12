@@ -159,7 +159,7 @@ class LinkBlockFormDataProvider implements FormDataProviderInterface
                 }
 
                 foreach ($customLanguages as $idLang => $custom) {
-                        $linkBlock['custom'][$key][$idLang] = [
+                    $linkBlock['custom'][$key][$idLang] = [
                         'title' => !empty($custom['title']) ? $custom['title'] : $customLanguages[$defaultLanguageId]['title'],
                         'url' => !empty($custom['url']) ? $custom['url'] : $customLanguages[$defaultLanguageId]['url'],
                     ];
