@@ -128,6 +128,41 @@ class LinkBlockFormDataProvider implements FormDataProviderInterface
     }
 
     /**
+     * Make sure to fill empty multilang fields if value for default is available
+     * 
+     * @param array $linkBlock
+     * 
+     * @return array
+     */
+    public function prepareData(array $linkBlock): array
+    {
+        $defaultLanguageId = (int) \Configuration::get('PS_LANG_DEFAULT');
+
+        foreach ($this->languages as $language) {
+            if (empty($linkBlock['block_name'][$language['id_lang']])) {
+                $linkBlock['block_name'][$language['id_lang']] = $linkBlock['block_name'][$defaultLanguageId];
+            }
+        }
+
+        if (!empty($linkBlock['custom'])) {
+            foreach ($linkBlock['custom'] as $key => $customLanguages) {
+                if ($this->isEmptyCustom($customLanguages)) {
+                    continue;
+                }
+
+                foreach ($customLanguages as $idLang => $custom) {
+                        $linkBlock['custom'][$key][$idLang] = [
+                        'title' => !empty($custom['title']) ? $custom['title'] : $customLanguages[$defaultLanguageId]['title'],
+                        'url' => !empty($custom['url']) ? $custom['url'] : $customLanguages[$defaultLanguageId]['url'],
+                    ];
+                }
+            }
+        }
+
+        return $linkBlock;
+    }
+
+    /**
      * @param array $data
      *
      * @return array
@@ -136,7 +171,8 @@ class LinkBlockFormDataProvider implements FormDataProviderInterface
      */
     public function setData(array $data)
     {
-        $linkBlock = $data['link_block'];
+        $linkBlock = $this->prepareData($data['link_block']);
+
         $errors = $this->validateLinkBlock($linkBlock);
         if (!empty($errors)) {
             return $errors;
