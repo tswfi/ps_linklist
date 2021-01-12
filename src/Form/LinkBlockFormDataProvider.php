@@ -20,13 +20,14 @@
 
 namespace PrestaShop\Module\LinkList\Form;
 
-use PrestaShop\Module\LinkList\Cache\LinkBlockCacheInterface;
-use PrestaShop\Module\LinkList\Model\LinkBlock;
-use PrestaShop\Module\LinkList\Repository\LinkBlockRepository;
-use PrestaShop\PrestaShop\Core\Addon\Module\ModuleRepository;
-use PrestaShop\PrestaShop\Core\Form\FormDataProviderInterface;
 use Hook;
 use Ps_Linklist;
+use PrestaShop\Module\LinkList\Model\LinkBlock;
+use PrestaShop\PrestaShop\Adapter\Configuration;
+use PrestaShop\Module\LinkList\Cache\LinkBlockCacheInterface;
+use PrestaShop\PrestaShop\Core\Addon\Module\ModuleRepository;
+use PrestaShop\Module\LinkList\Repository\LinkBlockRepository;
+use PrestaShop\PrestaShop\Core\Form\FormDataProviderInterface;
 
 /**
  * Class LinkBlockFormDataProvider.
@@ -64,6 +65,11 @@ class LinkBlockFormDataProvider implements FormDataProviderInterface
     private $shopId;
 
     /**
+     * @var Configuration
+     */
+    private $configuration;
+
+    /**
      * LinkBlockFormDataProvider constructor.
      *
      * @param LinkBlockRepository $repository
@@ -77,13 +83,15 @@ class LinkBlockFormDataProvider implements FormDataProviderInterface
         LinkBlockCacheInterface $cache,
         ModuleRepository $moduleRepository,
         array $languages,
-        $shopId
+        $shopId,
+        Configuration $configuration
     ) {
         $this->repository = $repository;
         $this->cache = $cache;
         $this->moduleRepository = $moduleRepository;
         $this->languages = $languages;
         $this->shopId = $shopId;
+        $this->configuration = $configuration;
     }
 
     /**
@@ -136,7 +144,7 @@ class LinkBlockFormDataProvider implements FormDataProviderInterface
      */
     public function prepareData(array $linkBlock): array
     {
-        $defaultLanguageId = (int) \Configuration::get('PS_LANG_DEFAULT');
+        $defaultLanguageId = (int) $this->configuration->get('PS_LANG_DEFAULT');
 
         foreach ($this->languages as $language) {
             if (empty($linkBlock['block_name'][$language['id_lang']])) {
