@@ -63,7 +63,7 @@ class LinkBlock extends \ObjectModel
         'primary' => 'id_link_block',
         'multilang' => true,
         'fields' => array(
-            'name' => array('type' => self::TYPE_STRING, 'lang' => true, 'required' => true, 'size' => 128),
+            'name' => array('type' => self::TYPE_STRING, 'lang' => true, 'required' => true, 'size' => 40),
             'id_hook' => array('type' => self::TYPE_INT, 'validate' => 'isUnsignedInt', 'required' => true),
             'position' => array('type' => self::TYPE_INT, 'validate' => 'isUnsignedInt', 'required' => true),
             'content' => array('type' => self::TYPE_STRING, 'validate' => 'isJson'),

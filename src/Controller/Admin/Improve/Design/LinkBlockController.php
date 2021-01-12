@@ -260,6 +260,13 @@ class LinkBlockController extends FrameworkBundleAdminController
             }
 
             $this->flashErrors($saveErrors);
+        } else {
+            $formErrors = [];
+            foreach ($form->getErrors(true) as $error) {          
+                $formErrors[] = $error->getMessage();             
+            }
+            
+            $this->flashErrors($formErrors);
         }
 
         return $this->render('@Modules/ps_linklist/views/templates/admin/link_block/form.html.twig', [
