@@ -146,9 +146,11 @@ class LinkBlockFormDataProvider implements FormDataProviderInterface
     {
         $defaultLanguageId = (int) $this->configuration->get('PS_LANG_DEFAULT');
 
-        foreach ($this->languages as $language) {
-            if (empty($linkBlock['block_name'][$language['id_lang']])) {
-                $linkBlock['block_name'][$language['id_lang']] = $linkBlock['block_name'][$defaultLanguageId];
+        if (!empty($linkBlock['block_name'])) {
+            foreach ($this->languages as $language) {
+                if (empty($linkBlock['block_name'][$language['id_lang']])) {
+                    $linkBlock['block_name'][$language['id_lang']] = $linkBlock['block_name'][$defaultLanguageId];
+                }
             }
         }
 
