@@ -249,17 +249,19 @@ class LinkBlockController extends FrameworkBundleAdminController
         $form = $formHandler->getForm();
         $form->handleRequest($request);
 
-        if ($form->isSubmitted() && $form->isValid()) {
-            $data = $form->getData();
-            $saveErrors = $formHandler->save($data);
-
-            if (0 === count($saveErrors)) {
-                $this->addFlash('success', $this->trans($successMessage, 'Admin.Notifications.Success'));
-
-                return $this->redirectToRoute('admin_link_block_list');
+        if ($form->isSubmitted()) {
+            if ($form->isValid()) {
+                $saveErrors = $formHandler->save($form->getData());
+                if (0 === count($saveErrors)) {
+                    $this->addFlash('success', $this->trans($successMessage, 'Admin.Notifications.Success'));
+                    return $this->redirectToRoute('admin_link_block_list');
+                }
             }
-
-            $this->flashErrors($saveErrors);
+            $formErrors = [];
+            foreach ($form->getErrors(true) as $error) {
+                $formErrors[] = $error->getMessage();
+            }
+            $this->flashErrors($formErrors);
         }
 
         return $this->render('@Modules/ps_linklist/views/templates/admin/link_block/form.html.twig', [

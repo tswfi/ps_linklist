@@ -20,17 +20,24 @@
 
 namespace PrestaShop\Module\LinkList\Form\Type;
 
-use PrestaShopBundle\Form\Admin\Type\TranslateTextType;
-use PrestaShopBundle\Form\Admin\Type\TranslatorAwareType;
-use Symfony\Component\Form\Extension\Core\Type\ChoiceType;
-use Symfony\Component\Form\Extension\Core\Type\CollectionType;
-use Symfony\Component\Form\Extension\Core\Type\HiddenType;
 use Symfony\Component\Form\FormBuilderInterface;
 use Symfony\Component\OptionsResolver\OptionsResolver;
 use Symfony\Component\Translation\TranslatorInterface;
+use PrestaShopBundle\Form\Admin\Type\TranslateTextType;
+use PrestaShopBundle\Form\Admin\Type\TranslatorAwareType;
+use Symfony\Component\Form\Extension\Core\Type\ChoiceType;
+use Symfony\Component\Form\Extension\Core\Type\HiddenType;
+use Symfony\Component\Form\Extension\Core\Type\CollectionType;
+use Symfony\Component\Validator\Constraints\Length;
+use PrestaShop\PrestaShop\Core\ConstraintValidator\Constraints\DefaultLanguage;
 
 class LinkBlockType extends TranslatorAwareType
 {
+    /**
+     * @var TranslatorInterface
+     */
+    private $translator;
+
     /**
      * @var array
      */
@@ -82,6 +89,7 @@ class LinkBlockType extends TranslatorAwareType
         $this->productPageChoices = $productPageChoices;
         $this->staticPageChoices = $staticPageChoices;
         $this->categoryChoices = $categoryChoices;
+        $this->translator = $translator;
     }
 
     /**
@@ -95,6 +103,23 @@ class LinkBlockType extends TranslatorAwareType
                 'locales' => $this->locales,
                 'required' => true,
                 'label' => $this->trans('Name of the block', 'Modules.Linklist.Admin'),
+                'constraints' => [
+                    new DefaultLanguage(),
+                ],
+                'options' => [
+                    'constraints' => [
+                        new Length([
+                            'max' => 40,
+                            'maxMessage' => $this->translator->trans(
+                                'Name of the block cannot be longer than %limit% characters',
+                                [
+                                    '%limit%' => 40
+                                ],
+                                'Modules.Linklist.Admin'
+                            ),
+                        ]),
+                    ],
+                ],
             ])
             ->add('id_hook', ChoiceType::class, [
                 'choices' => $this->hookChoices,
