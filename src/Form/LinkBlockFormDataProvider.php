@@ -22,6 +22,7 @@ namespace PrestaShop\Module\LinkList\Form;
 
 use Hook;
 use Ps_Linklist;
+use Language;
 use PrestaShop\Module\LinkList\Model\LinkBlock;
 use PrestaShop\PrestaShop\Adapter\Configuration;
 use PrestaShop\Module\LinkList\Cache\LinkBlockCacheInterface;
@@ -277,25 +278,16 @@ class LinkBlockFormDataProvider implements FormDataProviderInterface
             if ($this->isEmptyCustom($custom)) {
                 continue;
             }
-            foreach ($this->languages as $language) {
-                if (!isset($custom[$language['id_lang']])) {
+
+            $defaultLanguageId = (int) $this->configuration->get('PS_LANG_DEFAULT');
+            $fields = ['title', 'url'];
+            foreach ($fields as $field) {
+                if (empty($custom[$defaultLanguageId][$field])) {
                     $errors[] = [
-                        'key' => 'Missing block_name value for language %s',
+                        'key' => 'Missing %s value in custom[%s] for language %s',
                         'domain' => 'Admin.Catalog.Notification',
-                        'parameters' => [$language['iso_code']],
+                        'parameters' => [$field, $customIndex, Language::getIsoById($defaultLanguageId)],
                     ];
-                } else {
-                    $langCustom = $custom[$language['id_lang']];
-                    $fields = ['title', 'url'];
-                    foreach ($fields as $field) {
-                        if (empty($langCustom[$field])) {
-                            $errors[] = [
-                                'key' => 'Missing %s value in custom[%s] for language %s',
-                                'domain' => 'Admin.Catalog.Notification',
-                                'parameters' => [$field, $customIndex, $language['iso_code']],
-                            ];
-                        }
-                    }
                 }
             }
         }
