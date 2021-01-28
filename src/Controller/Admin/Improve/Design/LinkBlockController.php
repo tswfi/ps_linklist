@@ -248,7 +248,7 @@ class LinkBlockController extends FrameworkBundleAdminController
         $formHandler = $this->get('prestashop.module.link_block.form_handler');
         $form = $formHandler->getForm();
         $form->handleRequest($request);
-
+        
         if ($form->isSubmitted()) {
             if ($form->isValid()) {
                 $saveErrors = $formHandler->save($form->getData());
@@ -256,6 +256,8 @@ class LinkBlockController extends FrameworkBundleAdminController
                     $this->addFlash('success', $this->trans($successMessage, 'Admin.Notifications.Success'));
                     return $this->redirectToRoute('admin_link_block_list');
                 }
+
+                $this->flashErrors($saveErrors);
             }
             $formErrors = [];
             foreach ($form->getErrors(true) as $error) {

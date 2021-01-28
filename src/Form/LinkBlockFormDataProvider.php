@@ -20,13 +20,15 @@
 
 namespace PrestaShop\Module\LinkList\Form;
 
-use PrestaShop\Module\LinkList\Cache\LinkBlockCacheInterface;
-use PrestaShop\Module\LinkList\Model\LinkBlock;
-use PrestaShop\Module\LinkList\Repository\LinkBlockRepository;
-use PrestaShop\PrestaShop\Core\Addon\Module\ModuleRepository;
-use PrestaShop\PrestaShop\Core\Form\FormDataProviderInterface;
 use Hook;
 use Ps_Linklist;
+use Language;
+use PrestaShop\Module\LinkList\Model\LinkBlock;
+use PrestaShop\PrestaShop\Adapter\Configuration;
+use PrestaShop\Module\LinkList\Cache\LinkBlockCacheInterface;
+use PrestaShop\PrestaShop\Core\Addon\Module\ModuleRepository;
+use PrestaShop\Module\LinkList\Repository\LinkBlockRepository;
+use PrestaShop\PrestaShop\Core\Form\FormDataProviderInterface;
 
 /**
  * Class LinkBlockFormDataProvider.
@@ -64,6 +66,11 @@ class LinkBlockFormDataProvider implements FormDataProviderInterface
     private $shopId;
 
     /**
+     * @var Configuration
+     */
+    private $configuration;
+
+    /**
      * LinkBlockFormDataProvider constructor.
      *
      * @param LinkBlockRepository $repository
@@ -77,13 +84,15 @@ class LinkBlockFormDataProvider implements FormDataProviderInterface
         LinkBlockCacheInterface $cache,
         ModuleRepository $moduleRepository,
         array $languages,
-        $shopId
+        $shopId,
+        Configuration $configuration
     ) {
         $this->repository = $repository;
         $this->cache = $cache;
         $this->moduleRepository = $moduleRepository;
         $this->languages = $languages;
         $this->shopId = $shopId;
+        $this->configuration = $configuration;
     }
 
     /**
@@ -128,6 +137,43 @@ class LinkBlockFormDataProvider implements FormDataProviderInterface
     }
 
     /**
+     * Make sure to fill empty multilang fields if value for default is available
+     * 
+     * @param array $linkBlock
+     * 
+     * @return array
+     */
+    public function prepareData(array $linkBlock): array
+    {
+        $defaultLanguageId = (int) $this->configuration->get('PS_LANG_DEFAULT');
+
+        if (!empty($linkBlock['block_name'])) {
+            foreach ($this->languages as $language) {
+                if (empty($linkBlock['block_name'][$language['id_lang']])) {
+                    $linkBlock['block_name'][$language['id_lang']] = $linkBlock['block_name'][$defaultLanguageId];
+                }
+            }
+        }
+
+        if (!empty($linkBlock['custom'])) {
+            foreach ($linkBlock['custom'] as $key => $customLanguages) {
+                if ($this->isEmptyCustom($customLanguages)) {
+                    continue;
+                }
+
+                foreach ($customLanguages as $idLang => $custom) {
+                    $linkBlock['custom'][$key][$idLang] = [
+                        'title' => $custom['title'] ?? $customLanguages[$defaultLanguageId]['title'],
+                        'url' => $custom['url'] ?? $customLanguages[$defaultLanguageId]['url'],
+                    ];
+                }
+            }
+        }
+
+        return $linkBlock;
+    }
+
+    /**
      * @param array $data
      *
      * @return array
@@ -136,7 +182,8 @@ class LinkBlockFormDataProvider implements FormDataProviderInterface
      */
     public function setData(array $data)
     {
-        $linkBlock = $data['link_block'];
+        $linkBlock = $this->prepareData($data['link_block']);
+
         $errors = $this->validateLinkBlock($linkBlock);
         if (!empty($errors)) {
             return $errors;
@@ -231,25 +278,16 @@ class LinkBlockFormDataProvider implements FormDataProviderInterface
             if ($this->isEmptyCustom($custom)) {
                 continue;
             }
-            foreach ($this->languages as $language) {
-                if (!isset($custom[$language['id_lang']])) {
+
+            $defaultLanguageId = (int) $this->configuration->get('PS_LANG_DEFAULT');
+            $fields = ['title', 'url'];
+            foreach ($fields as $field) {
+                if (empty($custom[$defaultLanguageId][$field])) {
                     $errors[] = [
-                        'key' => 'Missing block_name value for language %s',
+                        'key' => 'Missing %s value in custom[%s] for language %s',
                         'domain' => 'Admin.Catalog.Notification',
-                        'parameters' => [$language['iso_code']],
+                        'parameters' => [$field, $customIndex, Language::getIsoById($defaultLanguageId)],
                     ];
-                } else {
-                    $langCustom = $custom[$language['id_lang']];
-                    $fields = ['title', 'url'];
-                    foreach ($fields as $field) {
-                        if (empty($langCustom[$field])) {
-                            $errors[] = [
-                                'key' => 'Missing %s value in custom[%s] for language %s',
-                                'domain' => 'Admin.Catalog.Notification',
-                                'parameters' => [$field, $customIndex, $language['iso_code']],
-                            ];
-                        }
-                    }
                 }
             }
         }
