@@ -1,6 +1,6 @@
 <?php
 /**
- * 2007-2020 PrestaShop and Contributors
+ * 2007-2021 PrestaShop and Contributors
  *
  * NOTICE OF LICENSE
  *
@@ -13,7 +13,7 @@
  * to license@prestashop.com so we can send you a copy immediately.
  *
  * @author    PrestaShop SA <contact@prestashop.com>
- * @copyright 2007-2020 PrestaShop SA and Contributors
+ * @copyright 2007-2021 PrestaShop SA and Contributors
  * @license   https://opensource.org/licenses/AFL-3.0 Academic Free License 3.0 (AFL-3.0)
  * International Registered Trademark & Property of PrestaShop SA
  */
@@ -112,17 +112,24 @@ class Ps_Linklist extends Module implements WidgetInterface
             return false;
         }
 
-        $installed = $this->createTables();
+        $tablesInstalledWithSuccess = $this->createTables();
 
-        if ($installed) {
-            if ($this->uninstallPrestaShop16Module()) {
-                (new DataMigration(Db::getInstance()))->migrateData();
-            } else {
-                $installed &= $this->installFixtures();
-            }
+        if (!$tablesInstalledWithSuccess) {
+            $this->uninstall();
+            return false;
         }
 
-        if ($installed
+
+        $old16ModuleUninstalledWithSuccess = $this->uninstallPrestaShop16Module();
+
+        if ($old16ModuleUninstalledWithSuccess) {
+            (new DataMigration(Db::getInstance()))->migrateData();
+            $dataLoadedWithSuccess = true;
+        } else {
+            $dataLoadedWithSuccess = $this->installFixtures();
+        }
+
+        if ($dataLoadedWithSuccess
             && $this->registerHook('displayFooter')
             && $this->registerHook('actionUpdateLangAfter')) {
             return true;
