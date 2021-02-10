@@ -1,6 +1,6 @@
 <?php
 /**
- * 2007-2020 PrestaShop and Contributors
+ * 2007-2021 PrestaShop and Contributors
  *
  * NOTICE OF LICENSE
  *
@@ -13,7 +13,7 @@
  * to license@prestashop.com so we can send you a copy immediately.
  *
  * @author    PrestaShop SA <contact@prestashop.com>
- * @copyright 2007-2020 PrestaShop SA and Contributors
+ * @copyright 2007-2021 PrestaShop SA and Contributors
  * @license   https://opensource.org/licenses/AFL-3.0 Academic Free License 3.0 (AFL-3.0)
  * International Registered Trademark & Property of PrestaShop SA
  */
@@ -26,6 +26,7 @@ if (file_exists(__DIR__ . '/vendor/autoload.php')) {
 }
 
 use PrestaShop\PrestaShop\Core\Module\WidgetInterface;
+use PrestaShop\Module\LinkList\DataMigration;
 use PrestaShop\Module\LinkList\LegacyLinkBlockRepository;
 use PrestaShop\Module\LinkList\Presenter\LinkBlockPresenter;
 use PrestaShop\Module\LinkList\Model\LinkBlockLang;
@@ -39,6 +40,11 @@ use PrestaShop\PrestaShop\Adapter\Shop\Context;
  */
 class Ps_Linklist extends Module implements WidgetInterface
 {
+    /**
+     * @var string Name of the module running on PS 1.6.x. Used for data migration.
+     */
+    const PS_16_EQUIVALENT_MODULE = 'blockcms';
+
     const MODULE_NAME = 'ps_linklist';
 
     protected $_html;
@@ -106,9 +112,24 @@ class Ps_Linklist extends Module implements WidgetInterface
             return false;
         }
 
-        $installed = $this->installFixtures();
+        $tablesInstalledWithSuccess = $this->createTables();
 
-        if ($installed
+        if (!$tablesInstalledWithSuccess) {
+            $this->uninstall();
+            return false;
+        }
+
+
+        $old16ModuleUninstalledWithSuccess = $this->uninstallPrestaShop16Module();
+
+        if ($old16ModuleUninstalledWithSuccess) {
+            (new DataMigration(Db::getInstance()))->migrateData();
+            $dataLoadedWithSuccess = true;
+        } else {
+            $dataLoadedWithSuccess = $this->installFixtures();
+        }
+
+        if ($dataLoadedWithSuccess
             && $this->registerHook('displayFooter')
             && $this->registerHook('actionUpdateLangAfter')) {
             return true;
@@ -124,26 +145,37 @@ class Ps_Linklist extends Module implements WidgetInterface
      *
      * @throws \Doctrine\DBAL\DBALException
      */
-    private function installFixtures()
+    private function createTables()
     {
-        $installed = true;
         $result = $this->getRepository()->createTables();
         if (false === $result || (is_array($result) && !empty($result))) {
             if (is_array($result)) {
                 $this->addModuleErrors($result);
             }
-            $installed = false;
+
+            return false;
         }
 
+        return true;
+    }
+
+    /**
+     * @return bool
+     *
+     * @throws \Doctrine\DBAL\DBALException
+     */
+    private function installFixtures()
+    {
         $result = $this->getRepository()->installFixtures();
         if (false === $result || (is_array($result) && !empty($result))) {
             if (is_array($result)) {
                 $this->addModuleErrors($result);
             }
-            $installed = false;
+
+            return false;
         }
 
-        return $installed;
+        return true;
     }
 
     public function uninstall()
@@ -158,6 +190,27 @@ class Ps_Linklist extends Module implements WidgetInterface
         }
 
         return $uninstalled && parent::uninstall();
+    }
+
+    /**
+     * Migrate data from 1.6 equivalent module (if applicable), then uninstall
+     */
+    private function uninstallPrestaShop16Module()
+    {
+        if (!Module::isInstalled(self::PS_16_EQUIVALENT_MODULE)) {
+            return false;
+        }
+        $oldModule = Module::getInstanceByName(self::PS_16_EQUIVALENT_MODULE);
+        if ($oldModule) {
+            // This closure calls the parent class to prevent data to be erased
+            // It allows the new module to be configured without migration
+            $parentUninstallClosure = function() {
+                return parent::uninstall();
+            };
+            $parentUninstallClosure = $parentUninstallClosure->bindTo($oldModule, get_class($oldModule));
+            $parentUninstallClosure();
+        }
+        return true;
     }
 
     public function hookActionUpdateLangAfter($params)
