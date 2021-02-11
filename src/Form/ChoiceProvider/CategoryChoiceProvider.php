@@ -21,28 +21,33 @@
 namespace PrestaShop\Module\LinkList\Form\ChoiceProvider;
 
 /**
- * Class HookChoiceProvider.
+ * Class CategoryChoiceProvider.
  */
-final class HookChoiceProvider extends AbstractDatabaseChoiceProvider
+final class CategoryChoiceProvider extends AbstractDatabaseChoiceProvider
 {
     /**
-     * @return mixed
+     * @return array
      */
     public function getChoices()
     {
         $qb = $this->connection->createQueryBuilder();
         $qb
-            ->select('h.id_hook, h.name')
-            ->from($this->dbPrefix . 'hook', 'h')
-            ->andWhere('h.name LIKE :displayHook')
-            ->setParameter('displayHook', 'display%')
-            ->orderBy('h.name')
+            ->select('cc.id_category, ccl.name')
+            ->from($this->dbPrefix . 'category', 'cc')
+            ->innerJoin('cc', $this->dbPrefix . 'category_lang', 'ccl', 'cc.id_category = ccl.id_category')
+            ->innerJoin('cc', $this->dbPrefix . 'category_shop', 'ccs', 'cc.id_category = ccs.id_category')
+            ->andWhere('cc.active = 1')
+            ->andWhere('ccl.id_lang = :idLang')
+            ->andWhere('ccs.id_shop IN (:shopIds)')
+            ->setParameter('idLang', $this->idLang)
+            ->setParameter('shopIds', implode(',', $this->shopIds))
+            ->orderBy('ccl.name')
         ;
 
-        $hooks = $qb->execute()->fetchAll();
+        $categories = $qb->execute()->fetchAll();
         $choices = [];
-        foreach ($hooks as $hook) {
-            $choices[$hook['name']] = $hook['id_hook'];
+        foreach ($categories as $category) {
+            $choices[$category['name']] = $category['id_category'];
         }
 
         return $choices;

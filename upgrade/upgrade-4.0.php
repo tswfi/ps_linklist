@@ -17,34 +17,17 @@
  * @copyright Since 2007 PrestaShop SA and Contributors
  * @license   https://opensource.org/licenses/AFL-3.0 Academic Free License version 3.0
  */
+if (!defined('_PS_VERSION_')) {
+    exit;
+}
 
-namespace PrestaShop\Module\LinkList\Form\ChoiceProvider;
-
-/**
- * Class HookChoiceProvider.
- */
-final class HookChoiceProvider extends AbstractDatabaseChoiceProvider
+function upgrade_module_4_0($object)
 {
-    /**
-     * @return mixed
-     */
-    public function getChoices()
-    {
-        $qb = $this->connection->createQueryBuilder();
-        $qb
-            ->select('h.id_hook, h.name')
-            ->from($this->dbPrefix . 'hook', 'h')
-            ->andWhere('h.name LIKE :displayHook')
-            ->setParameter('displayHook', 'display%')
-            ->orderBy('h.name')
-        ;
+    $result = true;
+    $result &= Db::getInstance()->execute('UPDATE `'._DB_PREFIX_.'tab` SET `route_name` = "admin_link_block_list" WHERE `class_name` = "AdminLinkWidget"');
+    $result &= Db::getInstance()->execute('ALTER TABLE `'._DB_PREFIX_.'link_block` CONVERT TO CHARACTER SET utf8mb4 COLLATE utf8mb4_general_ci;');
+    $result &= Db::getInstance()->execute('ALTER TABLE `'._DB_PREFIX_.'link_block_lang` CONVERT TO CHARACTER SET utf8mb4 COLLATE utf8mb4_general_ci;');
+    $result &= Db::getInstance()->execute('ALTER TABLE `'._DB_PREFIX_.'link_block_shop` CONVERT TO CHARACTER SET utf8mb4 COLLATE utf8mb4_general_ci;');
 
-        $hooks = $qb->execute()->fetchAll();
-        $choices = [];
-        foreach ($hooks as $hook) {
-            $choices[$hook['name']] = $hook['id_hook'];
-        }
-
-        return $choices;
-    }
+    return (bool) $result;
 }
