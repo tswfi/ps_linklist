@@ -7,7 +7,7 @@
     "watch": "webpack --progress --colors --debug --display-chunks --watch"
   },
   "author": "PrestaShop",
-  "license": "OSL-3.0",
+  "license": "AFL-3.0",
   "devDependencies": {
     "babel-core": "^6.25.0",
     "babel-loader": "^6.2.1",
