@@ -28,6 +28,7 @@ use PrestaShop\PrestaShop\Core\Grid\Grid;
 use PrestaShop\PrestaShop\Core\Grid\GridFactory;
 use PrestaShop\PrestaShop\Core\Hook\HookDispatcherInterface;
 use Symfony\Component\Translation\TranslatorInterface;
+use PrestaShop\PrestaShop\Adapter\Shop\Context;
 
 /**
  * Class LinkBlockGridFactory.
@@ -55,6 +56,11 @@ final class LinkBlockGridFactory
     private $filterFormFactory;
 
     /**
+     * @var Context
+     */
+    private $shopContext;
+
+    /**
      * HookGridFactory constructor.
      *
      * @param TranslatorInterface $translator
@@ -66,12 +72,14 @@ final class LinkBlockGridFactory
         TranslatorInterface $translator,
         GridDataFactoryInterface $dataFactory,
         HookDispatcherInterface $hookDispatcher,
-        GridFilterFormFactoryInterface $filterFormFactory
+        GridFilterFormFactoryInterface $filterFormFactory,
+        Context $shopContext
     ) {
         $this->translator = $translator;
         $this->hookDispatcher = $hookDispatcher;
         $this->dataFactory = $dataFactory;
         $this->filterFormFactory = $filterFormFactory;
+        $this->shopContext = $shopContext;
     }
 
     /**
@@ -86,6 +94,11 @@ final class LinkBlockGridFactory
         foreach ($hooks as $hook) {
             $hookParams = $filtersParams;
             $hookParams['filters']['id_hook'] = $hook['id_hook'];
+            $hookParams['filters']['id_shop'] = [$this->shopContext->getContextShopID()];
+            
+            if (!$this->shopContext->isSingleShopContext()) {
+                $hookParams['filters']['id_shop'] = $this->shopContext->getContextListShopID();
+            }
 
             $filters = new LinkBlockFilters($hookParams);
 

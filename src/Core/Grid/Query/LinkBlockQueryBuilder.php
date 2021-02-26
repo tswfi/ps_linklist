@@ -20,9 +20,10 @@
 
 namespace PrestaShop\Module\LinkList\Core\Grid\Query;
 
+use Doctrine\DBAL\Connection;
 use Doctrine\DBAL\Query\QueryBuilder;
-use PrestaShop\PrestaShop\Core\Grid\Query\AbstractDoctrineQueryBuilder;
 use PrestaShop\PrestaShop\Core\Grid\Search\SearchCriteriaInterface;
+use PrestaShop\PrestaShop\Core\Grid\Query\AbstractDoctrineQueryBuilder;
 
 /**
  * Class LinkBlockQueryBuilder.
@@ -88,6 +89,7 @@ final class LinkBlockQueryBuilder extends AbstractDoctrineQueryBuilder
             ->createQueryBuilder()
             ->from($this->dbPrefix . 'link_block', 'lb')
             ->innerJoin('lb', $this->dbPrefix . 'link_block_lang', 'lbl', 'lb.id_link_block = lbl.id_link_block')
+            ->leftJoin('lb', $this->dbPrefix . 'link_block_shop', 'lbs', 'lb.id_link_block = lbs.id_link_block')
             ->leftJoin('lb', $this->dbPrefix . 'hook', 'h', 'lb.id_hook = h.id_hook');
 
         foreach ($filters as $name => $value) {
@@ -104,6 +106,15 @@ final class LinkBlockQueryBuilder extends AbstractDoctrineQueryBuilder
                 $qb
                     ->andWhere("h.id_hook = :$name")
                     ->setParameter($name, $value)
+                ;
+
+                continue;
+            }
+
+            if ('id_shop' === $name) {
+                $qb
+                    ->andWhere("lbs.id_shop IN (:$name)")
+                    ->setParameter($name, $value, Connection::PARAM_STR_ARRAY);
                 ;
 
                 continue;

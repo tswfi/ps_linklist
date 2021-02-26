@@ -62,11 +62,13 @@ class LegacyLinkBlockRepository
     public function getByIdHook($id_hook)
     {
         $id_hook = (int) $id_hook;
+        $shopId = Context::getContext()->shop->id;
 
-        $sql = "SELECT cb.`id_link_block`
-                    FROM {$this->db_prefix}link_block cb
-                    WHERE `id_hook` = $id_hook
-                    ORDER by cb.`position`
+        $sql = "SELECT lb.`id_link_block`
+                    FROM {$this->db_prefix}link_block lb
+                    INNER JOIN {$this->db_prefix}link_block_shop lbs ON lbs.`id_link_block` = lb.`id_link_block`
+                    WHERE lb. `id_hook` = $id_hook AND lbs.`id_shop` = {$shopId}
+                    ORDER by lb.`position`
                 ";
         $ids = $this->db->executeS($sql);
 

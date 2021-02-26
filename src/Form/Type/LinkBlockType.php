@@ -21,14 +21,17 @@
 namespace PrestaShop\Module\LinkList\Form\Type;
 
 use Symfony\Component\Form\FormBuilderInterface;
+use Symfony\Component\Validator\Constraints\Length;
 use Symfony\Component\OptionsResolver\OptionsResolver;
 use Symfony\Component\Translation\TranslatorInterface;
 use PrestaShopBundle\Form\Admin\Type\TranslateTextType;
+use PrestaShop\PrestaShop\Core\Feature\FeatureInterface;
+use PrestaShopBundle\Form\Admin\Type\ShopChoiceTreeType;
 use PrestaShopBundle\Form\Admin\Type\TranslatorAwareType;
 use Symfony\Component\Form\Extension\Core\Type\ChoiceType;
 use Symfony\Component\Form\Extension\Core\Type\HiddenType;
 use Symfony\Component\Form\Extension\Core\Type\CollectionType;
-use Symfony\Component\Validator\Constraints\Length;
+use Symfony\Component\Validator\Constraints\NotBlank;
 use PrestaShop\PrestaShop\Core\ConstraintValidator\Constraints\DefaultLanguage;
 
 class LinkBlockType extends TranslatorAwareType
@@ -64,6 +67,11 @@ class LinkBlockType extends TranslatorAwareType
     private $categoryChoices;
 
     /**
+     * @var FeatureInterface
+     */
+    private $multiStoreFeature;
+
+    /**
      * LinkBlockType constructor.
      *
      * @param TranslatorInterface $translator
@@ -81,7 +89,8 @@ class LinkBlockType extends TranslatorAwareType
         array $cmsPageChoices,
         array $productPageChoices,
         array $staticPageChoices,
-        array $categoryChoices
+        array $categoryChoices,
+        FeatureInterface $multiStoreFeature
     ) {
         parent::__construct($translator, $locales);
         $this->hookChoices = $hookChoices;
@@ -90,6 +99,7 @@ class LinkBlockType extends TranslatorAwareType
         $this->staticPageChoices = $staticPageChoices;
         $this->categoryChoices = $categoryChoices;
         $this->translator = $translator;
+        $this->multiStoreFeature = $multiStoreFeature;
     }
 
     /**
@@ -168,6 +178,20 @@ class LinkBlockType extends TranslatorAwareType
                 'label' => $this->trans('Custom content', 'Modules.Linklist.Admin'),
             ])
         ;
+
+        if ($this->multiStoreFeature->isUsed()) {
+            $builder->add('shop_association', ShopChoiceTreeType::class, [
+                'label' => $this->trans('Shop association', 'Admin.Global'),
+                'required' => false,
+                'constraints' => [
+                    new NotBlank([
+                        'message' => $this->trans(
+                            'This field cannot be empty', 'Admin.Notifications.Error'
+                        ),
+                    ]),
+                ],
+            ]);
+        }
     }
 
     /**
