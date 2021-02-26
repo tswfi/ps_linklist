@@ -5,3 +5,4 @@
 /views/node_modules
 !vendor/index.php
 !vendor/.htaccess
+views/yarn.lock
