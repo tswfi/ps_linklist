@@ -62,12 +62,11 @@ class LegacyLinkBlockRepository
     public function getByIdHook($id_hook)
     {
         $id_hook = (int) $id_hook;
-        $shopId = Context::getContext()->shop->id;
 
         $sql = "SELECT lb.`id_link_block`
                     FROM {$this->db_prefix}link_block lb
                     INNER JOIN {$this->db_prefix}link_block_shop lbs ON lbs.`id_link_block` = lb.`id_link_block`
-                    WHERE lb. `id_hook` = $id_hook AND lbs.`id_shop` = {$shopId}
+                    WHERE lb. `id_hook` = $id_hook AND lbs.`id_shop` = {$this->shop->id}
                     ORDER by lb.`position`
                 ";
         $ids = $this->db->executeS($sql);
@@ -141,9 +140,17 @@ class LegacyLinkBlockRepository
         foreach (Language::getLanguages(true, Context::getContext()->shop->id) as $lang) {
             $queries[] = 'INSERT INTO `' . $this->db_prefix . 'link_block_lang` (`id_link_block`, `id_lang`, `name`) VALUES
                 (1, ' . (int) $lang['id_lang'] . ', "' . pSQL($this->translator->trans('Products', array(), 'Modules.Linklist.Shop', $lang['locale'])) . '"),
-                (2, ' . (int) $lang['id_lang'] . ', "' . pSQL($this->translator->trans('Our company', array(), 'Modules.Linklist.Shop', $lang['locale'])) . '")'
+                (2, ' . (int) $lang['id_lang'] . ', "' . pSQL($this->translator->trans('Our company', array(), 'Modules.Linklist.Shop', $lang['locale'])) . '");'
             ;
         }
+
+        foreach ($this->shop::getContextListShopID() as $shopId) {
+            $queries[] = 'INSERT INTO `' . $this->db_prefix . 'link_block_shop` (`id_link_block`, `id_shop`) VALUES
+                (1, ' . (int) $shopId . '),
+                (2, ' . (int) $shopId . ');'
+            ;
+        }
+        
         foreach ($queries as $query) {
             $success &= $this->db->execute($query);
         }
