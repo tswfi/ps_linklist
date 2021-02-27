@@ -301,7 +301,10 @@ class Ps_Linklist extends Module implements WidgetInterface
                             $container->get('doctrine.dbal.default_connection'),
                             $container->getParameter('database_prefix'),
                             $legacyContext->getLanguages(true, $shopContext->getContextShopID()),
-                            $container->get('translator')
+                            $container->get('translator'),
+                            $container->get('prestashop.adapter.feature.multistore'),
+                            $legacyContext->employee,
+                            $shopContext->getShops(true, true)
                         );
                     }
                 } catch (Throwable $e) {

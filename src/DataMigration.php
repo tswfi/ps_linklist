@@ -22,11 +22,9 @@ namespace PrestaShop\Module\LinkList;
 
 use PrestaShop\Module\LinkList\Model\LinkBlock;
 use Configuration;
-use Context;
 use Db;
 use Hook;
 use Language;
-use Shop;
 
 /**
  * Class used to migrate data from the 1.6 module
