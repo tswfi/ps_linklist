@@ -45,7 +45,7 @@ final class LinkBlockQueryBuilder extends AbstractDoctrineQueryBuilder
             h.name as hook_name,
             h.title as hook_title,
             h.description as hook_description,
-            lb.position
+            lbs.position as position
             ')
             ->orderBy(
                 $searchCriteria->getOrderBy(),

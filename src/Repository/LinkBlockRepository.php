@@ -124,19 +124,17 @@ class LinkBlockRepository
     public function create(array $data)
     {
         $idHook = $data['id_hook'];
-        $maxPosition = $this->getHookMaxPosition($idHook);
+        $idShop = $data['id_shop'];
 
         $qb = $this->connection->createQueryBuilder();
         $qb
             ->insert($this->dbPrefix . 'link_block')
             ->values([
                 'id_hook' => ':idHook',
-                'position' => ':position',
                 'content' => ':content',
             ])
             ->setParameters([
                 'idHook' => $idHook,
-                'position' => null !== $maxPosition ? $maxPosition + 1 : 0,
                 'content' => json_encode([
                     'cms' => empty($data['cms']) ? [false] : $data['cms'],
                     'static' => empty($data['static']) ? [false] : $data['static'],
@@ -149,7 +147,7 @@ class LinkBlockRepository
         $linkBlockId = $this->connection->lastInsertId();
 
         $this->updateLanguages($linkBlockId, $data['block_name'], $data['custom_content']);
-        $this->updateShopAssociation($linkBlockId, $data['shop_association']);
+        $this->updateShopAssociation($linkBlockId, $data['shop_association'], $idHook, true);
 
         return $linkBlockId;
     }
@@ -395,19 +393,25 @@ class LinkBlockRepository
 
     /**
      * @param int $idHook
+     * @param int $idShop
      *
-     * @return bool|string
+     * @return int|null
      */
-    private function getHookMaxPosition($idHook)
+    private function getHookMaxPosition(int $idHook, int $idShop): ?int
     {
         $qb = $this->connection->createQueryBuilder();
-        $qb->select('MAX(lb.position)')
-            ->from($this->dbPrefix . 'link_block', 'lb')
+        $qb->select('MAX(lbs.position)')
+            ->from($this->dbPrefix . 'link_block_shop', 'lbs')
+            ->leftJoin('lbs', $this->dbPrefix . 'link_block', 'lb', 'lbs.id_link_block = lb.id_link_block')
             ->andWhere('lb.id_hook = :idHook')
+            ->andWhere('lbs.id_shop = :idShop')
             ->setParameter('idHook', $idHook)
+            ->setParameter('idShop', $idShop)
         ;
 
-        return $qb->execute()->fetchColumn(0);
+        $maxPosition = $qb->execute()->fetchColumn(0);
+        
+        return null !== $maxPosition ? $maxPosition + 1 : 0;
     }
 
     /**
@@ -416,7 +420,7 @@ class LinkBlockRepository
      *
      * @throws DatabaseException
      */
-    private function updateShopAssociation(int $linkBlockId, array $shopIds): void
+    private function updateShopAssociation(int $linkBlockId, array $shopIds, ?int $hookId = null, bool $forcePositions = false): void
     {
         if (!$this->multiStoreFeature->isUsed() || empty($shopIds)) {
             return;
@@ -440,18 +444,61 @@ class LinkBlockRepository
         $this->executeQueryBuilder($qb, 'Link block shop association deletion error');
 
         foreach ($shopIds as $shopId) {
+            $values = [
+                'id_shop' => ':shopId',
+                'id_link_block' => ':linkBlockId',
+            ];
+            $parameters = [
+                'shopId' => $shopId,
+                'linkBlockId' => $linkBlockId,
+            ];
+
+            if ($hookId && $forcePositions) {
+                $values['position'] = ':position';
+                $parameters['position'] = $this->getHookMaxPosition($hookId, $shopId);
+            }
+
             $qb
                 ->insert($this->dbPrefix . 'link_block_shop')
-                ->values([
-                    'id_shop' => ':shopId',
-                    'id_link_block' => ':linkBlockId',
-                ])
-                ->setParameters([
-                    'shopId' => $shopId,
-                    'linkBlockId' => $linkBlockId
-                ]);
+                ->values($values)
+                ->setParameters($parameters);
 
             $this->executeQueryBuilder($qb, 'Link block shop association error');
+        }
+    }
+
+    /**
+     * @param int $shopId
+     * @param array $positionsData
+     * 
+     * @return void
+     */
+    public function updatePositions(int $shopId, array $positionsData = [])
+    {
+        try {
+            $this->connection->beginTransaction();
+
+            foreach ($positionsData['positions'] as $position) {
+                $qb = $this->connection->createQueryBuilder();
+                $qb
+                    ->update($this->dbPrefix . 'link_block_shop')
+                    ->set('position', ':position')
+                    ->andWhere('id_link_block = :linkBlockId')
+                    ->andWhere('id_shop = :shopId')
+                    ->setParameter('shopId', $shopId)
+                    ->setParameter('linkBlockId', $position['rowId'])
+                    ->setParameter('position', $position['newPosition']);
+
+                $statement = $qb->execute();
+                if ($statement instanceof Statement && $statement->errorCode()) {
+                    throw new DatabaseException('Could not update #%i');
+                }
+            }
+            $this->connection->commit();
+        } catch (ConnectionException $e) {
+            $this->connection->rollBack();
+
+            throw new DatabaseException('Could not update positions.');
         }
     }
 }

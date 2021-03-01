@@ -214,6 +214,7 @@ class LinkBlockFormDataProvider implements FormDataProviderInterface
             }
         }
         $linkBlock['custom_content'] = $customContent;
+        $linkBlock['id_shop'] = $this->shopContext->getContextShopID();
 
         if (empty($linkBlock['id_link_block'])) {
             $linkBlockId = $this->repository->create($linkBlock);

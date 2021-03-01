@@ -26,12 +26,6 @@ use PrestaShop\Module\LinkList\Form\LinkBlockFormDataProvider;
 use PrestaShop\Module\LinkList\Repository\LinkBlockRepository;
 use PrestaShop\PrestaShop\Core\Exception\DatabaseException;
 use PrestaShop\PrestaShop\Core\Form\FormHandlerInterface;
-use PrestaShop\PrestaShop\Core\Grid\Position\Exception\PositionDataException;
-use PrestaShop\PrestaShop\Core\Grid\Position\Exception\PositionUpdateException;
-use PrestaShop\PrestaShop\Core\Grid\Position\GridPositionUpdaterInterface;
-use PrestaShop\PrestaShop\Core\Grid\Position\PositionUpdateFactory;
-use PrestaShop\PrestaShop\Core\Grid\Position\PositionDefinition;
-use PrestaShop\PrestaShop\Core\Grid\Position\PositionUpdate;
 use PrestaShopBundle\Controller\Admin\FrameworkBundleAdminController;
 use PrestaShopBundle\Security\Annotation\AdminSecurity;
 use PrestaShopBundle\Security\Annotation\ModuleActivated;
@@ -201,27 +195,14 @@ class LinkBlockController extends FrameworkBundleAdminController
             'parentId' => $hookId,
         ];
 
-        /** @var PositionDefinition $positionDefinition */
-        $positionDefinition = $this->get('prestashop.module.link_block.grid.position_definition');
-        /** @var PositionUpdateFactory $positionUpdateFactory */
-        $positionUpdateFactory = $this->get('prestashop.core.grid.position.position_update_factory');
-        try {
-            /** @var PositionUpdate $positionUpdate */
-            $positionUpdate = $positionUpdateFactory->buildPositionUpdate($positionsData, $positionDefinition);
-        } catch (PositionDataException $e) {
-            $errors = [$e->toArray()];
-            $this->flashErrors($errors);
+        /** @var LinkBlockRepository $repository */
+        $repository = $this->get('prestashop.module.link_block.repository');
 
-            return $this->redirectToRoute('admin_link_block_list');
-        }
-
-        /** @var GridPositionUpdaterInterface $updater */
-        $updater = $this->get('prestashop.core.grid.position.doctrine_grid_position_updater');
         try {
-            $updater->update($positionUpdate);
+            $repository->updatePositions($this->getContext()->shop->id, $positionsData);
             $this->clearModuleCache();
             $this->addFlash('success', $this->trans('Successful update.', 'Admin.Notifications.Success'));
-        } catch (PositionUpdateException $e) {
+        } catch (DatabaseException $e) {
             $errors = [$e->toArray()];
             $this->flashErrors($errors);
         }
