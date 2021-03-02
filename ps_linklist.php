@@ -25,15 +25,16 @@ if (file_exists(__DIR__ . '/vendor/autoload.php')) {
     require_once __DIR__ . '/vendor/autoload.php';
 }
 
-use PrestaShop\PrestaShop\Core\Module\WidgetInterface;
 use PrestaShop\Module\LinkList\DataMigration;
+use PrestaShop\PrestaShop\Adapter\Shop\Context;
+use PrestaShop\PrestaShop\Adapter\LegacyContext;
+use PrestaShop\Module\LinkList\Model\LinkBlockLang;
+use PrestaShop\PrestaShop\Adapter\SymfonyContainer;
+use PrestaShop\PrestaShop\Core\Module\WidgetInterface;
+use PrestaShop\PrestaShop\Core\Feature\FeatureInterface;
 use PrestaShop\Module\LinkList\LegacyLinkBlockRepository;
 use PrestaShop\Module\LinkList\Presenter\LinkBlockPresenter;
-use PrestaShop\Module\LinkList\Model\LinkBlockLang;
 use PrestaShop\Module\LinkList\Repository\LinkBlockRepository;
-use PrestaShop\PrestaShop\Adapter\SymfonyContainer;
-use PrestaShop\PrestaShop\Adapter\LegacyContext;
-use PrestaShop\PrestaShop\Adapter\Shop\Context;
 
 /**
  * Class Ps_Linklist.
@@ -108,6 +109,10 @@ class Ps_Linklist extends Module implements WidgetInterface
 
     public function install()
     {
+        if (Shop::isFeatureActive()) {
+            Shop::setContext(Shop::CONTEXT_ALL);
+        }
+
         if (!parent::install()) {
             return false;
         }
@@ -118,7 +123,6 @@ class Ps_Linklist extends Module implements WidgetInterface
             $this->uninstall();
             return false;
         }
-
 
         $old16ModuleUninstalledWithSuccess = $this->uninstallPrestaShop16Module();
 
@@ -295,16 +299,21 @@ class Ps_Linklist extends Module implements WidgetInterface
                         //Module is not installed so its services are not loaded
                         /** @var LegacyContext $context */
                         $legacyContext = $container->get('prestashop.adapter.legacy.context');
+
                         /** @var Context $shopContext */
                         $shopContext = $container->get('prestashop.adapter.shop.context');
+                        
+                        /** @var FeatureInterface $multiStoreFeature */
+                        $multiStoreFeature = $container->get('prestashop.adapter.feature.multistore');
+                        
                         $this->repository = new LinkBlockRepository(
                             $container->get('doctrine.dbal.default_connection'),
                             $container->getParameter('database_prefix'),
                             $legacyContext->getLanguages(true, $shopContext->getContextShopID()),
                             $container->get('translator'),
-                            $container->get('prestashop.adapter.feature.multistore'),
-                            $legacyContext->employee,
-                            $shopContext->getShops(true, true)
+                            $multiStoreFeature->isUsed(),
+                            $shopContext->getShops(true, true),
+                            $container->get('prestashop.module.link_block.adapter.object_model_handler')
                         );
                     }
                 } catch (Throwable $e) {

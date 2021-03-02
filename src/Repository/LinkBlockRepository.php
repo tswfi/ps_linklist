@@ -20,14 +20,14 @@
 
 namespace PrestaShop\Module\LinkList\Repository;
 
+use Hook;
 use Doctrine\DBAL\Connection;
 use Doctrine\DBAL\Driver\Statement;
 use Doctrine\DBAL\Query\QueryBuilder;
-use PrestaShop\PrestaShop\Core\Exception\DatabaseException;
 use Symfony\Component\Translation\TranslatorInterface;
-use Employee;
-use Hook;
 use PrestaShop\PrestaShop\Core\Feature\FeatureInterface;
+use PrestaShop\PrestaShop\Core\Exception\DatabaseException;
+use PrestaShop\Module\LinkList\Adapter\ObjectModelHandler;
 
 /**
  * Class LinkBlockRepository.
@@ -55,19 +55,19 @@ class LinkBlockRepository
     private $translator;
 
     /**
-     * @var FeatureInterface
+     * @var bool
      */
-    private $multiStoreFeature;
-
-    /**
-     * @var Employee
-     */
-    private $employee;
+    private $isMultiStoreUsed;
 
     /**
      * @var array
      */
     private $shops;
+
+    /**
+     * @var ObjectModelHandler
+     */
+    private $objectModelHandler;
 
     /**
      * LinkBlockRepository constructor.
@@ -82,17 +82,17 @@ class LinkBlockRepository
         $dbPrefix,
         array $languages,
         TranslatorInterface $translator,
-        FeatureInterface $multiStoreFeature,
-        Employee $employee,
-        array $shops
+        bool $isMultiStoreUsed,
+        array $shops,
+        ObjectModelHandler $objectModelHandler
     ) {
         $this->connection = $connection;
         $this->dbPrefix = $dbPrefix;
         $this->languages = $languages;
         $this->translator = $translator;
-        $this->multiStoreFeature = $multiStoreFeature;
-        $this->employee = $employee;
+        $this->isMultiStoreUsed = $isMultiStoreUsed;
         $this->shops = $shops;
+        $this->objectModelHandler = $objectModelHandler;
     }
 
     /**
@@ -124,7 +124,6 @@ class LinkBlockRepository
     public function create(array $data)
     {
         $idHook = $data['id_hook'];
-        $idShop = $data['id_shop'];
 
         $qb = $this->connection->createQueryBuilder();
         $qb
@@ -147,7 +146,9 @@ class LinkBlockRepository
         $linkBlockId = $this->connection->lastInsertId();
 
         $this->updateLanguages($linkBlockId, $data['block_name'], $data['custom_content']);
-        $this->updateShopAssociation($linkBlockId, $data['shop_association']);
+        
+        $this->objectModelHandler->handleMultiShopAssociation($linkBlockId, $data['shop_association']);
+
         $this->updateMaxPosition($linkBlockId, $idHook, $data['shop_association']);
 
         return $linkBlockId;
@@ -178,10 +179,12 @@ class LinkBlockRepository
                 ]),
             ])
         ;
+
         $this->executeQueryBuilder($qb, 'Link block error');
 
         $this->updateLanguages($linkBlockId, $data['block_name'], $data['custom_content']);
-        $this->updateShopAssociation($linkBlockId, $data['shop_association']);
+        
+        $this->objectModelHandler->handleMultiShopAssociation($linkBlockId, $data['shop_association']);
     }
 
     /**
@@ -429,57 +432,9 @@ class LinkBlockRepository
      *
      * @throws DatabaseException
      */
-    private function updateShopAssociation(int $linkBlockId, array $shopIds): void
-    {
-        if (!$this->multiStoreFeature->isUsed() || empty($shopIds)) {
-            return;
-        }
-
-        $excludeIds = $shopIds;
-        foreach ($shopIds as $shopId) {
-            if (!$this->employee->hasAuthOnShop($shopId)) {
-                $excludeIds[] = $shopId;
-            }
-        }
-
-        $qb = $this->connection->createQueryBuilder();
-        $qb
-            ->delete($this->dbPrefix . 'link_block_shop')
-            ->andWhere($qb->expr()->notIn('id_shop', $excludeIds))
-            ->andWhere('id_link_block = :linkBlockId')
-            ->setParameter('linkBlockId', $linkBlockId)
-        ;
-
-        $this->executeQueryBuilder($qb, 'Link block shop association deletion error');
-
-        foreach ($shopIds as $shopId) {
-            $values = [
-                'id_shop' => ':shopId',
-                'id_link_block' => ':linkBlockId',
-            ];
-            $parameters = [
-                'shopId' => $shopId,
-                'linkBlockId' => $linkBlockId,
-            ];
-
-            $qb
-                ->insert($this->dbPrefix . 'link_block_shop')
-                ->values($values)
-                ->setParameters($parameters);
-
-            $this->executeQueryBuilder($qb, 'Link block shop association error');
-        }
-    }
-
-    /**
-     * @param int $linkBlockId
-     * @param array $shopIds
-     *
-     * @throws DatabaseException
-     */
     private function updateMaxPosition(int $linkBlockId, ?int $hookId = null, array $shopIds): void
     {
-        if (!$this->multiStoreFeature->isUsed() || empty($shopIds)) {
+        if (!$this->isMultiStoreUsed || empty($shopIds)) {
             return;
         }
 
@@ -504,7 +459,7 @@ class LinkBlockRepository
      * 
      * @return void
      */
-    public function updatePositions(int $shopId, array $positionsData = [])
+    public function updatePositions(int $shopId, array $positionsData = []): void
     {
         try {
             $this->connection->beginTransaction();

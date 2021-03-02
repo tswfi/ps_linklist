@@ -67,9 +67,9 @@ class LinkBlockType extends TranslatorAwareType
     private $categoryChoices;
 
     /**
-     * @var FeatureInterface
+     * @var bool
      */
-    private $multiStoreFeature;
+    private $isMultiStoreUsed;
 
     /**
      * LinkBlockType constructor.
@@ -90,7 +90,7 @@ class LinkBlockType extends TranslatorAwareType
         array $productPageChoices,
         array $staticPageChoices,
         array $categoryChoices,
-        FeatureInterface $multiStoreFeature
+        bool $isMultiStoreUsed
     ) {
         parent::__construct($translator, $locales);
         $this->hookChoices = $hookChoices;
@@ -99,7 +99,7 @@ class LinkBlockType extends TranslatorAwareType
         $this->staticPageChoices = $staticPageChoices;
         $this->categoryChoices = $categoryChoices;
         $this->translator = $translator;
-        $this->multiStoreFeature = $multiStoreFeature;
+        $this->isMultiStoreUsed = $isMultiStoreUsed;
     }
 
     /**
@@ -179,7 +179,7 @@ class LinkBlockType extends TranslatorAwareType
             ])
         ;
 
-        if ($this->multiStoreFeature->isUsed()) {
+        if ($this->isMultiStoreUsed) {
             $builder->add('shop_association', ShopChoiceTreeType::class, [
                 'label' => $this->trans('Shop association', 'Admin.Global'),
                 'required' => false,

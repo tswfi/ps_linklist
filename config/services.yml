@@ -14,9 +14,9 @@ services:
       $dbPrefix: '%database_prefix%'
       $languages: '@=service("prestashop.adapter.legacy.context").getLanguages(true, service("prestashop.adapter.shop.context").getContextShopID())'
       $translator: '@translator'
-      $multiStoreFeature: '@prestashop.adapter.feature.multistore'
-      $employee: '@=service("prestashop.adapter.legacy.context").getContext().employee'
+      $isMultiStoreUsed: '@=service("prestashop.adapter.feature.multistore").isUsed()'
       $shops: '@=service("prestashop.adapter.shop.context").getShops(true, true)'
+      $objectModelHandler: '@prestashop.module.link_block.adapter.object_model_handler'
 
   # Grid data query builder
   prestashop.module.link_block.grid.query_builder:
@@ -133,7 +133,7 @@ services:
       $productPageChoices: '@=service("prestashop.module.link_block.choice_provider.product_page").getChoices()'
       $staticPageChoices: '@=service("prestashop.module.link_block.choice_provider.static_page").getChoices()'
       $categoryChoices: '@=service("prestashop.module.link_block.choice_provider.category").getChoices()'
-      $multiStoreFeature: '@prestashop.adapter.feature.multistore'
+      $isMultiStoreUsed: '@=service("prestashop.adapter.feature.multistore").isUsed()'
     tags:
       - { name: form.type }
 
@@ -154,3 +154,6 @@ services:
       $formTypes:
         'link_block': 'PrestaShop\Module\LinkList\Form\Type\LinkBlockType'
       $hookName: 'AdminLinkWidget'
+
+  prestashop.module.link_block.adapter.object_model_handler:
+    class: 'PrestaShop\Module\LinkList\Adapter\ObjectModelHandler'
