@@ -237,6 +237,7 @@ class LinkBlockRepository
             "CREATE TABLE IF NOT EXISTS `{$this->dbPrefix}link_block_shop` (
     			`id_link_block` int(10) unsigned NOT NULL auto_increment,
     			`id_shop` int(10) unsigned NOT NULL,
+                `position` int(10) unsigned NOT NULL default '0',
     			PRIMARY KEY (`id_link_block`, `id_shop`)
             ) ENGINE=$engine DEFAULT CHARSET=utf8",
         ];
@@ -274,7 +275,14 @@ class LinkBlockRepository
         foreach ($this->languages as $lang) {
             $queries[] = 'INSERT INTO `' . $this->dbPrefix . 'link_block_lang` (`id_link_block`, `id_lang`, `name`) VALUES
                 (1, ' . (int) $lang['id_lang'] . ', "' . pSQL($this->translator->trans('Products', array(), 'Modules.Linklist.Shop', $lang['locale'])) . '"),
-                (2, ' . (int) $lang['id_lang'] . ', "' . pSQL($this->translator->trans('Our company', array(), 'Modules.Linklist.Shop', $lang['locale'])) . '")'
+                (2, ' . (int) $lang['id_lang'] . ', "' . pSQL($this->translator->trans('Our company', array(), 'Modules.Linklist.Shop', $lang['locale'])) . '");'
+            ;
+        }
+
+        foreach ($this->shops as $shopId) {
+            $queries[] = 'INSERT INTO `' . $this->dbPrefix . 'link_block_shop` (`id_link_block`, `id_shop`, `position`) VALUES
+                (1, ' . (int) $shopId . ', 0),
+                (2, ' . (int) $shopId . ', 1);'
             ;
         }
 

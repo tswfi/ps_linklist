@@ -105,6 +105,7 @@ class LegacyLinkBlockRepository
             "CREATE TABLE IF NOT EXISTS `{$this->db_prefix}link_block_shop` (
     			`id_link_block` int(10) unsigned NOT NULL auto_increment,
     			`id_shop` int(10) unsigned NOT NULL,
+                `position` int(10) unsigned NOT NULL default '0',
     			PRIMARY KEY (`id_link_block`, `id_shop`)
             ) ENGINE=$engine DEFAULT CHARSET=utf8",
         ];
@@ -145,9 +146,9 @@ class LegacyLinkBlockRepository
         }
 
         foreach ($this->shop::getContextListShopID() as $shopId) {
-            $queries[] = 'INSERT INTO `' . $this->db_prefix . 'link_block_shop` (`id_link_block`, `id_shop`) VALUES
-                (1, ' . (int) $shopId . '),
-                (2, ' . (int) $shopId . ');'
+            $queries[] = 'INSERT INTO `' . $this->db_prefix . 'link_block_shop` (`id_link_block`, `id_shop`, `position`) VALUES
+                (1, ' . (int) $shopId . ', 0),
+                (2, ' . (int) $shopId . ', 1);'
             ;
         }
         
