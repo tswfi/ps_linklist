@@ -454,11 +454,6 @@ class LinkBlockRepository
                 'linkBlockId' => $linkBlockId,
             ];
 
-            if ($hookId && $forcePositions) {
-                $values['position'] = ':position';
-                $parameters['position'] = $this->getHookMaxPosition($hookId, $shopId);
-            }
-
             $qb
                 ->insert($this->dbPrefix . 'link_block_shop')
                 ->values($values)
@@ -483,15 +478,12 @@ class LinkBlockRepository
         $qb = $this->connection->createQueryBuilder();
         foreach ($shopIds as $shopId) {
             $qb
-                ->update($this->dbPrefix . 'link_block_shop')
-                ->leftJoin('lbs', $this->dbPrefix . 'link_block', 'lb', 'lbs.id_link_block = lb.id_link_block')
+                ->update($this->dbPrefix . 'link_block_shop lbs')
                 ->set('position', ':position')
-                ->andWhere('lb.id_hook = :idHook')
-                ->andWhere('lbs.id_shop = :idShop')
+                ->andWhere('lbs.id_shop = :shopId')
                 ->andWhere('lbs.id_link_block = :linkBlockId')
-                ->setParameter('position', $this->getHookMaxPosition($hookId, $shopID))
-                ->setParameter('idHook', $hookId)
-                ->setParameter('idShop', $shopId)
+                ->setParameter('position', $this->getHookMaxPosition($hookId, $shopId))
+                ->setParameter('shopId', $shopId)
                 ->setParameter('linkBlockId', $linkBlockId);
 
             $this->executeQueryBuilder($qb, 'Link block max position update error');
