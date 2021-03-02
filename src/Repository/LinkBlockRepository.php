@@ -147,7 +147,8 @@ class LinkBlockRepository
         $linkBlockId = $this->connection->lastInsertId();
 
         $this->updateLanguages($linkBlockId, $data['block_name'], $data['custom_content']);
-        $this->updateShopAssociation($linkBlockId, $data['shop_association'], $idHook, true);
+        $this->updateShopAssociation($linkBlockId, $data['shop_association']);
+        $this->updateMaxPosition($linkBlockId, $idHook, $data['shop_association']);
 
         return $linkBlockId;
     }
@@ -420,7 +421,7 @@ class LinkBlockRepository
      *
      * @throws DatabaseException
      */
-    private function updateShopAssociation(int $linkBlockId, array $shopIds, ?int $hookId = null, bool $forcePositions = false): void
+    private function updateShopAssociation(int $linkBlockId, array $shopIds): void
     {
         if (!$this->multiStoreFeature->isUsed() || empty($shopIds)) {
             return;
@@ -464,6 +465,36 @@ class LinkBlockRepository
                 ->setParameters($parameters);
 
             $this->executeQueryBuilder($qb, 'Link block shop association error');
+        }
+    }
+
+    /**
+     * @param int $linkBlockId
+     * @param array $shopIds
+     *
+     * @throws DatabaseException
+     */
+    private function updateMaxPosition(int $linkBlockId, ?int $hookId = null, array $shopIds): void
+    {
+        if (!$this->multiStoreFeature->isUsed() || empty($shopIds)) {
+            return;
+        }
+
+        $qb = $this->connection->createQueryBuilder();
+        foreach ($shopIds as $shopId) {
+            $qb
+                ->update($this->dbPrefix . 'link_block_shop')
+                ->leftJoin('lbs', $this->dbPrefix . 'link_block', 'lb', 'lbs.id_link_block = lb.id_link_block')
+                ->set('position', ':position')
+                ->andWhere('lb.id_hook = :idHook')
+                ->andWhere('lbs.id_shop = :idShop')
+                ->andWhere('lbs.id_link_block = :linkBlockId')
+                ->setParameter('position', $this->getHookMaxPosition($hookId, $shopID))
+                ->setParameter('idHook', $hookId)
+                ->setParameter('idShop', $shopId)
+                ->setParameter('linkBlockId', $linkBlockId);
+
+            $this->executeQueryBuilder($qb, 'Link block max position update error');
         }
     }
 
