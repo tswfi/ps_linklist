@@ -67,7 +67,7 @@ class LegacyLinkBlockRepository
                     FROM {$this->db_prefix}link_block lb
                     INNER JOIN {$this->db_prefix}link_block_shop lbs ON lbs.`id_link_block` = lb.`id_link_block`
                     WHERE lb. `id_hook` = $id_hook AND lbs.`id_shop` = {$this->shop->id}
-                    ORDER by lb.`position`
+                    ORDER by lbs.`position`
                 ";
         $ids = $this->db->executeS($sql);
 
