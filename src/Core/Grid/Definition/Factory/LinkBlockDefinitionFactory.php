@@ -51,6 +51,7 @@ final class LinkBlockDefinitionFactory extends AbstractGridDefinitionFactory
      * LinkBlockDefinitionFactory constructor.
      *
      * @param array $hook
+     * @param MultistoreContextCheckerInterface $multistoreContextChecker
      */
     public function __construct(
         array $hook,
@@ -139,9 +140,7 @@ final class LinkBlockDefinitionFactory extends AbstractGridDefinitionFactory
                     ],
                 ])
             );
-        }
-
-        if (!$this->multistoreContextChecker->isSingleShopContext()) {
+        } else {
             $columns->addBefore(
                 'actions',
                 (new DataColumn('shop_name'))

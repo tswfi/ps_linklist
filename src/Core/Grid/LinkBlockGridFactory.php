@@ -67,6 +67,7 @@ final class LinkBlockGridFactory
      * @param HookDispatcherInterface $hookDispatcher
      * @param GridDataFactoryInterface $dataFactory
      * @param GridFilterFormFactoryInterface $filterFormFactory
+     * @param Context $shopContext
      */
     public function __construct(
         TranslatorInterface $translator,

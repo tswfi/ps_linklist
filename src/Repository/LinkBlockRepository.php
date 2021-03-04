@@ -92,9 +92,7 @@ class LinkBlockRepository
         $this->languages = $languages;
         $this->translator = $translator;
         $this->isMultiStoreUsed = $isMultiStoreUsed;
-        
         $this->objectModelHandler = $objectModelHandler;
-
         $this->multiStoreContext = $multiStoreContext;
     }
 
