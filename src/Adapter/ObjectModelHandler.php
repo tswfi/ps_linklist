@@ -39,8 +39,9 @@ class ObjectModelHandler extends AbstractObjectModelHandler
 
         /**
          * Why we want to force association?
-         * It's easier to work on multi-store tables even when they're disabled
+         * It's easier to work on multi-store tables even when feature is disabled
          * This way we can force association to store as legacy ObjectModel does
+         * We need to remember that multi-store is always there, shop tables are always there
          * 
          * @todo: this should be part of AbstractObjectModelHandler
          */
