@@ -147,7 +147,11 @@ class LinkBlockRepository
 
         $this->updateLanguages($linkBlockId, $data['block_name'], $data['custom_content']);
         
-        $this->objectModelHandler->handleMultiShopAssociation($linkBlockId, $data['shop_association']);
+        $this->objectModelHandler->handleMultiShopAssociation(
+            $linkBlockId,
+            $data['shop_association'],
+            !$this->isMultiStoreUsed
+        );
 
         $this->updateMaxPosition($linkBlockId, $idHook, $data['shop_association']);
 
@@ -184,7 +188,12 @@ class LinkBlockRepository
 
         $this->updateLanguages($linkBlockId, $data['block_name'], $data['custom_content']);
         
-        $this->objectModelHandler->handleMultiShopAssociation($linkBlockId, $data['shop_association']);
+        if ($this->isMultiStoreUsed) {
+            $this->objectModelHandler->handleMultiShopAssociation(
+                $linkBlockId,
+                $data['shop_association']
+            );
+        }
     }
 
     /**
@@ -434,10 +443,6 @@ class LinkBlockRepository
      */
     private function updateMaxPosition(int $linkBlockId, ?int $hookId = null, array $shopIds): void
     {
-        if (!$this->isMultiStoreUsed || empty($shopIds)) {
-            return;
-        }
-
         $qb = $this->connection->createQueryBuilder();
         foreach ($shopIds as $shopId) {
             $qb

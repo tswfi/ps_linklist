@@ -25,7 +25,14 @@ function upgrade_module_5_0()
 {
     $result = true;
     $result &= Db::getInstance()->execute('ALTER TABLE `'._DB_PREFIX_.'link_block_shop`  ADD COLUMN `position` int(10) unsigned NOT NULL DEFAULT 0');
-    $result &= Db::getInstance()->execute('UPDATE `'._DB_PREFIX_.'link_block_shop` lbs JOIN `'._DB_PREFIX_.'link_block` lb ON lb.`id_link_block` = lbs.`id_link_block` SET lbs.`position` = lb.`position`');
 
+    foreach (Shop::getContextListShopID() as $shopId) {
+        $result &= Db::getInstance()->execute(
+            'INSERT INTO `'._DB_PREFIX_.'link_block_shop` (`id_link_block`, `position`, `id_shop`)
+            SELECT `id_link_block`, `position`, '.$shopId.' FROM `'._DB_PREFIX_.'link_block`
+            '
+        );
+    }
+    
     return (bool) $result;
 }
