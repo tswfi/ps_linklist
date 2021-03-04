@@ -136,7 +136,7 @@ class LinkBlockFormDataProvider implements FormDataProviderInterface
         }
 
         return ['link_block' => [
-            'id_link_block' => $arrayLinkBlock['id_link_block'],
+            'id_link_block' => $arrayLinkBlock['id'],
             'block_name' => $arrayLinkBlock['name'],
             'id_hook' => $arrayLinkBlock['id_hook'],
             'cms' => isset($arrayLinkBlock['content']['cms']) ? $arrayLinkBlock['content']['cms'] : [],

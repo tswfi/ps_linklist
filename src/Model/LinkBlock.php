@@ -133,7 +133,7 @@ class LinkBlock extends \ObjectModel
     {
         return [
             'id' => $this->id,
-            'id_link_block' => $this->id_link_block,
+            'id_link_block' => $this->id,
             'name' => $this->name,
             'id_hook' => $this->id_hook,
             'position' => $this->position,

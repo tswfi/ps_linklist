@@ -296,25 +296,7 @@ class Ps_Linklist extends Module implements WidgetInterface
                 try {
                     $container = SymfonyContainer::getInstance();
                     if (null !== $container) {
-                        //Module is not installed so its services are not loaded
-                        /** @var LegacyContext $context */
-                        $legacyContext = $container->get('prestashop.adapter.legacy.context');
-
-                        /** @var Context $shopContext */
-                        $shopContext = $container->get('prestashop.adapter.shop.context');
-                        
-                        /** @var FeatureInterface $multiStoreFeature */
-                        $multiStoreFeature = $container->get('prestashop.adapter.feature.multistore');
-                        
-                        $this->repository = new LinkBlockRepository(
-                            $container->get('doctrine.dbal.default_connection'),
-                            $container->getParameter('database_prefix'),
-                            $legacyContext->getLanguages(true, $shopContext->getContextShopID()),
-                            $container->get('translator'),
-                            $multiStoreFeature->isUsed(),
-                            $shopContext->getShops(true, true),
-                            $container->get('prestashop.module.link_block.adapter.object_model_handler')
-                        );
+                        $this->repository = $container->get('prestashop.module.link_block.repository');
                     }
                 } catch (Throwable $e) {
                 }

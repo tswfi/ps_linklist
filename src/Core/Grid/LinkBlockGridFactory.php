@@ -119,7 +119,7 @@ final class LinkBlockGridFactory
      */
     private function buildGridFactoryByHook(array $hook)
     {
-        $definitionFactory = new LinkBlockDefinitionFactory($hook);
+        $definitionFactory = new LinkBlockDefinitionFactory($hook, $this->shopContext);
         $definitionFactory->setTranslator($this->translator);
         $definitionFactory->setHookDispatcher($this->hookDispatcher);
 

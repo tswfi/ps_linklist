@@ -464,6 +464,7 @@ class LinkBlockRepository
         try {
             $this->connection->beginTransaction();
 
+            $i = 0;
             foreach ($positionsData['positions'] as $position) {
                 $qb = $this->connection->createQueryBuilder();
                 $qb
@@ -473,7 +474,9 @@ class LinkBlockRepository
                     ->andWhere('id_shop = :shopId')
                     ->setParameter('shopId', $shopId)
                     ->setParameter('linkBlockId', $position['rowId'])
-                    ->setParameter('position', $position['newPosition']);
+                    ->setParameter('position', $i);
+
+                ++$i;
 
                 $statement = $qb->execute();
                 if ($statement instanceof Statement && $statement->errorCode()) {

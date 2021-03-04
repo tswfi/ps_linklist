@@ -20,13 +20,14 @@
 
 namespace PrestaShop\Module\LinkList\Core\Grid\Definition\Factory;
 
-use PrestaShop\PrestaShop\Core\Grid\Action\Row\RowActionCollection;
-use PrestaShop\PrestaShop\Core\Grid\Action\Row\Type\LinkRowAction;
-use PrestaShop\PrestaShop\Core\Grid\Action\Row\Type\SubmitRowAction;
-use PrestaShop\PrestaShop\Core\Grid\Column\ColumnCollection;
-use PrestaShop\PrestaShop\Core\Grid\Column\Type\Common\PositionColumn;
-use PrestaShop\PrestaShop\Core\Grid\Column\Type\Common\ActionColumn;
 use PrestaShop\PrestaShop\Core\Grid\Column\Type\DataColumn;
+use PrestaShop\PrestaShop\Core\Grid\Column\ColumnCollection;
+use PrestaShop\PrestaShop\Core\Grid\Action\Row\Type\LinkRowAction;
+use PrestaShop\PrestaShop\Core\Grid\Action\Row\RowActionCollection;
+use PrestaShop\PrestaShop\Core\Grid\Action\Row\Type\SubmitRowAction;
+use PrestaShop\PrestaShop\Core\Grid\Column\Type\Common\ActionColumn;
+use PrestaShop\PrestaShop\Core\Grid\Column\Type\Common\PositionColumn;
+use PrestaShop\PrestaShop\Core\Multistore\MultistoreContextCheckerInterface;
 use PrestaShop\PrestaShop\Core\Grid\Definition\Factory\AbstractGridDefinitionFactory;
 
 /**
@@ -42,13 +43,21 @@ final class LinkBlockDefinitionFactory extends AbstractGridDefinitionFactory
     private $hook;
 
     /**
+     * @var MultistoreContextCheckerInterface
+     */
+    private $multistoreContextChecker;
+
+    /**
      * LinkBlockDefinitionFactory constructor.
      *
      * @param array $hook
      */
-    public function __construct(array $hook)
-    {
+    public function __construct(
+        array $hook,
+        MultistoreContextCheckerInterface $multistoreContextChecker
+    ) {
         $this->hook = $hook;
+        $this->multistoreContextChecker = $multistoreContextChecker;
     }
 
     /**
@@ -72,7 +81,7 @@ final class LinkBlockDefinitionFactory extends AbstractGridDefinitionFactory
      */
     protected function getColumns()
     {
-        return (new ColumnCollection())
+        $columns = (new ColumnCollection())
             ->add((new DataColumn('id_link_block'))
                 ->setName($this->trans('ID', [], 'Modules.Linklist.Admin'))
                 ->setOptions([
@@ -83,18 +92,6 @@ final class LinkBlockDefinitionFactory extends AbstractGridDefinitionFactory
                 ->setName($this->trans('Name of the block', [], 'Modules.Linklist.Admin'))
                 ->setOptions([
                     'field' => 'block_name',
-                ])
-            )
-            ->add((new PositionColumn('position'))
-                ->setName($this->trans('Position', [], 'Admin.Global'))
-                ->setOptions([
-                    'id_field' => 'id_link_block',
-                    'position_field' => 'position',
-                    'update_route' => 'admin_link_block_update_positions',
-                    'update_method' => 'POST',
-                    'record_route_params' => [
-                        'id_hook' => 'hookId',
-                    ],
                 ])
             )
             ->add((new ActionColumn('actions'))
@@ -126,5 +123,36 @@ final class LinkBlockDefinitionFactory extends AbstractGridDefinitionFactory
                 ])
             )
         ;
+
+        if ($this->multistoreContextChecker->isSingleShopContext()) {
+            $columns->addBefore(
+                'actions',
+                (new PositionColumn('position'))
+                ->setName($this->trans('Position', [], 'Admin.Global'))
+                ->setOptions([
+                    'id_field' => 'id_link_block',
+                    'position_field' => 'position',
+                    'update_route' => 'admin_link_block_update_positions',
+                    'update_method' => 'POST',
+                    'record_route_params' => [
+                        'id_hook' => 'hookId',
+                    ],
+                ])
+            );
+        }
+
+        if (!$this->multistoreContextChecker->isSingleShopContext()) {
+            $columns->addBefore(
+                'actions',
+                (new DataColumn('shop_name'))
+                    ->setName($this->trans('Shop', [], 'Admin.Global'))
+                    ->setOptions([
+                        'field' => 'shop_name',
+                        'sortable' => false,
+                    ])
+            );
+        }
+
+        return $columns;
     }
 }
