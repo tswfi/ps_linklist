@@ -15,7 +15,7 @@ services:
       $languages: '@=service("prestashop.adapter.legacy.context").getLanguages(true, service("prestashop.adapter.shop.context").getContextShopID())'
       $translator: '@translator'
       $isMultiStoreUsed: '@=service("prestashop.adapter.feature.multistore").isUsed()'
-      $shops: '@=service("prestashop.adapter.shop.context").getShops(true, true)'
+      $multiStoreContext: '@prestashop.adapter.shop.context'
       $objectModelHandler: '@prestashop.module.link_block.adapter.object_model_handler'
 
   # Grid data query builder

@@ -24,10 +24,10 @@ use Hook;
 use Doctrine\DBAL\Connection;
 use Doctrine\DBAL\Driver\Statement;
 use Doctrine\DBAL\Query\QueryBuilder;
+use PrestaShop\PrestaShop\Adapter\Shop\Context;
 use Symfony\Component\Translation\TranslatorInterface;
-use PrestaShop\PrestaShop\Core\Feature\FeatureInterface;
-use PrestaShop\PrestaShop\Core\Exception\DatabaseException;
 use PrestaShop\Module\LinkList\Adapter\ObjectModelHandler;
+use PrestaShop\PrestaShop\Core\Exception\DatabaseException;
 
 /**
  * Class LinkBlockRepository.
@@ -60,14 +60,15 @@ class LinkBlockRepository
     private $isMultiStoreUsed;
 
     /**
-     * @var array
+     * @var Context
      */
-    private $shops;
+    private $multiStoreContext;
 
     /**
      * @var ObjectModelHandler
      */
     private $objectModelHandler;
+
 
     /**
      * LinkBlockRepository constructor.
@@ -83,7 +84,7 @@ class LinkBlockRepository
         array $languages,
         TranslatorInterface $translator,
         bool $isMultiStoreUsed,
-        array $shops,
+        Context $multiStoreContext,
         ObjectModelHandler $objectModelHandler
     ) {
         $this->connection = $connection;
@@ -91,8 +92,10 @@ class LinkBlockRepository
         $this->languages = $languages;
         $this->translator = $translator;
         $this->isMultiStoreUsed = $isMultiStoreUsed;
-        $this->shops = $shops;
+        
         $this->objectModelHandler = $objectModelHandler;
+
+        $this->multiStoreContext = $multiStoreContext;
     }
 
     /**
@@ -201,22 +204,37 @@ class LinkBlockRepository
      *
      * @throws DatabaseException
      */
-    public function delete($idLinkBlock)
+    public function delete($idLinkBlock): void
     {
-        $tableNames = [
-            'link_block_shop',
-            'link_block_lang',
-            'link_block',
-        ];
+        if (count($this->multiStoreContext->getAllShopIds()) === count($this->multiStoreContext->getContextListShopID())) {
+            $tableNames = [
+                'link_block_lang',
+                'link_block',
+                'link_block_shop'
+            ];
 
-        foreach ($tableNames as $tableName) {
-            $qb = $this->connection->createQueryBuilder();
-            $qb
-                ->delete($this->dbPrefix . $tableName)
-                ->andWhere('id_link_block = :idLinkBlock')
-                ->setParameter('idLinkBlock', $idLinkBlock)
-            ;
-            $this->executeQueryBuilder($qb, 'Delete error');
+            foreach ($tableNames as $tableName) {
+                $qb = $this->connection->createQueryBuilder();
+                $qb
+                    ->delete($this->dbPrefix . $tableName)
+                    ->andWhere('id_link_block = :idLinkBlock')
+                    ->setParameter('idLinkBlock', $idLinkBlock)
+                ;
+                $this->executeQueryBuilder($qb, 'Delete error');
+            }
+        } else {
+            // Delete only from specific stores
+            if (!$this->multiStoreContext->isAllShopContext()) {
+                $qb = $this->connection->createQueryBuilder();
+                $qb
+                    ->delete($this->dbPrefix . 'link_block_shop')
+                    ->andWhere('id_link_block = :idLinkBlock')
+                    ->andWhere("id_shop IN (:shopIds)")
+                    ->setParameter('shopIds', $this->multiStoreContext->getContextListShopID(), Connection::PARAM_STR_ARRAY)
+                    ->setParameter('idLinkBlock', $idLinkBlock);
+                ;
+                $this->executeQueryBuilder($qb, 'Delete from multi-store tables error');
+            }
         }
     }
 
@@ -291,7 +309,7 @@ class LinkBlockRepository
             ;
         }
 
-        foreach ($this->shops as $shopId) {
+        foreach ($this->multiStoreContext->getShops(true, true) as $shopId) {
             $queries[] = 'INSERT INTO `' . $this->dbPrefix . 'link_block_shop` (`id_link_block`, `id_shop`, `position`) VALUES
                 (1, ' . (int) $shopId . ', 0),
                 (2, ' . (int) $shopId . ', 1);'
