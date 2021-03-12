@@ -145,9 +145,9 @@ class LinkBlockFormDataProvider implements FormDataProviderInterface
 
     /**
      * Make sure to fill empty multilang fields if value for default is available
-     * 
+     *
      * @param array $linkBlock
-     * 
+     *
      * @return array
      */
     public function prepareData(array $linkBlock): array

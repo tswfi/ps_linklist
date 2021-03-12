@@ -83,22 +83,26 @@ final class LinkBlockDefinitionFactory extends AbstractGridDefinitionFactory
     protected function getColumns()
     {
         $columns = (new ColumnCollection())
-            ->add((new DataColumn('id_link_block'))
+            ->add(
+                (new DataColumn('id_link_block'))
                 ->setName($this->trans('ID', [], 'Modules.Linklist.Admin'))
                 ->setOptions([
                     'field' => 'id_link_block',
                 ])
             )
-            ->add((new DataColumn('block_name'))
+            ->add(
+                (new DataColumn('block_name'))
                 ->setName($this->trans('Name of the block', [], 'Modules.Linklist.Admin'))
                 ->setOptions([
                     'field' => 'block_name',
                 ])
             )
-            ->add((new ActionColumn('actions'))
+            ->add(
+                (new ActionColumn('actions'))
                 ->setOptions([
                     'actions' => (new RowActionCollection())
-                        ->add((new LinkRowAction('edit'))
+                        ->add(
+                            (new LinkRowAction('edit'))
                             ->setIcon('edit')
                             ->setOptions([
                                 'route' => 'admin_link_block_edit',
@@ -106,7 +110,8 @@ final class LinkBlockDefinitionFactory extends AbstractGridDefinitionFactory
                                 'route_param_field' => 'id_link_block',
                             ])
                         )
-                        ->add((new SubmitRowAction('delete'))
+                        ->add(
+                            (new SubmitRowAction('delete'))
                             ->setName($this->trans('Delete', [], 'Admin.Actions'))
                             ->setIcon('delete')
                             ->setOptions([

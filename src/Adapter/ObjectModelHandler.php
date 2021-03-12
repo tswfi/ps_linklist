@@ -31,7 +31,7 @@ class ObjectModelHandler extends AbstractObjectModelHandler
      * @param bool $forceAssociate
      */
     public function handleMultiShopAssociation(
-        int $linkBlockId, 
+        int $linkBlockId,
         array $associatedShops,
         bool $forceAssociate = false
     ): void {
@@ -42,7 +42,7 @@ class ObjectModelHandler extends AbstractObjectModelHandler
          * It's easier to work on multi-store tables even when feature is disabled
          * This way we can force association to store as legacy ObjectModel does
          * We need to remember that multi-store is always there, shop tables are always there
-         * 
+         *
          * @todo: this should be part of AbstractObjectModelHandler
          */
         if ($forceAssociate) {

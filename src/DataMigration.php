@@ -47,7 +47,8 @@ class DataMigration
     public function migrateData()
     {
         // Copy first table
-        $this->db->execute("INSERT INTO `" . _DB_PREFIX_ . "link_block`
+        $this->db->execute(
+            "INSERT INTO `" . _DB_PREFIX_ . "link_block`
             (`id_link_block`, `id_hook`, `position`)
             SELECT `id_cms_block`, `location`, `position`
             FROM `" . _DB_PREFIX_ . "cms_block`"
@@ -64,20 +65,23 @@ class DataMigration
                 'cms' => $this->getCmsIdsFromBlock($oldLocation)
             ]);
 
-            $this->db->execute("UPDATE `" . _DB_PREFIX_ . "link_block`
+            $this->db->execute(
+                "UPDATE `" . _DB_PREFIX_ . "link_block`
                 SET `id_hook` = " . (int) Hook::getIdByName($newHookLocation) . ",
                 `content` = '" . pSQL($content) . "'
                 WHERE `id_hook` = " . $oldLocation
             );
         }
         // Copy second table (lang)
-        $this->db->execute("INSERT INTO `" . _DB_PREFIX_ . "link_block_lang`
+        $this->db->execute(
+            "INSERT INTO `" . _DB_PREFIX_ . "link_block_lang`
             (`id_link_block`, `id_lang`, `name`)
             SELECT `id_cms_block`, `id_lang`, `name`
             FROM `" . _DB_PREFIX_ . "cms_block_lang`"
         );
         // Copy third table (shop)
-        $this->db->execute("INSERT INTO `" . _DB_PREFIX_ . "link_block_shop`
+        $this->db->execute(
+            "INSERT INTO `" . _DB_PREFIX_ . "link_block_shop`
             (`id_link_block`, `id_shop`)
             SELECT `id_cms_block`, `id_shop`
             FROM `" . _DB_PREFIX_ . "cms_block_shop`"
@@ -86,7 +90,8 @@ class DataMigration
         $this->migrateBlockFooter();
 
         // Drop old tables
-        $this->db->execute('DROP TABLE `'._DB_PREFIX_.'cms_block`,
+        $this->db->execute(
+            'DROP TABLE `'._DB_PREFIX_.'cms_block`,
             `'._DB_PREFIX_.'cms_block_lang`,
             `'._DB_PREFIX_.'cms_block_page`,
             `'._DB_PREFIX_.'cms_block_shop`'
@@ -142,10 +147,10 @@ class DataMigration
 
     /**
      * Generate a JSON for the column `content` of link_block
-     * 
+     *
      * @param array $data
-     * 
-     * @return string 
+     *
+     * @return string
      */
     private function generateJsonForBlockContent(array $data)
     {
@@ -158,14 +163,15 @@ class DataMigration
 
     /**
      * Get list of cms IDs from database for a given old cms_block_page
-     * 
+     *
      * @param int $oldLocation
-     * 
-     * @return array 
+     *
+     * @return array
      */
     private function getCmsIdsFromBlock($oldLocation)
     {
-        $request = $this->db->executeS("SELECT id_cms FROM  `" . _DB_PREFIX_ . "cms_block_page`
+        $request = $this->db->executeS(
+            "SELECT id_cms FROM  `" . _DB_PREFIX_ . "cms_block_page`
             WHERE id_cms_block = " . (int) $oldLocation . "
             AND is_category = 0"
         );

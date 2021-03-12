@@ -251,7 +251,7 @@ class LinkBlockRepository
             "CREATE TABLE IF NOT EXISTS `{$this->dbPrefix}link_block`(
     			`id_link_block` int(10) unsigned NOT NULL auto_increment,
     			`id_hook` int(1) unsigned DEFAULT NULL,
-    			`position` int(10) unsigned NOT NULL default '0',
+                `position` int(10) unsigned NOT NULL default '0',
     			`content` text default NULL,
     			PRIMARY KEY (`id_link_block`)
             ) ENGINE=$engine DEFAULT CHARSET=utf8",
@@ -264,7 +264,7 @@ class LinkBlockRepository
             ) ENGINE=$engine DEFAULT CHARSET=utf8",
             "CREATE TABLE IF NOT EXISTS `{$this->dbPrefix}link_block_shop` (
     			`id_link_block` int(10) unsigned NOT NULL auto_increment,
-    			`id_shop` int(10) unsigned NOT NULL,
+                `id_shop` int(10) unsigned NOT NULL,
                 `position` int(10) unsigned NOT NULL default '0',
     			PRIMARY KEY (`id_link_block`, `id_shop`)
             ) ENGINE=$engine DEFAULT CHARSET=utf8",
@@ -477,7 +477,7 @@ class LinkBlockRepository
     /**
      * @param int $shopId
      * @param array $positionsData
-     * 
+     *
      * @return void
      */
     public function updatePositions(int $shopId, array $positionsData = []): void
