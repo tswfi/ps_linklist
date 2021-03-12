@@ -95,11 +95,7 @@ final class LinkBlockGridFactory
         foreach ($hooks as $hook) {
             $hookParams = $filtersParams;
             $hookParams['filters']['id_hook'] = $hook['id_hook'];
-            $hookParams['filters']['id_shop'] = [$this->shopContext->getContextShopID()];
-            
-            if (!$this->shopContext->isSingleShopContext()) {
-                $hookParams['filters']['id_shop'] = $this->shopContext->getContextListShopID();
-            }
+            $hookParams['filters']['id_shop'] = $this->shopContext->getContextListShopID();
 
             $filters = new LinkBlockFilters($hookParams);
 

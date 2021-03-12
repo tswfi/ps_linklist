@@ -106,15 +106,9 @@ class LinkBlockFormDataProvider implements FormDataProviderInterface
     public function getData()
     {
         if (null === $this->idLinkBlock) {
-            if (!$this->shopContext->isSingleShopContext()) {
-                $shopSelectedByDefault = $this->shopContext->getContextListShopID();
-            } else {
-                $shopSelectedByDefault = [$this->shopContext->getContextShopID()];
-            }
-
             return [
                 'link_block' => [
-                    'shop_association' => $shopSelectedByDefault
+                    'shop_association' => $this->shopContext->getContextListShopID()
                 ]
             ];
         }
