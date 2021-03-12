@@ -128,7 +128,6 @@ final class LinkBlockQueryBuilder extends AbstractDoctrineQueryBuilder
                 ->setParameter($name, '%' . $value . '%')
             ;
         }
-        
         return $qb;
     }
 }
