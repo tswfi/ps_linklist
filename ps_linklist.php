@@ -88,6 +88,8 @@ class Ps_Linklist extends Module implements WidgetInterface
                 'visible' => true,
                 'name' => $tabNames,
                 'parent_class_name' => 'AdminParentThemes',
+                'wording' => 'Link Widget',
+                'wording_domain' => 'Modules.Linklist.Admin',
             ],
         ];
 
