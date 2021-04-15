@@ -79,7 +79,7 @@ class Ps_Linklist extends Module implements WidgetInterface
 
         $tabNames = [];
         foreach (Language::getLanguages(true) as $lang) {
-            $tabNames[$lang['locale']] = $this->trans('Link List', array(), 'Modules.Linklist.Admin', $lang['locale']);
+            $tabNames[$lang['locale']] = $this->trans('Link Widget', array(), 'Modules.Linklist.Admin', $lang['locale']);
         }
         $this->tabs = [
             [
@@ -88,6 +88,8 @@ class Ps_Linklist extends Module implements WidgetInterface
                 'visible' => true,
                 'name' => $tabNames,
                 'parent_class_name' => 'AdminParentThemes',
+                'wording' => 'Link Widget',
+                'wording_domain' => 'Modules.Linklist.Admin',
             ],
         ];
 
