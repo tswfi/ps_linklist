@@ -186,7 +186,7 @@ class LinkBlockType extends TranslatorAwareType
                 'constraints' => [
                     new NotBlank([
                         'message' => $this->trans(
-                            'This field cannot be empty',
+                            'You have to select at least one shop to associate this item with',
                             'Admin.Notifications.Error'
                         ),
                     ]),
