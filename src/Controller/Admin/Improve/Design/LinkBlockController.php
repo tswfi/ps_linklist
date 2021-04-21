@@ -65,6 +65,13 @@ class LinkBlockController extends FrameworkBundleAdminController
             $presentedGrids[] = $this->presentGrid($grid);
         }
 
+        $presentedGrids = array_filter(
+            $presentedGrids,
+            function ($grid) {
+                return $grid['data']['records_total'] > 0;
+            }
+        );
+
         return $this->render('@Modules/ps_linklist/views/templates/admin/link_block/list.html.twig', [
             'grids' => $presentedGrids,
             'enableSidebar' => true,
