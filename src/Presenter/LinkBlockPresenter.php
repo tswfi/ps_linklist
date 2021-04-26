@@ -155,7 +155,6 @@ class LinkBlockPresenter
     {
         $productLinks = array();
         foreach ($productIds as $productId) {
-
             if (false === $productId) {
                 continue;
             }
@@ -182,7 +181,6 @@ class LinkBlockPresenter
     {
         $staticLinks = array();
         foreach ($staticIds as $staticId) {
-
             if (false === $staticId) {
                 continue;
             }
@@ -239,7 +237,6 @@ class LinkBlockPresenter
     {
         $categoryLinks = array();
         foreach ($categoryIds as $categoryId) {
-
             if (false === $categoryId) {
                 continue;
             }

@@ -20,6 +20,8 @@
 
 namespace PrestaShop\Module\LinkList\Model;
 
+use Shop;
+
 /**
  * Class LinkBlock.
  */
@@ -73,6 +75,8 @@ class LinkBlock extends \ObjectModel
 
     public function __construct($id = null, $id_lang = null, $id_shop = null)
     {
+        Shop::addTableAssociation('link_block', ['type' => 'shop']);
+
         parent::__construct($id, $id_lang, $id_shop);
 
         if ($this->id) {
@@ -129,12 +133,13 @@ class LinkBlock extends \ObjectModel
     {
         return [
             'id' => $this->id,
-            'id_link_block' => $this->id_link_block,
+            'id_link_block' => $this->id,
             'name' => $this->name,
             'id_hook' => $this->id_hook,
             'position' => $this->position,
             'content' => $this->content,
             'custom_content' => $this->custom_content,
+            'shop_association' => $this->getAssociatedShops()
         ];
     }
 }

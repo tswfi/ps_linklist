@@ -17,28 +17,22 @@
  * @copyright Since 2007 PrestaShop SA and Contributors
  * @license   https://opensource.org/licenses/AFL-3.0 Academic Free License version 3.0
  */
+if (!defined('_PS_VERSION_')) {
+    exit;
+}
 
-namespace PrestaShop\Module\LinkList\Core\Search\Filters;
-
-use PrestaShop\PrestaShop\Core\Search\Filters;
-
-/**
- * Class LinkBlockFilters.
- */
-final class LinkBlockFilters extends Filters
+function upgrade_module_5_0()
 {
-    /**
-     * {@inheritdoc}
-     */
-    public static function getDefaults()
-    {
-        return [
-            'id_shop' => null,
-            'limit' => 0,
-            'offset' => 0,
-            'orderBy' => 'position',
-            'sortOrder' => 'asc',
-            'filters' => [],
-        ];
+    $result = true;
+    $result &= Db::getInstance()->execute('ALTER TABLE `'._DB_PREFIX_.'link_block_shop`  ADD COLUMN `position` int(10) unsigned NOT NULL DEFAULT 0');
+
+    foreach (Shop::getContextListShopID() as $shopId) {
+        $result &= Db::getInstance()->execute(
+            'INSERT INTO `'._DB_PREFIX_.'link_block_shop` (`id_link_block`, `position`, `id_shop`)
+            SELECT `id_link_block`, `position`, '.$shopId.' FROM `'._DB_PREFIX_.'link_block`
+            '
+        );
     }
+    
+    return (bool) $result;
 }

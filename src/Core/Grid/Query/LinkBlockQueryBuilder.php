@@ -20,9 +20,10 @@
 
 namespace PrestaShop\Module\LinkList\Core\Grid\Query;
 
+use Doctrine\DBAL\Connection;
 use Doctrine\DBAL\Query\QueryBuilder;
-use PrestaShop\PrestaShop\Core\Grid\Query\AbstractDoctrineQueryBuilder;
 use PrestaShop\PrestaShop\Core\Grid\Search\SearchCriteriaInterface;
+use PrestaShop\PrestaShop\Core\Grid\Query\AbstractDoctrineQueryBuilder;
 
 /**
  * Class LinkBlockQueryBuilder.
@@ -44,7 +45,8 @@ final class LinkBlockQueryBuilder extends AbstractDoctrineQueryBuilder
             h.name as hook_name,
             h.title as hook_title,
             h.description as hook_description,
-            lb.position
+            lbs.position as position,
+            GROUP_CONCAT(s.name SEPARATOR ", ") as shop_name
             ')
             ->orderBy(
                 $searchCriteria->getOrderBy(),
@@ -88,7 +90,10 @@ final class LinkBlockQueryBuilder extends AbstractDoctrineQueryBuilder
             ->createQueryBuilder()
             ->from($this->dbPrefix . 'link_block', 'lb')
             ->innerJoin('lb', $this->dbPrefix . 'link_block_lang', 'lbl', 'lb.id_link_block = lbl.id_link_block')
-            ->leftJoin('lb', $this->dbPrefix . 'hook', 'h', 'lb.id_hook = h.id_hook');
+            ->leftJoin('lb', $this->dbPrefix . 'link_block_shop', 'lbs', 'lb.id_link_block = lbs.id_link_block')
+            ->leftJoin('lb', $this->dbPrefix . 'hook', 'h', 'lb.id_hook = h.id_hook')
+            ->leftJoin('lb', $this->dbPrefix . 'shop', 's', 's.id_shop = lbs.id_shop')
+            ->groupBy('lb.id_link_block');
 
         foreach ($filters as $name => $value) {
             if ('id_lang' === $name) {
@@ -109,12 +114,20 @@ final class LinkBlockQueryBuilder extends AbstractDoctrineQueryBuilder
                 continue;
             }
 
+            if ('id_shop' === $name) {
+                $qb
+                    ->andWhere("lbs.id_shop IN (:$name)")
+                    ->setParameter($name, $value, Connection::PARAM_STR_ARRAY);
+                ;
+
+                continue;
+            }
+
             $qb
                 ->andWhere(sprintf('lbl.%s LIKE :%s', $name, $name))
                 ->setParameter($name, '%' . $value . '%')
             ;
         }
-
         return $qb;
     }
 }

@@ -63,10 +63,11 @@ class LegacyLinkBlockRepository
     {
         $id_hook = (int) $id_hook;
 
-        $sql = "SELECT cb.`id_link_block`
-                    FROM {$this->db_prefix}link_block cb
-                    WHERE `id_hook` = $id_hook
-                    ORDER by cb.`position`
+        $sql = "SELECT lb.`id_link_block`
+                    FROM {$this->db_prefix}link_block lb
+                    INNER JOIN {$this->db_prefix}link_block_shop lbs ON lbs.`id_link_block` = lb.`id_link_block`
+                    WHERE lb. `id_hook` = $id_hook AND lbs.`id_shop` = {$this->shop->id}
+                    ORDER by lbs.`position`
                 ";
         $ids = $this->db->executeS($sql);
 
@@ -104,6 +105,7 @@ class LegacyLinkBlockRepository
             "CREATE TABLE IF NOT EXISTS `{$this->db_prefix}link_block_shop` (
     			`id_link_block` int(10) unsigned NOT NULL auto_increment,
     			`id_shop` int(10) unsigned NOT NULL,
+                `position` int(10) unsigned NOT NULL default '0',
     			PRIMARY KEY (`id_link_block`, `id_shop`)
             ) ENGINE=$engine DEFAULT CHARSET=utf8",
         ];
@@ -139,9 +141,17 @@ class LegacyLinkBlockRepository
         foreach (Language::getLanguages(true, Context::getContext()->shop->id) as $lang) {
             $queries[] = 'INSERT INTO `' . $this->db_prefix . 'link_block_lang` (`id_link_block`, `id_lang`, `name`) VALUES
                 (1, ' . (int) $lang['id_lang'] . ', "' . pSQL($this->translator->trans('Products', array(), 'Modules.Linklist.Shop', $lang['locale'])) . '"),
-                (2, ' . (int) $lang['id_lang'] . ', "' . pSQL($this->translator->trans('Our company', array(), 'Modules.Linklist.Shop', $lang['locale'])) . '")'
+                (2, ' . (int) $lang['id_lang'] . ', "' . pSQL($this->translator->trans('Our company', array(), 'Modules.Linklist.Shop', $lang['locale'])) . '");'
             ;
         }
+
+        foreach ($this->shop::getContextListShopID() as $shopId) {
+            $queries[] = 'INSERT INTO `' . $this->db_prefix . 'link_block_shop` (`id_link_block`, `id_shop`, `position`) VALUES
+                (1, ' . (int) $shopId . ', 0),
+                (2, ' . (int) $shopId . ', 1);'
+            ;
+        }
+        
         foreach ($queries as $query) {
             $success &= $this->db->execute($query);
         }

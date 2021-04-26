@@ -25,15 +25,16 @@ if (file_exists(__DIR__ . '/vendor/autoload.php')) {
     require_once __DIR__ . '/vendor/autoload.php';
 }
 
-use PrestaShop\PrestaShop\Core\Module\WidgetInterface;
 use PrestaShop\Module\LinkList\DataMigration;
+use PrestaShop\PrestaShop\Adapter\Shop\Context;
+use PrestaShop\PrestaShop\Adapter\LegacyContext;
+use PrestaShop\Module\LinkList\Model\LinkBlockLang;
+use PrestaShop\PrestaShop\Adapter\SymfonyContainer;
+use PrestaShop\PrestaShop\Core\Module\WidgetInterface;
+use PrestaShop\PrestaShop\Core\Feature\FeatureInterface;
 use PrestaShop\Module\LinkList\LegacyLinkBlockRepository;
 use PrestaShop\Module\LinkList\Presenter\LinkBlockPresenter;
-use PrestaShop\Module\LinkList\Model\LinkBlockLang;
 use PrestaShop\Module\LinkList\Repository\LinkBlockRepository;
-use PrestaShop\PrestaShop\Adapter\SymfonyContainer;
-use PrestaShop\PrestaShop\Adapter\LegacyContext;
-use PrestaShop\PrestaShop\Adapter\Shop\Context;
 
 /**
  * Class Ps_Linklist.
@@ -73,7 +74,7 @@ class Ps_Linklist extends Module implements WidgetInterface
     {
         $this->name = 'ps_linklist';
         $this->author = 'PrestaShop';
-        $this->version = '4.0.0';
+        $this->version = '5.0.0';
         $this->need_instance = 0;
         $this->tab = 'front_office_features';
 
@@ -100,7 +101,7 @@ class Ps_Linklist extends Module implements WidgetInterface
         $this->description = $this->trans('Give more visibility to your content/static pages (CMS, external pages, or else), where you want and when you want, to make your visitors feel like shopping on your store.', array(), 'Modules.Linklist.Admin');
         $this->secure_key = Tools::encrypt($this->name);
 
-        $this->ps_versions_compliancy = array('min' => '1.7.7.0', 'max' => _PS_VERSION_);
+        $this->ps_versions_compliancy = array('min' => '1.7.8.0', 'max' => _PS_VERSION_);
         $this->templateFile = 'module:ps_linklist/views/templates/hook/linkblock.tpl';
         $this->templateFileColumn = 'module:ps_linklist/views/templates/hook/linkblock-column.tpl';
 
@@ -110,6 +111,10 @@ class Ps_Linklist extends Module implements WidgetInterface
 
     public function install()
     {
+        if (Shop::isFeatureActive()) {
+            Shop::setContext(Shop::CONTEXT_ALL);
+        }
+
         if (!parent::install()) {
             return false;
         }
@@ -120,7 +125,6 @@ class Ps_Linklist extends Module implements WidgetInterface
             $this->uninstall();
             return false;
         }
-
 
         $old16ModuleUninstalledWithSuccess = $this->uninstallPrestaShop16Module();
 
@@ -206,7 +210,7 @@ class Ps_Linklist extends Module implements WidgetInterface
         if ($oldModule) {
             // This closure calls the parent class to prevent data to be erased
             // It allows the new module to be configured without migration
-            $parentUninstallClosure = function() {
+            $parentUninstallClosure = function () {
                 return parent::uninstall();
             };
             $parentUninstallClosure = $parentUninstallClosure->bindTo($oldModule, get_class($oldModule));
@@ -294,17 +298,7 @@ class Ps_Linklist extends Module implements WidgetInterface
                 try {
                     $container = SymfonyContainer::getInstance();
                     if (null !== $container) {
-                        //Module is not installed so its services are not loaded
-                        /** @var LegacyContext $context */
-                        $legacyContext = $container->get('prestashop.adapter.legacy.context');
-                        /** @var Context $shopContext */
-                        $shopContext = $container->get('prestashop.adapter.shop.context');
-                        $this->repository = new LinkBlockRepository(
-                            $container->get('doctrine.dbal.default_connection'),
-                            $container->getParameter('database_prefix'),
-                            $legacyContext->getLanguages(true, $shopContext->getContextShopID()),
-                            $container->get('translator')
-                        );
+                        $this->repository = $container->get('prestashop.module.link_block.repository');
                     }
                 } catch (Throwable $e) {
                 }
