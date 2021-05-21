@@ -22,13 +22,13 @@ namespace PrestaShop\Module\LinkList\Core\Grid;
 
 use PrestaShop\Module\LinkList\Core\Grid\Definition\Factory\LinkBlockDefinitionFactory;
 use PrestaShop\Module\LinkList\Core\Search\Filters\LinkBlockFilters;
+use PrestaShop\PrestaShop\Adapter\Shop\Context;
 use PrestaShop\PrestaShop\Core\Grid\Data\Factory\GridDataFactoryInterface;
 use PrestaShop\PrestaShop\Core\Grid\Filter\GridFilterFormFactoryInterface;
-use PrestaShop\PrestaShop\Core\Grid\Grid;
 use PrestaShop\PrestaShop\Core\Grid\GridFactory;
+use PrestaShop\PrestaShop\Core\Grid\GridInterface;
 use PrestaShop\PrestaShop\Core\Hook\HookDispatcherInterface;
 use Symfony\Component\Translation\TranslatorInterface;
-use PrestaShop\PrestaShop\Adapter\Shop\Context;
 
 /**
  * Class LinkBlockGridFactory.
@@ -87,7 +87,7 @@ final class LinkBlockGridFactory
      * @param array $hooks
      * @param array $filtersParams
      *
-     * @return Grid[]
+     * @return GridInterface[]
      */
     public function getGrids(array $hooks, array $filtersParams)
     {

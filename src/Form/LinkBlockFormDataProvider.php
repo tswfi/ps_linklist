@@ -22,14 +22,14 @@ namespace PrestaShop\Module\LinkList\Form;
 
 use Hook;
 use Language;
-use Ps_Linklist;
-use PrestaShop\Module\LinkList\Model\LinkBlock;
-use PrestaShop\PrestaShop\Adapter\Shop\Context;
-use PrestaShop\PrestaShop\Adapter\Configuration;
 use PrestaShop\Module\LinkList\Cache\LinkBlockCacheInterface;
-use PrestaShop\PrestaShop\Core\Addon\Module\ModuleRepository;
+use PrestaShop\Module\LinkList\Model\LinkBlock;
 use PrestaShop\Module\LinkList\Repository\LinkBlockRepository;
+use PrestaShop\PrestaShop\Adapter\Configuration;
+use PrestaShop\PrestaShop\Adapter\Shop\Context;
+use PrestaShop\PrestaShop\Core\Addon\Module\ModuleRepository;
 use PrestaShop\PrestaShop\Core\Form\FormDataProviderInterface;
+use Ps_Linklist;
 
 /**
  * Class LinkBlockFormDataProvider.
@@ -108,8 +108,8 @@ class LinkBlockFormDataProvider implements FormDataProviderInterface
         if (null === $this->idLinkBlock) {
             return [
                 'link_block' => [
-                    'shop_association' => $this->shopContext->getContextListShopID()
-                ]
+                    'shop_association' => $this->shopContext->getContextListShopID(),
+                ],
             ];
         }
 
@@ -139,7 +139,7 @@ class LinkBlockFormDataProvider implements FormDataProviderInterface
             'static' => isset($arrayLinkBlock['content']['static']) ? $arrayLinkBlock['content']['static'] : [],
             'category' => isset($arrayLinkBlock['content']['category']) ? $arrayLinkBlock['content']['category'] : [],
             'custom' => $arrayCustom,
-            'shop_association' => $arrayLinkBlock['shop_association']
+            'shop_association' => $arrayLinkBlock['shop_association'],
         ]];
     }
 
@@ -213,7 +213,7 @@ class LinkBlockFormDataProvider implements FormDataProviderInterface
 
         if (empty($linkBlock['id_link_block'])) {
             $linkBlockId = $this->repository->create($linkBlock);
-            $this->setIdLinkBlock($linkBlockId);
+            $this->setIdLinkBlock((int) $linkBlockId);
         } else {
             $linkBlockId = $linkBlock['id_link_block'];
             $this->repository->update($linkBlockId, $linkBlock);

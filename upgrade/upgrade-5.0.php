@@ -24,15 +24,15 @@ if (!defined('_PS_VERSION_')) {
 function upgrade_module_5_0()
 {
     $result = true;
-    $result &= Db::getInstance()->execute('ALTER TABLE `'._DB_PREFIX_.'link_block_shop`  ADD COLUMN `position` int(10) unsigned NOT NULL DEFAULT 0');
+    $result &= Db::getInstance()->execute('ALTER TABLE `' . _DB_PREFIX_ . 'link_block_shop`  ADD COLUMN `position` int(10) unsigned NOT NULL DEFAULT 0');
 
     foreach (Shop::getContextListShopID() as $shopId) {
         $result &= Db::getInstance()->execute(
-            'INSERT INTO `'._DB_PREFIX_.'link_block_shop` (`id_link_block`, `position`, `id_shop`)
-            SELECT `id_link_block`, `position`, '.$shopId.' FROM `'._DB_PREFIX_.'link_block`
+            'INSERT INTO `' . _DB_PREFIX_ . 'link_block_shop` (`id_link_block`, `position`, `id_shop`)
+            SELECT `id_link_block`, `position`, ' . $shopId . ' FROM `' . _DB_PREFIX_ . 'link_block`
             '
         );
     }
-    
+
     return (bool) $result;
 }
