@@ -37,7 +37,7 @@ class ObjectModelHandler extends AbstractObjectModelHandler
     ): void {
         $objectModel = new LinkBlock($linkBlockId);
 
-        /**
+        /*
          * Why we want to force association?
          * It's easier to work on multi-store tables even when feature is disabled
          * This way we can force association to store as legacy ObjectModel does
@@ -47,9 +47,10 @@ class ObjectModelHandler extends AbstractObjectModelHandler
          */
         if ($forceAssociate) {
             $objectModel->associateTo($associatedShops);
+
             return;
         }
-        
+
         $this->associateWithShops($objectModel, $associatedShops);
     }
 }

@@ -26,15 +26,12 @@ if (file_exists(__DIR__ . '/vendor/autoload.php')) {
 }
 
 use PrestaShop\Module\LinkList\DataMigration;
-use PrestaShop\PrestaShop\Adapter\Shop\Context;
-use PrestaShop\PrestaShop\Adapter\LegacyContext;
-use PrestaShop\Module\LinkList\Model\LinkBlockLang;
-use PrestaShop\PrestaShop\Adapter\SymfonyContainer;
-use PrestaShop\PrestaShop\Core\Module\WidgetInterface;
-use PrestaShop\PrestaShop\Core\Feature\FeatureInterface;
 use PrestaShop\Module\LinkList\LegacyLinkBlockRepository;
+use PrestaShop\Module\LinkList\Model\LinkBlockLang;
 use PrestaShop\Module\LinkList\Presenter\LinkBlockPresenter;
 use PrestaShop\Module\LinkList\Repository\LinkBlockRepository;
+use PrestaShop\PrestaShop\Adapter\SymfonyContainer;
+use PrestaShop\PrestaShop\Core\Module\WidgetInterface;
 
 /**
  * Class Ps_Linklist.
@@ -59,7 +56,7 @@ class Ps_Linklist extends Module implements WidgetInterface
      */
     private $legacyBlockRepository;
     /**
-     * @var LinkBlockRepository
+     * @var LinkBlockRepository|LegacyLinkBlockRepository|null
      */
     private $repository;
 
@@ -80,7 +77,7 @@ class Ps_Linklist extends Module implements WidgetInterface
 
         $tabNames = [];
         foreach (Language::getLanguages(true) as $lang) {
-            $tabNames[$lang['locale']] = $this->trans('Link Widget', array(), 'Modules.Linklist.Admin', $lang['locale']);
+            $tabNames[$lang['locale']] = $this->trans('Link Widget', [], 'Modules.Linklist.Admin', $lang['locale']);
         }
         $this->tabs = [
             [
@@ -97,11 +94,10 @@ class Ps_Linklist extends Module implements WidgetInterface
         $this->bootstrap = true;
         parent::__construct();
 
-        $this->displayName = $this->trans('Link List', array(), 'Modules.Linklist.Admin');
-        $this->description = $this->trans('Give more visibility to your content/static pages (CMS, external pages, or else), where you want and when you want, to make your visitors feel like shopping on your store.', array(), 'Modules.Linklist.Admin');
-        $this->secure_key = Tools::encrypt($this->name);
+        $this->displayName = $this->trans('Link List', [], 'Modules.Linklist.Admin');
+        $this->description = $this->trans('Give more visibility to your content/static pages (CMS, external pages, or else), where you want and when you want, to make your visitors feel like shopping on your store.', [], 'Modules.Linklist.Admin');
 
-        $this->ps_versions_compliancy = array('min' => '1.7.8.0', 'max' => _PS_VERSION_);
+        $this->ps_versions_compliancy = ['min' => '1.7.8.0', 'max' => _PS_VERSION_];
         $this->templateFile = 'module:ps_linklist/views/templates/hook/linkblock.tpl';
         $this->templateFileColumn = 'module:ps_linklist/views/templates/hook/linkblock-column.tpl';
 
@@ -123,6 +119,7 @@ class Ps_Linklist extends Module implements WidgetInterface
 
         if (!$tablesInstalledWithSuccess) {
             $this->uninstall();
+
             return false;
         }
 
@@ -216,6 +213,7 @@ class Ps_Linklist extends Module implements WidgetInterface
             $parentUninstallClosure = $parentUninstallClosure->bindTo($oldModule, get_class($oldModule));
             $parentUninstallClosure();
         }
+
         return true;
     }
 
@@ -265,15 +263,15 @@ class Ps_Linklist extends Module implements WidgetInterface
 
         $linkBlocks = $this->legacyBlockRepository->getByIdHook($id_hook);
 
-        $blocks = array();
+        $blocks = [];
         foreach ($linkBlocks as $block) {
             $blocks[] = $this->linkBlockPresenter->present($block);
         }
 
-        return array(
+        return [
             'linkBlocks' => $blocks,
             'hookName' => $hookName,
-        );
+        ];
     }
 
     /**
@@ -287,7 +285,7 @@ class Ps_Linklist extends Module implements WidgetInterface
     }
 
     /**
-     * @return LinkBlockRepository|LegacyLinkBlockRepository|null
+     * @return LinkBlockRepository|LegacyLinkBlockRepository
      */
     private function getRepository()
     {

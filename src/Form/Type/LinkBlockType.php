@@ -20,19 +20,18 @@
 
 namespace PrestaShop\Module\LinkList\Form\Type;
 
-use Symfony\Component\Form\FormBuilderInterface;
-use Symfony\Component\Validator\Constraints\Length;
-use Symfony\Component\OptionsResolver\OptionsResolver;
-use Symfony\Component\Translation\TranslatorInterface;
-use PrestaShopBundle\Form\Admin\Type\TranslateTextType;
-use PrestaShop\PrestaShop\Core\Feature\FeatureInterface;
+use PrestaShop\PrestaShop\Core\ConstraintValidator\Constraints\DefaultLanguage;
 use PrestaShopBundle\Form\Admin\Type\ShopChoiceTreeType;
+use PrestaShopBundle\Form\Admin\Type\TranslateTextType;
 use PrestaShopBundle\Form\Admin\Type\TranslatorAwareType;
 use Symfony\Component\Form\Extension\Core\Type\ChoiceType;
-use Symfony\Component\Form\Extension\Core\Type\HiddenType;
 use Symfony\Component\Form\Extension\Core\Type\CollectionType;
+use Symfony\Component\Form\Extension\Core\Type\HiddenType;
+use Symfony\Component\Form\FormBuilderInterface;
+use Symfony\Component\OptionsResolver\OptionsResolver;
+use Symfony\Component\Translation\TranslatorInterface;
+use Symfony\Component\Validator\Constraints\Length;
 use Symfony\Component\Validator\Constraints\NotBlank;
-use PrestaShop\PrestaShop\Core\ConstraintValidator\Constraints\DefaultLanguage;
 
 class LinkBlockType extends TranslatorAwareType
 {
@@ -123,7 +122,7 @@ class LinkBlockType extends TranslatorAwareType
                             'maxMessage' => $this->translator->trans(
                                 'Name of the block cannot be longer than %limit% characters',
                                 [
-                                    '%limit%' => 40
+                                    '%limit%' => 40,
                                 ],
                                 'Modules.Linklist.Admin'
                             ),

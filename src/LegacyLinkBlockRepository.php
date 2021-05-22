@@ -20,26 +20,41 @@
 
 namespace PrestaShop\Module\LinkList;
 
-use PrestaShop\Module\LinkList\Model\LinkBlock;
-use Symfony\Component\Translation\TranslatorInterface as Translator;
-use Shop;
-use Hook;
-use DB;
-use Language;
 use Context;
+use Db;
+use Hook;
+use Language;
+use PrestaShop\Module\LinkList\Model\LinkBlock;
+use Shop;
+use Symfony\Component\Translation\TranslatorInterface as Translator;
 
 /**
  * Class LegacyLinkBlockRepository.
  */
 class LegacyLinkBlockRepository
 {
+    /**
+     * @var Db
+     */
     private $db;
+
+    /**
+     * @var Shop
+     */
     private $shop;
+
+    /**
+     * @var string
+     */
     private $db_prefix;
+
+    /**
+     * @var Translator
+     */
     private $translator;
 
     /**
-     * @param DB $db
+     * @param Db $db
      * @param Shop $shop
      * @param Translator $translator
      */
@@ -71,7 +86,7 @@ class LegacyLinkBlockRepository
                 ";
         $ids = $this->db->executeS($sql);
 
-        $cmsBlock = array();
+        $cmsBlock = [];
         foreach ($ids as $id) {
             $cmsBlock[] = new LinkBlock((int) $id['id_link_block']);
         }
@@ -113,7 +128,7 @@ class LegacyLinkBlockRepository
             $success &= $this->db->execute($query);
         }
 
-        return $success;
+        return (bool) $success;
     }
 
     public function dropTables()
@@ -140,8 +155,8 @@ class LegacyLinkBlockRepository
         ];
         foreach (Language::getLanguages(true, Context::getContext()->shop->id) as $lang) {
             $queries[] = 'INSERT INTO `' . $this->db_prefix . 'link_block_lang` (`id_link_block`, `id_lang`, `name`) VALUES
-                (1, ' . (int) $lang['id_lang'] . ', "' . pSQL($this->translator->trans('Products', array(), 'Modules.Linklist.Shop', $lang['locale'])) . '"),
-                (2, ' . (int) $lang['id_lang'] . ', "' . pSQL($this->translator->trans('Our company', array(), 'Modules.Linklist.Shop', $lang['locale'])) . '");'
+                (1, ' . (int) $lang['id_lang'] . ', "' . pSQL($this->translator->trans('Products', [], 'Modules.Linklist.Shop', $lang['locale'])) . '"),
+                (2, ' . (int) $lang['id_lang'] . ', "' . pSQL($this->translator->trans('Our company', [], 'Modules.Linklist.Shop', $lang['locale'])) . '");'
             ;
         }
 
@@ -151,7 +166,7 @@ class LegacyLinkBlockRepository
                 (2, ' . (int) $shopId . ', 1);'
             ;
         }
-        
+
         foreach ($queries as $query) {
             $success &= $this->db->execute($query);
         }

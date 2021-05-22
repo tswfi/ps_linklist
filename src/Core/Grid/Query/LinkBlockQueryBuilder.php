@@ -22,8 +22,8 @@ namespace PrestaShop\Module\LinkList\Core\Grid\Query;
 
 use Doctrine\DBAL\Connection;
 use Doctrine\DBAL\Query\QueryBuilder;
-use PrestaShop\PrestaShop\Core\Grid\Search\SearchCriteriaInterface;
 use PrestaShop\PrestaShop\Core\Grid\Query\AbstractDoctrineQueryBuilder;
+use PrestaShop\PrestaShop\Core\Grid\Search\SearchCriteriaInterface;
 
 /**
  * Class LinkBlockQueryBuilder.
@@ -31,7 +31,7 @@ use PrestaShop\PrestaShop\Core\Grid\Query\AbstractDoctrineQueryBuilder;
 final class LinkBlockQueryBuilder extends AbstractDoctrineQueryBuilder
 {
     /**
-     * @param null|SearchCriteriaInterface $searchCriteria
+     * @param SearchCriteriaInterface|null $searchCriteria
      *
      * @return QueryBuilder
      */
@@ -65,7 +65,7 @@ final class LinkBlockQueryBuilder extends AbstractDoctrineQueryBuilder
     }
 
     /**
-     * @param null|SearchCriteriaInterface $searchCriteria
+     * @param SearchCriteriaInterface|null $searchCriteria
      *
      * @return QueryBuilder
      */
@@ -118,7 +118,6 @@ final class LinkBlockQueryBuilder extends AbstractDoctrineQueryBuilder
                 $qb
                     ->andWhere("lbs.id_shop IN (:$name)")
                     ->setParameter($name, $value, Connection::PARAM_STR_ARRAY);
-                ;
 
                 continue;
             }
@@ -128,6 +127,7 @@ final class LinkBlockQueryBuilder extends AbstractDoctrineQueryBuilder
                 ->setParameter($name, '%' . $value . '%')
             ;
         }
+
         return $qb;
     }
 }

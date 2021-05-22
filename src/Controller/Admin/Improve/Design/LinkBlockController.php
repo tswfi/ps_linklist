@@ -210,7 +210,7 @@ class LinkBlockController extends FrameworkBundleAdminController
             $this->clearModuleCache();
             $this->addFlash('success', $this->trans('Successful update.', 'Admin.Notifications.Success'));
         } catch (DatabaseException $e) {
-            $errors = [$e->toArray()];
+            $errors = [$e->getMessage()];
             $this->flashErrors($errors);
         }
 
@@ -236,12 +236,13 @@ class LinkBlockController extends FrameworkBundleAdminController
         $formHandler = $this->get('prestashop.module.link_block.form_handler');
         $form = $formHandler->getForm();
         $form->handleRequest($request);
-        
+
         if ($form->isSubmitted()) {
             if ($form->isValid()) {
                 $saveErrors = $formHandler->save($form->getData());
                 if (0 === count($saveErrors)) {
                     $this->addFlash('success', $this->trans($successMessage, 'Admin.Notifications.Success'));
+
                     return $this->redirectToRoute('admin_link_block_list');
                 }
 
